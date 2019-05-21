@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using System;
 using System.Threading.Tasks;
 
 namespace IdentityModel.AspNetCore
@@ -46,8 +48,19 @@ namespace IdentityModel.AspNetCore
         public static async Task<string> GetAccessTokenAsync(this HttpContext context)
         {
             var store = context.RequestServices.GetRequiredService<ITokenStore>();
+            var clock = context.RequestServices.GetRequiredService<ISystemClock>();
+            var options = context.RequestServices.GetRequiredService<IOptions<TokenUtilityOptions>>();
 
-            return (await store.GetTokenAsync(context.User)).accessToken;
+            var tokens = await store.GetTokenAsync(context.User);
+
+            var dtRefresh = tokens.expiration.Subtract(options.Value.RefreshBeforeExpiration);
+            if (dtRefresh < clock.UtcNow)
+            {
+                var refreshed = await context.RefreshAccessTokenAsync();
+                return refreshed.accessToken;
+            }
+
+            return tokens.accessToken;
         }
     }
 }
