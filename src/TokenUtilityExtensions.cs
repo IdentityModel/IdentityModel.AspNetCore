@@ -2,12 +2,15 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace IdentityModel.AspNetCore
 {
     public static class TokenUtilityExtensions
     {
+        static ConcurrentDictionary<string, Task<string>> _dictionary = new ConcurrentDictionary<string, Task<string>>(); 
+
         public static async Task<string> GetAccessTokenAsync(this HttpContext context)
         {
             var store = context.RequestServices.GetRequiredService<ITokenStore>();
@@ -19,8 +22,31 @@ namespace IdentityModel.AspNetCore
             var dtRefresh = tokens.expiration.Subtract(options.Value.RefreshBeforeExpiration);
             if (dtRefresh < clock.UtcNow)
             {
-                var refreshed = await context.RefreshAccessTokenAsync();
-                return refreshed.accessToken;
+                string accessToken = null;
+
+                try
+                {
+                    var source = new TaskCompletionSource<string>();
+                    var accessTokenTask = _dictionary.GetOrAdd(tokens.refreshToken, source.Task);
+
+                    if (accessTokenTask == source.Task)
+                    {
+                        var refreshed = await context.RefreshAccessTokenAsync();
+                        accessToken = refreshed.accessToken;
+
+                        source.SetResult(accessToken);
+                    }
+                    else
+                    {
+                        accessToken = await accessTokenTask;
+                    }
+                }
+                finally
+                {
+                    _dictionary.TryRemove(tokens.refreshToken, out _);
+                }
+
+                return accessToken;
             }
 
             return tokens.accessToken;
