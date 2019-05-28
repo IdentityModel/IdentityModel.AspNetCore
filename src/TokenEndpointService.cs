@@ -30,7 +30,7 @@ namespace IdentityModel.AspNetCore
             _logger = logger;
         }
 
-        public async Task<TokenResponse> RefreshTokenAsync(string refreshToken)
+        public async Task<TokenResponse> RefreshAccessTokenAsync(string refreshToken)
         {
             var oidcOptions = await GetOidcOptionsAsync();
             var configuration = await oidcOptions.ConfigurationManager.GetConfigurationAsync(default);

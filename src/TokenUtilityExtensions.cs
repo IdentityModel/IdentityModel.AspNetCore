@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿using IdentityModel.Client;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -33,7 +34,7 @@ namespace IdentityModel.AspNetCore
                     if (accessTokenTask == source.Task)
                     {
                         var refreshed = await context.RefreshAccessTokenAsync();
-                        accessToken = refreshed.accessToken;
+                        accessToken = refreshed.AccessToken;
 
                         source.SetResult(accessToken);
                     }
@@ -53,28 +54,27 @@ namespace IdentityModel.AspNetCore
             return tokens.accessToken;
         }
 
-        public static async Task<(string accessToken, int expiresIn, string refreshToken)> RefreshAccessTokenAsync(this HttpContext context, string refreshToken)
+        public static async Task<TokenResponse> RefreshAccessTokenAsync(this HttpContext context, string refreshToken)
         {
             var service = context.RequestServices.GetRequiredService<TokenEndpointService>();
-            var result = await service.RefreshTokenAsync(refreshToken);
+            var response = await service.RefreshAccessTokenAsync(refreshToken);
 
-            if (!result.IsError)
-            {
-                return (result.AccessToken, result.ExpiresIn, result.RefreshToken);
-            }
-
-            throw new System.Exception(result.Error);
+            return response;
         }
 
-        public static async Task<(string accessToken, string refreshToken)> RefreshAccessTokenAsync(this HttpContext context)
+        public static async Task<TokenResponse> RefreshAccessTokenAsync(this HttpContext context)
         {
             var store = context.RequestServices.GetRequiredService<ITokenStore>();
 
             var tokens = await store.GetTokenAsync(context.User);
-            var result = await context.RefreshAccessTokenAsync(tokens.refreshToken);
+            var response = await context.RefreshAccessTokenAsync(tokens.refreshToken);
 
-            await store.StoreTokenAsync(context.User, result.accessToken, result.expiresIn, result.refreshToken);
-            return (result.accessToken, result.refreshToken);
+            if (!response.IsError)
+            {
+                await store.StoreTokenAsync(context.User, response.AccessToken, response.ExpiresIn, response.RefreshToken);
+            }
+
+            return response;
         }
 
         public static async Task RevokeRefreshTokenAsync(this HttpContext context, string refreshToken)
