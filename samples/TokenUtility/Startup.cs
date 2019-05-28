@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 
 namespace AspNetCoreSecurity
@@ -24,11 +25,11 @@ namespace AspNetCoreSecurity
         {
             services.AddHttpClient();
 
-            services.AddHttpContextAccessor();
-            //services.ConfigureOptions<TokenUtilityOptions>();
-            services.AddTransient<ITokenStore, AuthenticationSessionTokenStore>();
-            services.AddTransient<TokenEndpointService>();
-            services.AddHttpClient<TokenEndpointService>();
+            services.AddTokenUtilities()
+                .ConfigureBackchannelHttpClient(client =>
+                {
+                    client.Timeout = TimeSpan.FromSeconds(30);
+                });
 
             services.AddMvc(options =>
             {

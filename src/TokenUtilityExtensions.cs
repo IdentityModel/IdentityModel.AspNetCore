@@ -7,9 +7,10 @@ using System.Threading.Tasks;
 
 namespace IdentityModel.AspNetCore
 {
-    public static class TokenUtilityExtensions
+    public static class TokenUtilityHttpContextExtensions
     {
-        static ConcurrentDictionary<string, Task<string>> _dictionary = new ConcurrentDictionary<string, Task<string>>(); 
+        static readonly ConcurrentDictionary<string, Task<string>> _dictionary = 
+            new ConcurrentDictionary<string, Task<string>>();
 
         public static async Task<string> GetAccessTokenAsync(this HttpContext context)
         {
