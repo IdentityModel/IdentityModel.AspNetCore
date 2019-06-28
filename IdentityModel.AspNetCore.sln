@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{054D2D66-997
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "samples", "samples", "{B8F1A24B-007A-4735-B33E-9528662EDCAD}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TokenUtility", "samples\TokenUtility\TokenUtility.csproj", "{1FEDC65B-02A4-4746-882F-659003758810}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TokenManagement", "samples\TokenUtility\TokenManagement.csproj", "{1FEDC65B-02A4-4746-882F-659003758810}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
