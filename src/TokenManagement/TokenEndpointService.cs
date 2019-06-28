@@ -10,14 +10,14 @@ namespace IdentityModel.AspNetCore
 {
     public class TokenEndpointService
     {
-        private readonly TokenUtilityOptions _tokenUtilityOptions;
+        private readonly TokenManagementOptions _tokenUtilityOptions;
         private readonly IOptionsSnapshot<OpenIdConnectOptions> _oidcOptions;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly HttpClient _httpClient;
         private readonly ILogger<TokenEndpointService> _logger;
 
         public TokenEndpointService(
-            IOptions<TokenUtilityOptions> tokenUtilityOptions,
+            IOptions<TokenManagementOptions> tokenUtilityOptions,
             IOptionsSnapshot<OpenIdConnectOptions> oidcOptions,
             IAuthenticationSchemeProvider schemeProvider,
             HttpClient httpClient,

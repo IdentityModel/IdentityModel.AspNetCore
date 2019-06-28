@@ -1,4 +1,5 @@
-﻿using IdentityModel.Client;
+﻿using IdentityModel.AspNetCore;
+using IdentityModel.Client;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -6,9 +7,9 @@ using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
-namespace IdentityModel.AspNetCore
+namespace Microsoft.AspNetCore.Authentication
 {
-    public static class TokenUtilityHttpContextExtensions
+    public static class TokenManagementHttpContextExtensions
     {
         static readonly ConcurrentDictionary<string, Task<string>> _dictionary = 
             new ConcurrentDictionary<string, Task<string>>();
@@ -17,7 +18,7 @@ namespace IdentityModel.AspNetCore
         {
             var store = context.RequestServices.GetRequiredService<ITokenStore>();
             var clock = context.RequestServices.GetRequiredService<ISystemClock>();
-            var options = context.RequestServices.GetRequiredService<IOptions<TokenUtilityOptions>>();
+            var options = context.RequestServices.GetRequiredService<IOptions<TokenManagementOptions>>();
 
             var tokens = await store.GetTokenAsync(context.User);
 
