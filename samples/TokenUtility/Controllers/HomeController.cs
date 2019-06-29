@@ -33,6 +33,16 @@ namespace AspNetCoreSecurity.Controllers
 
         public async Task<IActionResult> CallApi()
         {
+            var client = _httpClientFactory.CreateClient("client");
+            
+            var response = await client.GetStringAsync("https://demo.identityserver.io/api/test");
+            ViewBag.Json = JArray.Parse(response).ToString();
+
+            return View();
+        }
+
+        public async Task<IActionResult> CallApiManual()
+        {
             var token = await HttpContext.GetAccessTokenAsync();
 
             var client = _httpClientFactory.CreateClient();
