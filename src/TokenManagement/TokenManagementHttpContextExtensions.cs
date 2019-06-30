@@ -3,6 +3,7 @@ using IdentityModel.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
@@ -10,8 +11,8 @@ namespace Microsoft.AspNetCore.Authentication
 {
     public static class TokenManagementHttpContextExtensions
     {
-        static readonly ConcurrentDictionary<string, Task<string>> _dictionary = 
-            new ConcurrentDictionary<string, Task<string>>();
+        static readonly ConcurrentDictionary<string, Lazy<Task<string>>> _dictionary = 
+            new ConcurrentDictionary<string, Lazy<Task<string>>>();
 
         public static async Task<string> GetAccessTokenAsync(this HttpContext context)
         {
@@ -24,31 +25,20 @@ namespace Microsoft.AspNetCore.Authentication
             var dtRefresh = tokens.expiration.Subtract(options.Value.RefreshBeforeExpiration);
             if (dtRefresh < clock.UtcNow)
             {
-                string accessToken = null;
-
                 try
                 {
-                    var source = new TaskCompletionSource<string>();
-                    var accessTokenTask = _dictionary.GetOrAdd(tokens.refreshToken, source.Task);
-
-                    if (accessTokenTask == source.Task)
+                    return await _dictionary.GetOrAdd(tokens.refreshToken, (string refreshToken) =>
                     {
-                        var refreshed = await context.RefreshAccessTokenAsync();
-                        accessToken = refreshed.AccessToken;
-
-                        source.SetResult(accessToken);
-                    }
-                    else
-                    {
-                        accessToken = await accessTokenTask;
-                    }
+                        return new Lazy<Task<string>>(async () => {
+                            var refreshed = await context.RefreshAccessTokenAsync();
+                            return refreshed.AccessToken;
+                        });
+                    }).Value;
                 }
                 finally
                 {
                     _dictionary.TryRemove(tokens.refreshToken, out _);
                 }
-
-                return accessToken;
             }
 
             return tokens.accessToken;
