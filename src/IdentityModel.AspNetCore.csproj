@@ -5,6 +5,17 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
+  <PropertyGroup>
+    <Authors>Dominick Baier;Brock Allen</Authors>
+    <Description>OpenID Connect &amp; OAuth 2.0 client library for ASP.NET Core</Description>
+    <PackageId>IdentityModel.AspNetCore</PackageId>
+    <PackageTags>OAuth2;OAuth 2.0;OpenID Connect;Security;Identity;IdentityServer;ASP.NET Core</PackageTags>
+    <PackageIconUrl>https://identityserver.github.io/Documentation/assets/images/icons/IDmodel_icon128.png</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/IdentityModel/IdentityModel.AspNetCore</PackageProjectUrl>
+    <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="IdentityModel" Version="4.0.0-preview.2.33" />
     
