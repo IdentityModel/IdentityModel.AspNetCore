@@ -23,7 +23,6 @@ namespace AspNetCoreSecurity
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddTransient<AccessTokenHandler>();
             services.AddHttpClient("client")
                 .AddHttpMessageHandler<AccessTokenHandler>();
 
