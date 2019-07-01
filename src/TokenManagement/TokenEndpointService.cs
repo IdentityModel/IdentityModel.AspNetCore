@@ -38,7 +38,6 @@ namespace IdentityModel.AspNetCore
             return await _httpClient.RequestRefreshTokenAsync(new RefreshTokenRequest
             {
                 Address = configuration.TokenEndpoint,
-
                 ClientId = oidcOptions.ClientId,
                 ClientSecret = oidcOptions.ClientSecret,
                 RefreshToken = refreshToken
