@@ -30,10 +30,10 @@ namespace Microsoft.AspNetCore.Authentication
                 logger.LogDebug("Token {token} needs refreshing.", tokens.accessToken);
 
                 string accessToken = null;
+                var source = new TaskCompletionSource<string>();
 
                 try
                 {
-                    var source = new TaskCompletionSource<string>();
                     var accessTokenTask = _dictionary.GetOrAdd(tokens.refreshToken, source.Task);
 
                     if (accessTokenTask == source.Task)
@@ -47,6 +47,10 @@ namespace Microsoft.AspNetCore.Authentication
                     {
                         accessToken = await accessTokenTask;
                     }
+                }
+                catch(Exception ex)
+                {
+                    source.SetException(ex);
                 }
                 finally
                 {
