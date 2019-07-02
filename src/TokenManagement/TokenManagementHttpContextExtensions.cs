@@ -1,7 +1,8 @@
-﻿using IdentityModel.AspNetCore;
+using IdentityModel.AspNetCore;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
@@ -19,12 +20,16 @@ namespace Microsoft.AspNetCore.Authentication
             var store = context.RequestServices.GetRequiredService<ITokenStore>();
             var clock = context.RequestServices.GetRequiredService<ISystemClock>();
             var options = context.RequestServices.GetRequiredService<IOptions<TokenManagementOptions>>();
+            var loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
+            var logger = loggerFactory.CreateLogger("IdentityModel.AspNetCore.TokenManagement");
 
             var tokens = await store.GetTokenAsync(context.User);
 
             var dtRefresh = tokens.expiration.Subtract(options.Value.RefreshBeforeExpiration);
             if (dtRefresh < clock.UtcNow)
             {
+                logger.LogDebug("Token {token} needs refreshing.", tokens.accessToken);
+
                 try
                 {
                     return await _dictionary.GetOrAdd(tokens.refreshToken, (string refreshToken) =>

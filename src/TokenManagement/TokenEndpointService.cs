@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace IdentityModel.AspNetCore
 {
-    public class TokenEndpointService
+    internal class TokenEndpointService
     {
         private readonly TokenManagementOptions _tokenUtilityOptions;
         private readonly IOptionsSnapshot<OpenIdConnectOptions> _oidcOptions;
