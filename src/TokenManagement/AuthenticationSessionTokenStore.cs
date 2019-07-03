@@ -1,4 +1,7 @@
-﻿using Microsoft.AspNetCore.Authentication;
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
@@ -10,11 +13,19 @@ using System.Threading.Tasks;
 
 namespace IdentityModel.AspNetCore
 {
+    /// <summary>
+    /// Token store using the ASP.NET Core authentication session
+    /// </summary>
     public class AuthenticationSessionTokenStore : ITokenStore
     {
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly ILogger<AuthenticationSessionTokenStore> _logger;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="contextAccessor"></param>
+        /// <param name="logger"></param>
         public AuthenticationSessionTokenStore(
             IHttpContextAccessor contextAccessor,
             ILogger<AuthenticationSessionTokenStore> logger)
@@ -23,6 +34,7 @@ namespace IdentityModel.AspNetCore
             _logger = logger;
         }
 
+        /// <inheritdoc/>
         public async Task<(string accessToken, string refreshToken, DateTimeOffset expiration)> GetTokenAsync(ClaimsPrincipal user)
         {
             var result = await _contextAccessor.HttpContext.AuthenticateAsync();
@@ -56,6 +68,7 @@ namespace IdentityModel.AspNetCore
             return (accessToken.Value, refreshToken.Value, dtExpires);
         }
 
+        /// <inheritdoc/>
         public async Task StoreTokenAsync(ClaimsPrincipal user, string accessToken, int expiresIn, string refreshToken)
         {
             var result = await _contextAccessor.HttpContext.AuthenticateAsync();

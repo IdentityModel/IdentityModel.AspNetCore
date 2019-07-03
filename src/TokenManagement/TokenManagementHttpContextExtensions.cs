@@ -1,3 +1,6 @@
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
+
 using IdentityModel.AspNetCore;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Http;
@@ -10,11 +13,19 @@ using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Authentication
 {
+    /// <summary>
+    /// Extensions methods for HttpContext for token management
+    /// </summary>
     public static class TokenManagementHttpContextExtensions
     {
         static readonly ConcurrentDictionary<string, Lazy<Task<string>>> _dictionary = 
             new ConcurrentDictionary<string, Lazy<Task<string>>>();
 
+        /// <summary>
+        /// Returns (and refreshes if needed) the current access token
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public static async Task<string> GetAccessTokenAsync(this HttpContext context)
         {
             var store = context.RequestServices.GetRequiredService<ITokenStore>();
@@ -34,7 +45,8 @@ namespace Microsoft.AspNetCore.Authentication
                 {
                     return await _dictionary.GetOrAdd(tokens.refreshToken, (string refreshToken) =>
                     {
-                        return new Lazy<Task<string>>(async () => {
+                        return new Lazy<Task<string>>(async () => 
+                        {
                             var refreshed = await context.RefreshAccessTokenAsync();
                             return refreshed.AccessToken;
                         });
@@ -49,6 +61,12 @@ namespace Microsoft.AspNetCore.Authentication
             return tokens.accessToken;
         }
 
+        /// <summary>
+        /// Refreshes an access token using a given refresh token
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="refreshToken"></param>
+        /// <returns></returns>
         public static async Task<TokenResponse> RefreshAccessTokenAsync(this HttpContext context, string refreshToken)
         {
             var service = context.RequestServices.GetRequiredService<TokenEndpointService>();
@@ -57,6 +75,11 @@ namespace Microsoft.AspNetCore.Authentication
             return response;
         }
 
+        /// <summary>
+        /// Refreshes the current access token
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         public static async Task<TokenResponse> RefreshAccessTokenAsync(this HttpContext context)
         {
             var store = context.RequestServices.GetRequiredService<ITokenStore>();
@@ -72,6 +95,12 @@ namespace Microsoft.AspNetCore.Authentication
             return response;
         }
 
+        /// <summary>
+        /// Revokes a given refresh token
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="refreshToken"></param>
+        /// <returns></returns>
         public static async Task RevokeRefreshTokenAsync(this HttpContext context, string refreshToken)
         {
             var service = context.RequestServices.GetRequiredService<TokenEndpointService>();
