@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddTransient<AccessTokenHandler>();
             services.AddTransient<ITokenStore, AuthenticationSessionTokenStore>();
-            services.AddTransient<TokenEndpointService>();
+            
             services.AddHttpClient<TokenEndpointService>();
 
             return new TokenManagementBuilder(services);
