@@ -20,11 +20,11 @@ namespace MvcCode
             services.AddHttpClient("client")
                 .AddHttpMessageHandler<AccessTokenHandler>();
 
-            services.AddTokenManagement();
-                //.ConfigureBackchannelHttpClient(client =>
-                //{
-                //    client.Timeout = TimeSpan.FromSeconds(30);
-                //});
+            services.AddTokenManagement()
+                .ConfigureBackchannelHttpClient(client =>
+                {
+                    client.Timeout = TimeSpan.FromSeconds(30);
+                });
 
             services.AddAuthentication(options =>
             {
