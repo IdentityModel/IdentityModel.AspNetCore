@@ -7,6 +7,17 @@ jobs:
   pool:
     vmImage: 'ubuntu-16.04'
   steps:
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core 2.x SDK'
+    inputs:
+      packageType: 'sdk'
+      version: '2.x'
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core 3.x SDK'
+    inputs:
+      packageType: 'sdk'
+      version: '3.0.100-preview9-014004'
+      includePreviewVersions: true
   - task: Bash@3
     displayName: 'Build Script'
     inputs:
@@ -17,6 +28,17 @@ jobs:
   pool:
     vmImage: 'vs2017-win2016'
   steps:
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core 2.x SDK'
+    inputs:
+      packageType: 'sdk'
+      version: '2.x'
+  - task: UseDotNet@2
+    displayName: 'Install .NET Core 3.x SDK'
+    inputs:
+      packageType: 'sdk'
+      version: '3.0.100-preview9-014004'
+      includePreviewVersions: true
   - task: PowerShell@2
     displayName: 'Build Script'
     inputs:
