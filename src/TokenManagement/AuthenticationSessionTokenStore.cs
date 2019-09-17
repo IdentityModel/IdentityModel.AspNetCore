@@ -39,6 +39,11 @@ namespace IdentityModel.AspNetCore
         {
             var result = await _contextAccessor.HttpContext.AuthenticateAsync();
 
+            if (!result.Succeeded)
+            {
+                return (null, null, default);
+            }
+
             var tokens = result.Properties.GetTokens();
             if (tokens == null || !tokens.Any())
             {
@@ -72,6 +77,11 @@ namespace IdentityModel.AspNetCore
         public async Task StoreTokenAsync(ClaimsPrincipal user, string accessToken, int expiresIn, string refreshToken)
         {
             var result = await _contextAccessor.HttpContext.AuthenticateAsync();
+
+            if (!result.Succeeded)
+            {
+                throw new Exception("can't store tokens. User is anonymous");
+            }
 
             result.Properties.UpdateTokenValue(OpenIdConnectParameterNames.AccessToken, accessToken);
             result.Properties.UpdateTokenValue(OpenIdConnectParameterNames.RefreshToken, refreshToken);
