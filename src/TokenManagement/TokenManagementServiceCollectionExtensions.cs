@@ -2,6 +2,8 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel.AspNetCore;
+using System;
+using System.Net.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -25,6 +27,25 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddHttpClient<TokenEndpointService>();
 
             return new TokenManagementBuilder(services);
+        }
+
+        /// <summary>
+        /// Adds a named HTTP client for the factory that automatically sends the current access token
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="name">The name of the client.</param>
+        /// <param name="configureClient">Additional configuration.</param>
+        /// <returns></returns>
+        public static IHttpClientBuilder AddApiClient(this IServiceCollection services, string name, Action<HttpClient> configureClient = null)
+        {
+            if (configureClient != null)
+            {
+                return services.AddHttpClient("client", configureClient)
+                    .AddHttpMessageHandler<AccessTokenHandler>();
+            }
+
+            return services.AddHttpClient("client")
+                .AddHttpMessageHandler<AccessTokenHandler>();
         }
     }
 }
