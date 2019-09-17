@@ -123,6 +123,7 @@ namespace Microsoft.AspNetCore.Authentication
             if (!string.IsNullOrEmpty(tokens.refreshToken))
             {
                 await context.RevokeRefreshTokenAsync(tokens.refreshToken);
+                await store.ClearTokenAsync(context.User);
             }
         }
     }
