@@ -17,7 +17,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services"></param>
         /// <returns></returns>
-        public static TokenManagementBuilder AddTokenManagement(this IServiceCollection services)
+        public static TokenManagementBuilder AddAccessTokenManagement(this IServiceCollection services)
         {
             services.AddHttpContextAccessor();
 
@@ -36,15 +36,15 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="name">The name of the client.</param>
         /// <param name="configureClient">Additional configuration.</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddApiClient(this IServiceCollection services, string name, Action<HttpClient> configureClient = null)
+        public static IHttpClientBuilder AddAccessTokenClient(this IServiceCollection services, string name, Action<HttpClient> configureClient = null)
         {
             if (configureClient != null)
             {
-                return services.AddHttpClient("client", configureClient)
+                return services.AddHttpClient(name, configureClient)
                     .AddHttpMessageHandler<AccessTokenHandler>();
             }
 
-            return services.AddHttpClient("client")
+            return services.AddHttpClient(name)
                 .AddHttpMessageHandler<AccessTokenHandler>();
         }
     }

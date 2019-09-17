@@ -17,9 +17,9 @@ namespace MvcCode
 
             services.AddControllersWithViews();
 
-            services.AddApiClient("client");
+            services.AddAccessTokenClient("client");
 
-            services.AddTokenManagement()
+            services.AddAccessTokenManagement()
                 .ConfigureBackchannelHttpClient(client =>
                 {
                     client.Timeout = TimeSpan.FromSeconds(30);

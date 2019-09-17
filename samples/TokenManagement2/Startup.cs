@@ -26,7 +26,7 @@ namespace AspNetCoreSecurity
             services.AddHttpClient("client")
                 .AddHttpMessageHandler<AccessTokenHandler>();
 
-            services.AddTokenManagement()
+            services.AddAccessTokenManagement()
                 .ConfigureBackchannelHttpClient(client =>
                 {
                     client.Timeout = TimeSpan.FromSeconds(30);
