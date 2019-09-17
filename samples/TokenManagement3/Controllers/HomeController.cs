@@ -20,7 +20,7 @@ namespace MvcCode.Controllers
 
         public IActionResult Secure() => View();
 
-        public IActionResult Logout() => SignOut("oidc");
+        public IActionResult Logout() => SignOut("cookie", "oidc");
 
         public async Task<IActionResult> CallApi()
         {

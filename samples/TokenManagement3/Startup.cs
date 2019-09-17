@@ -27,12 +27,17 @@ namespace MvcCode
 
             services.AddAuthentication(options =>
             {
-                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultScheme = "cookie";
                 options.DefaultChallengeScheme = "oidc";
             })
-                .AddCookie(options =>
+                .AddCookie("cookie", options =>
                 {
                     options.Cookie.Name = "mvccode";
+
+                    options.Events.OnSigningOut = async e =>
+                    {
+                        await e.HttpContext.RevokeRefreshTokenAsync();
+                    };
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
