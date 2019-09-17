@@ -24,7 +24,7 @@ namespace IdentityModel.AspNetCore
         /// <param name="services"></param>
         public TokenManagementBuilder(IServiceCollection services)
         {
-            Services = services; ;
+            Services = services;
         }
 
         /// <summary>

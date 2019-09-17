@@ -13,20 +13,20 @@ namespace IdentityModel.AspNetCore
 {
     internal class TokenEndpointService
     {
-        private readonly TokenManagementOptions _tokenUtilityOptions;
+        private readonly TokenManagementOptions _tokenManagementOptions;
         private readonly IOptionsSnapshot<OpenIdConnectOptions> _oidcOptions;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly HttpClient _httpClient;
         private readonly ILogger<TokenEndpointService> _logger;
 
         public TokenEndpointService(
-            IOptions<TokenManagementOptions> tokenUtilityOptions,
+            IOptions<TokenManagementOptions> tokenManagementOptions,
             IOptionsSnapshot<OpenIdConnectOptions> oidcOptions,
             IAuthenticationSchemeProvider schemeProvider,
             HttpClient httpClient,
             ILogger<TokenEndpointService> logger)
         {
-            _tokenUtilityOptions = tokenUtilityOptions.Value;
+            _tokenManagementOptions = tokenManagementOptions.Value;
             _oidcOptions = oidcOptions;
             _schemeProvider = schemeProvider;
             _httpClient = httpClient;
@@ -79,14 +79,14 @@ namespace IdentityModel.AspNetCore
 
         private async Task<OpenIdConnectOptions> GetOidcOptionsAsync()
         {
-            if (string.IsNullOrEmpty(_tokenUtilityOptions.Scheme))
+            if (string.IsNullOrEmpty(_tokenManagementOptions.Scheme))
             {
                 var scheme = await _schemeProvider.GetDefaultChallengeSchemeAsync();
                 return _oidcOptions.Get(scheme.Name);
             }
             else
             {
-                return _oidcOptions.Get(_tokenUtilityOptions.Scheme);
+                return _oidcOptions.Get(_tokenManagementOptions.Scheme);
             }
         }
     }

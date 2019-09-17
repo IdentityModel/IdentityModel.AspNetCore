@@ -73,13 +73,19 @@ namespace IdentityModel.AspNetCore
         {
             var result = await _contextAccessor.HttpContext.AuthenticateAsync();
 
-            result.Properties.UpdateTokenValue("access_token", accessToken);
-            result.Properties.UpdateTokenValue("refresh_token", refreshToken);
+            result.Properties.UpdateTokenValue(OpenIdConnectParameterNames.AccessToken, accessToken);
+            result.Properties.UpdateTokenValue(OpenIdConnectParameterNames.RefreshToken, refreshToken);
 
             var newExpiresAt = DateTime.UtcNow + TimeSpan.FromSeconds(expiresIn);
             result.Properties.UpdateTokenValue("expires_at", newExpiresAt.ToString("o", CultureInfo.InvariantCulture));
 
             await _contextAccessor.HttpContext.SignInAsync(result.Principal, result.Properties);
+        }
+
+        /// <inheritdoc/>
+        public Task ClearTokenAsync(ClaimsPrincipal user)
+        {
+            return Task.CompletedTask;
         }
     }
 }
