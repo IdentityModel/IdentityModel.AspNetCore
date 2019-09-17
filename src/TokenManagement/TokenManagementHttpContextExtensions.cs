@@ -103,8 +103,27 @@ namespace Microsoft.AspNetCore.Authentication
         /// <returns></returns>
         public static async Task RevokeRefreshTokenAsync(this HttpContext context, string refreshToken)
         {
-            var service = context.RequestServices.GetRequiredService<TokenEndpointService>();
-            await service.RevokeTokenAsync(refreshToken);
+            if (!string.IsNullOrEmpty(refreshToken))
+            {
+                var service = context.RequestServices.GetRequiredService<TokenEndpointService>();
+                await service.RevokeTokenAsync(refreshToken);
+            }
+        }
+
+        /// <summary>
+        /// Revokes the current refresh token
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static async Task RevokeRefreshTokenAsync(this HttpContext context)
+        {
+            var store = context.RequestServices.GetRequiredService<ITokenStore>();
+            var tokens = await store.GetTokenAsync(context.User);
+
+            if (!string.IsNullOrEmpty(tokens.refreshToken))
+            {
+                await context.RevokeRefreshTokenAsync(tokens.refreshToken);
+            }
         }
     }
 }
