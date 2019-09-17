@@ -17,8 +17,7 @@ namespace MvcCode
 
             services.AddControllersWithViews();
 
-            services.AddHttpClient("client")
-                .AddHttpMessageHandler<AccessTokenHandler>();
+            services.AddApiClient("client");
 
             services.AddTokenManagement()
                 .ConfigureBackchannelHttpClient(client =>
