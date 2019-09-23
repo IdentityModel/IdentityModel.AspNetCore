@@ -1,3 +1,4 @@
+using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +23,9 @@ namespace MvcCode
                 {
                     client.Timeout = TimeSpan.FromSeconds(30);
                 });
+
+            // cleanup needed
+            services.AddTransient<IAccessTokenManagementService, DefaultAccessTokenManagementService>();
 
             services.AddAuthentication(options =>
             {

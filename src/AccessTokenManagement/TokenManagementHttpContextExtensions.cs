@@ -26,7 +26,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static async Task<string> GetAccessTokenAsync(this HttpContext context)
+        public static async Task<string> GetUserAccessTokenAsync(this HttpContext context)
         {
             var store = context.RequestServices.GetRequiredService<IUserTokenStore>();
             var clock = context.RequestServices.GetRequiredService<ISystemClock>();
@@ -60,6 +60,14 @@ namespace Microsoft.AspNetCore.Authentication
 
             return tokens.accessToken;
         }
+
+        public static async Task<string> GetClientAccessTokenAsync(this HttpContext context, string clientName = null)
+        {
+            var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
+
+            return await service.GetClientAccessTokenAsync(clientName);
+        }
+
 
         /// <summary>
         /// Refreshes an access token using a given refresh token

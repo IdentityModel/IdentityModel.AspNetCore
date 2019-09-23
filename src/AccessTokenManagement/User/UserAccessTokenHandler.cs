@@ -29,7 +29,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc/>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var token = await _httpContextAccessor.HttpContext.GetAccessTokenAsync();
+            var token = await _httpContextAccessor.HttpContext.GetUserAccessTokenAsync();
 
             if (!string.IsNullOrEmpty(token))
             {

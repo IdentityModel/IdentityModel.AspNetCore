@@ -43,7 +43,7 @@ namespace AspNetCoreSecurity.Controllers
 
         public async Task<IActionResult> CallApiManual()
         {
-            var token = await HttpContext.GetAccessTokenAsync();
+            var token = await HttpContext.GetUserAccessTokenAsync();
 
             var client = _httpClientFactory.CreateClient();
             client.SetBearerToken(token);
