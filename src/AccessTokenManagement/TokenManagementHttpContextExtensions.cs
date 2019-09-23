@@ -1,7 +1,7 @@
 // Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityModel.AspNetCore;
+using IdentityModel.AspNetCore.AccessTokenManagement;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -28,9 +28,9 @@ namespace Microsoft.AspNetCore.Authentication
         /// <returns></returns>
         public static async Task<string> GetAccessTokenAsync(this HttpContext context)
         {
-            var store = context.RequestServices.GetRequiredService<ITokenStore>();
+            var store = context.RequestServices.GetRequiredService<IUserTokenStore>();
             var clock = context.RequestServices.GetRequiredService<ISystemClock>();
-            var options = context.RequestServices.GetRequiredService<IOptions<TokenManagementOptions>>();
+            var options = context.RequestServices.GetRequiredService<IOptions<UserAccessTokenManagementOptions>>();
             var loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger("IdentityModel.AspNetCore.TokenManagement");
 
@@ -82,7 +82,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <returns></returns>
         public static async Task<TokenResponse> RefreshAccessTokenAsync(this HttpContext context)
         {
-            var store = context.RequestServices.GetRequiredService<ITokenStore>();
+            var store = context.RequestServices.GetRequiredService<IUserTokenStore>();
 
             var tokens = await store.GetTokenAsync(context.User);
             var response = await context.RefreshAccessTokenAsync(tokens.refreshToken);
@@ -117,7 +117,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <returns></returns>
         public static async Task RevokeRefreshTokenAsync(this HttpContext context)
         {
-            var store = context.RequestServices.GetRequiredService<ITokenStore>();
+            var store = context.RequestServices.GetRequiredService<IUserTokenStore>();
             var tokens = await store.GetTokenAsync(context.User);
 
             if (!string.IsNullOrEmpty(tokens.refreshToken))

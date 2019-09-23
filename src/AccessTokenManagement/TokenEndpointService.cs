@@ -9,24 +9,29 @@ using Microsoft.Extensions.Options;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace IdentityModel.AspNetCore
+namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
-    internal class TokenEndpointService
+    public class TokenEndpointService
     {
-        private readonly TokenManagementOptions _tokenManagementOptions;
+        private readonly UserAccessTokenManagementOptions _userTokenManagementOptions;
+        private readonly ClientTokenManagementOptions _clientTokenManagementOptions;
+
         private readonly IOptionsSnapshot<OpenIdConnectOptions> _oidcOptions;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly HttpClient _httpClient;
         private readonly ILogger<TokenEndpointService> _logger;
 
         public TokenEndpointService(
-            IOptions<TokenManagementOptions> tokenManagementOptions,
+            IOptions<UserAccessTokenManagementOptions> tokenManagementOptions,
+            IOptions<ClientTokenManagementOptions> clientTokenManagementOptions,
             IOptionsSnapshot<OpenIdConnectOptions> oidcOptions,
             IAuthenticationSchemeProvider schemeProvider,
             HttpClient httpClient,
             ILogger<TokenEndpointService> logger)
         {
-            _tokenManagementOptions = tokenManagementOptions.Value;
+            _userTokenManagementOptions = tokenManagementOptions.Value;
+            _clientTokenManagementOptions = clientTokenManagementOptions.Value;
+
             _oidcOptions = oidcOptions;
             _schemeProvider = schemeProvider;
             _httpClient = httpClient;
@@ -35,7 +40,7 @@ namespace IdentityModel.AspNetCore
 
         public async Task<TokenResponse> RefreshAccessTokenAsync(string refreshToken)
         {
-            var oidcOptions = await GetOidcOptionsAsync();
+            var oidcOptions = await GetOidcOptionsAsync(_userTokenManagementOptions.Scheme);
             var configuration = await oidcOptions.ConfigurationManager.GetConfigurationAsync(default);
 
             var response = await _httpClient.RequestRefreshTokenAsync(new RefreshTokenRequest
@@ -57,7 +62,7 @@ namespace IdentityModel.AspNetCore
 
         public async Task<TokenRevocationResponse> RevokeTokenAsync(string refreshToken)
         {
-            var oidcOptions = await GetOidcOptionsAsync();
+            var oidcOptions = await GetOidcOptionsAsync(_userTokenManagementOptions.Scheme);
             var configuration = await oidcOptions.ConfigurationManager.GetConfigurationAsync(default);
 
             var response = await _httpClient.RevokeTokenAsync(new TokenRevocationRequest
@@ -77,16 +82,54 @@ namespace IdentityModel.AspNetCore
             return response;
         }
 
-        private async Task<OpenIdConnectOptions> GetOidcOptionsAsync()
+        public async Task<TokenResponse> RequestClientAccessToken(string clientName = null)
         {
-            if (string.IsNullOrEmpty(_tokenManagementOptions.Scheme))
+            TokenClientOptions tokenClientOptions = null;
+
+            if (!string.IsNullOrEmpty(clientName))
+            {
+                tokenClientOptions = _clientTokenManagementOptions.Clients[clientName];
+            }
+            else
+            {
+                var oidcOptions = await GetOidcOptionsAsync(_clientTokenManagementOptions.OidcSchemeClient);
+                var configuration = await oidcOptions.ConfigurationManager.GetConfigurationAsync(default);
+
+                tokenClientOptions = new TokenClientOptions
+                {
+                    Address = configuration.TokenEndpoint,
+
+                    ClientId = oidcOptions.ClientId,
+                    ClientSecret = oidcOptions.ClientSecret
+                };
+            }
+
+            var response = await _httpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = tokenClientOptions.Address,
+
+                ClientId = tokenClientOptions.ClientId,
+                ClientSecret = tokenClientOptions.ClientSecret
+            });
+
+            if (response.IsError)
+            {
+                _logger.LogError("Error request client access token. Error = {error}", response.Error);
+            }
+
+            return response;
+        }
+
+        private async Task<OpenIdConnectOptions> GetOidcOptionsAsync(string schemeName)
+        {
+            if (string.IsNullOrEmpty(schemeName))
             {
                 var scheme = await _schemeProvider.GetDefaultChallengeSchemeAsync();
                 return _oidcOptions.Get(scheme.Name);
             }
             else
             {
-                return _oidcOptions.Get(_tokenManagementOptions.Scheme);
+                return _oidcOptions.Get(schemeName);
             }
         }
     }

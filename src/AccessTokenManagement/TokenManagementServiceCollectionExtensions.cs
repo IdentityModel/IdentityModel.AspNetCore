@@ -1,7 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityModel.AspNetCore;
+using IdentityModel.AspNetCore.AccessTokenManagement;
 using System;
 using System.Net.Http;
 
@@ -21,8 +21,8 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddHttpContextAccessor();
 
-            services.AddTransient<AccessTokenHandler>();
-            services.AddTransient<ITokenStore, AuthenticationSessionTokenStore>();
+            services.AddTransient<UserAccessTokenHandler>();
+            services.AddTransient<IUserTokenStore, AuthenticationSessionUserTokenStore>();
             services.AddHttpClient<TokenEndpointService>();
 
             return new TokenManagementBuilder(services);
@@ -40,11 +40,11 @@ namespace Microsoft.Extensions.DependencyInjection
             if (configureClient != null)
             {
                 return services.AddHttpClient(name, configureClient)
-                    .AddHttpMessageHandler<AccessTokenHandler>();
+                    .AddHttpMessageHandler<UserAccessTokenHandler>();
             }
 
             return services.AddHttpClient(name)
-                .AddHttpMessageHandler<AccessTokenHandler>();
+                .AddHttpMessageHandler<UserAccessTokenHandler>();
         }
     }
 }

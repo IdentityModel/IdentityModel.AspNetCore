@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
 
-namespace IdentityModel.AspNetCore
+namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
     /// <summary>
     /// Builder object for the token management services

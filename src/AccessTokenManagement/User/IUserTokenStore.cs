@@ -5,12 +5,12 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace IdentityModel.AspNetCore
+namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
     /// <summary>
     /// Storage abstraction for access and refresh tokens
     /// </summary>
-    public interface ITokenStore
+    public interface IUserTokenStore
     {
         /// <summary>
         /// Stores tokens

@@ -3,12 +3,12 @@
 
 using System;
 
-namespace IdentityModel.AspNetCore
+namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
     /// <summary>
     /// Options for the token management services
     /// </summary>
-    public class TokenManagementOptions
+    public class UserAccessTokenManagementOptions
     {
         /// <summary>
         /// Name of the authentication scheme to use for the token operations

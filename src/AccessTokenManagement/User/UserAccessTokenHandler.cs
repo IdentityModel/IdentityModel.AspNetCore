@@ -8,12 +8,12 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace IdentityModel.AspNetCore
+namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
     /// <summary>
     /// Delegating handler that injects the current access token into an outgoing request
     /// </summary>
-    public class AccessTokenHandler : DelegatingHandler
+    public class UserAccessTokenHandler : DelegatingHandler
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -21,7 +21,7 @@ namespace IdentityModel.AspNetCore
         /// ctor
         /// </summary>
         /// <param name="httpContextAccessor"></param>
-        public AccessTokenHandler(IHttpContextAccessor httpContextAccessor)
+        public UserAccessTokenHandler(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }

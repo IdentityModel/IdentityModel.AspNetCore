@@ -11,24 +11,24 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace IdentityModel.AspNetCore
+namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
     /// <summary>
     /// Token store using the ASP.NET Core authentication session
     /// </summary>
-    public class AuthenticationSessionTokenStore : ITokenStore
+    public class AuthenticationSessionUserTokenStore : IUserTokenStore
     {
         private readonly IHttpContextAccessor _contextAccessor;
-        private readonly ILogger<AuthenticationSessionTokenStore> _logger;
+        private readonly ILogger<AuthenticationSessionUserTokenStore> _logger;
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="contextAccessor"></param>
         /// <param name="logger"></param>
-        public AuthenticationSessionTokenStore(
+        public AuthenticationSessionUserTokenStore(
             IHttpContextAccessor contextAccessor,
-            ILogger<AuthenticationSessionTokenStore> logger)
+            ILogger<AuthenticationSessionUserTokenStore> logger)
         {
             _contextAccessor = contextAccessor;
             _logger = logger;
