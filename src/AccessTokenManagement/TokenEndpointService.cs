@@ -11,26 +11,23 @@ using System.Threading.Tasks;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
-    public class TokenEndpointService
+    public class TokenEndpointService : ITokenEndpointService
     {
-        private readonly UserAccessTokenManagementOptions _userTokenManagementOptions;
-        private readonly ClientTokenManagementOptions _clientTokenManagementOptions;
-
+        private readonly AccessTokenManagementOptions _accessTokenManagementOptions;
+        
         private readonly IOptionsSnapshot<OpenIdConnectOptions> _oidcOptions;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly HttpClient _httpClient;
         private readonly ILogger<TokenEndpointService> _logger;
 
         public TokenEndpointService(
-            IOptions<UserAccessTokenManagementOptions> tokenManagementOptions,
-            IOptions<ClientTokenManagementOptions> clientTokenManagementOptions,
+            IOptions<AccessTokenManagementOptions> accessTokenManagementOptions,
             IOptionsSnapshot<OpenIdConnectOptions> oidcOptions,
             IAuthenticationSchemeProvider schemeProvider,
             HttpClient httpClient,
             ILogger<TokenEndpointService> logger)
         {
-            _userTokenManagementOptions = tokenManagementOptions.Value;
-            _clientTokenManagementOptions = clientTokenManagementOptions.Value;
+            _accessTokenManagementOptions = accessTokenManagementOptions.Value;
 
             _oidcOptions = oidcOptions;
             _schemeProvider = schemeProvider;
@@ -38,9 +35,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             _logger = logger;
         }
 
-        public async Task<TokenResponse> RefreshAccessTokenAsync(string refreshToken)
+        public async Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken)
         {
-            var oidcOptions = await GetOidcOptionsAsync(_userTokenManagementOptions.Scheme);
+            var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.User.Scheme);
             var configuration = await oidcOptions.ConfigurationManager.GetConfigurationAsync(default);
 
             var response = await _httpClient.RequestRefreshTokenAsync(new RefreshTokenRequest
@@ -60,9 +57,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             return response;
         }
 
-        public async Task<TokenRevocationResponse> RevokeTokenAsync(string refreshToken)
+        public async Task<TokenRevocationResponse> RevokeRefreshTokenAsync(string refreshToken)
         {
-            var oidcOptions = await GetOidcOptionsAsync(_userTokenManagementOptions.Scheme);
+            var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.User.Scheme);
             var configuration = await oidcOptions.ConfigurationManager.GetConfigurationAsync(default);
 
             var response = await _httpClient.RevokeTokenAsync(new TokenRevocationRequest
@@ -88,11 +85,11 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             if (!string.IsNullOrEmpty(clientName))
             {
-                tokenClientOptions = _clientTokenManagementOptions.Clients[clientName];
+                tokenClientOptions = _accessTokenManagementOptions.Client.Clients[clientName];
             }
             else
             {
-                var oidcOptions = await GetOidcOptionsAsync(_clientTokenManagementOptions.OidcSchemeClient);
+                var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.Client.OidcSchemeClient);
                 var configuration = await oidcOptions.ConfigurationManager.GetConfigurationAsync(default);
 
                 tokenClientOptions = new TokenClientOptions

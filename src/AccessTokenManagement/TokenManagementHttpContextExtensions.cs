@@ -30,13 +30,13 @@ namespace Microsoft.AspNetCore.Authentication
         {
             var store = context.RequestServices.GetRequiredService<IUserTokenStore>();
             var clock = context.RequestServices.GetRequiredService<ISystemClock>();
-            var options = context.RequestServices.GetRequiredService<IOptions<UserAccessTokenManagementOptions>>();
+            var options = context.RequestServices.GetRequiredService<IOptions<AccessTokenManagementOptions>>().Value;
             var loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
             var logger = loggerFactory.CreateLogger("IdentityModel.AspNetCore.TokenManagement");
 
             var tokens = await store.GetTokenAsync(context.User);
 
-            var dtRefresh = tokens.expiration.Subtract(options.Value.RefreshBeforeExpiration);
+            var dtRefresh = tokens.expiration.Subtract(options.User.RefreshBeforeExpiration);
             if (dtRefresh < clock.UtcNow)
             {
                 logger.LogDebug("Token {token} needs refreshing.", tokens.accessToken);
@@ -78,7 +78,7 @@ namespace Microsoft.AspNetCore.Authentication
         public static async Task<TokenResponse> RefreshAccessTokenAsync(this HttpContext context, string refreshToken)
         {
             var service = context.RequestServices.GetRequiredService<TokenEndpointService>();
-            var response = await service.RefreshAccessTokenAsync(refreshToken);
+            var response = await service.RefreshUserAccessTokenAsync(refreshToken);
 
             return response;
         }
@@ -114,7 +114,7 @@ namespace Microsoft.AspNetCore.Authentication
             if (!string.IsNullOrEmpty(refreshToken))
             {
                 var service = context.RequestServices.GetRequiredService<TokenEndpointService>();
-                await service.RevokeTokenAsync(refreshToken);
+                await service.RevokeRefreshTokenAsync(refreshToken);
             }
         }
 

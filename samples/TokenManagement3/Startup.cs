@@ -24,9 +24,6 @@ namespace MvcCode
                     client.Timeout = TimeSpan.FromSeconds(30);
                 });
 
-            // cleanup needed
-            services.AddTransient<IAccessTokenManagementService, DefaultAccessTokenManagementService>();
-
             services.AddAuthentication(options =>
             {
                 options.DefaultScheme = "cookie";
