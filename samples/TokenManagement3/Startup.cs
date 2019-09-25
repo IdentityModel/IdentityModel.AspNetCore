@@ -16,13 +16,13 @@ namespace MvcCode
 
             services.AddControllersWithViews();
 
-            services.AddAccessTokenClient("client");
-
             services.AddAccessTokenManagement()
                 .ConfigureBackchannelHttpClient(client =>
                 {
                     client.Timeout = TimeSpan.FromSeconds(30);
                 });
+
+            services.AddAccessTokenClient("client");
 
             services.AddAuthentication(options =>
             {

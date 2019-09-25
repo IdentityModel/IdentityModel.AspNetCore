@@ -37,6 +37,8 @@ namespace MvcCode.Controllers
         public async Task<IActionResult> CallApiAsClient()
         {
             var client = _httpClientFactory.CreateClient();
+
+            // add dynamic parameters option
             client.SetBearerToken(await HttpContext.GetClientAccessTokenAsync());
 
             var response = await client.GetStringAsync("https://demo.identityserver.io/api/test");
