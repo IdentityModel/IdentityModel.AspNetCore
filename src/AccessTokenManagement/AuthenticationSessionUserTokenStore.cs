@@ -35,13 +35,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<(string accessToken, string refreshToken, DateTimeOffset expiration)> GetTokenAsync(ClaimsPrincipal user)
+        public async Task<UserToken> GetTokenAsync(ClaimsPrincipal user)
         {
             var result = await _contextAccessor.HttpContext.AuthenticateAsync();
 
             if (!result.Succeeded)
             {
-                return (null, null, default);
+                return new UserToken();
             }
 
             var tokens = result.Properties.GetTokens();
@@ -70,7 +70,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             var dtExpires = DateTimeOffset.Parse(expiresAt.Value, CultureInfo.InvariantCulture);
 
-            return (accessToken.Value, refreshToken.Value, dtExpires);
+            return new UserToken
+            {
+                AccessToken = accessToken.Value,
+                RefreshToken = refreshToken.Value,
+                Expiration = dtExpires
+            };
+            
         }
 
         /// <inheritdoc/>

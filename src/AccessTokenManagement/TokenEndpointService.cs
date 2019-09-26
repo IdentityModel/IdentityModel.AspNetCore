@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using System;
+using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
 
@@ -33,6 +35,50 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             _schemeProvider = schemeProvider;
             _httpClient = httpClient;
             _logger = logger;
+        }
+
+        public async Task<TokenResponse> RequestClientAccessToken(string clientName = null)
+        {
+            TokenClientOptions tokenClientOptions;
+
+            // if a named client configuration was passed in, try to load it
+            if (!string.IsNullOrEmpty(clientName))
+            {
+                if (!_accessTokenManagementOptions.Client.Clients.TryGetValue(clientName, out tokenClientOptions))
+                {
+                    throw new InvalidOperationException($"No access token client configuration found for client: {clientName}");
+                }
+            }
+            else
+            {
+                // if only one client configuration exists, load that
+                if (_accessTokenManagementOptions.Client.Clients.Count == 1)
+                {
+                    tokenClientOptions = _accessTokenManagementOptions.Client.Clients.First().Value;
+                }
+                // otherwise fall back to the scheme configuration
+                else
+                {
+                    var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.Client.OidcSchemeClient);
+                    var configuration = await oidcOptions.ConfigurationManager.GetConfigurationAsync(default);
+
+                    tokenClientOptions = new TokenClientOptions
+                    {
+                        Address = configuration.TokenEndpoint,
+
+                        ClientId = oidcOptions.ClientId,
+                        ClientSecret = oidcOptions.ClientSecret
+                    };
+                }
+            }
+
+            return await _httpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
+            {
+                Address = tokenClientOptions.Address,
+
+                ClientId = tokenClientOptions.ClientId,
+                ClientSecret = tokenClientOptions.ClientSecret
+            });
         }
 
         public async Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken)
@@ -74,44 +120,6 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             if (response.IsError)
             {
                 _logger.LogError("Error revoking refresh token. Error = {error}", response.Error);
-            }
-
-            return response;
-        }
-
-        public async Task<TokenResponse> RequestClientAccessToken(string clientName = null)
-        {
-            TokenClientOptions tokenClientOptions = null;
-
-            if (!string.IsNullOrEmpty(clientName))
-            {
-                tokenClientOptions = _accessTokenManagementOptions.Client.Clients[clientName];
-            }
-            else
-            {
-                var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.Client.OidcSchemeClient);
-                var configuration = await oidcOptions.ConfigurationManager.GetConfigurationAsync(default);
-
-                tokenClientOptions = new TokenClientOptions
-                {
-                    Address = configuration.TokenEndpoint,
-
-                    ClientId = oidcOptions.ClientId,
-                    ClientSecret = oidcOptions.ClientSecret
-                };
-            }
-
-            var response = await _httpClient.RequestClientCredentialsTokenAsync(new ClientCredentialsTokenRequest
-            {
-                Address = tokenClientOptions.Address,
-
-                ClientId = tokenClientOptions.ClientId,
-                ClientSecret = tokenClientOptions.ClientSecret
-            });
-
-            if (response.IsError)
-            {
-                _logger.LogError("Error request client access token. Error = {error}", response.Error);
             }
 
             return response;

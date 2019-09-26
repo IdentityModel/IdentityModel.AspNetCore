@@ -37,27 +37,36 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             _logger = logger;
         }
 
+        /// <summary>
+        /// Returns either a cached of a new access token for a given client configuration or the default client
+        /// </summary>
+        /// <param name="name">Name of the client configuration, of default</param>
+        /// <returns>The access token.</returns>
         public async Task<string> GetClientAccessTokenAsync(string name = null)
         {
             var response = await _tokenEndpointService.RequestClientAccessToken(name);
 
-            // todo: error handling
+            if (response.IsError)
+            {
+                var configName = name ?? "default";
+                _logger.LogError("Error requesting access token for client {configName}. Error = {error}", configName, response.Error);
+            }
 
             return response.AccessToken;
         }
 
         public async Task<string> GetUserAccessTokenAsync()
         {
-            var tokens = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
+            var userToken = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
 
-            var dtRefresh = tokens.expiration.Subtract(_options.User.RefreshBeforeExpiration);
+            var dtRefresh = userToken.Expiration.Subtract(_options.User.RefreshBeforeExpiration);
             if (dtRefresh < _clock.UtcNow)
             {
-                _logger.LogDebug("Token {token} needs refreshing.", tokens.accessToken);
+                _logger.LogDebug("Token {token} needs refreshing.", userToken.AccessToken);
 
                 try
                 {
-                    return await _dictionary.GetOrAdd(tokens.refreshToken, (string refreshToken) =>
+                    return await _dictionary.GetOrAdd(userToken.RefreshToken, (string refreshToken) =>
                     {
                         return new Lazy<Task<string>>(async () =>
                         {
@@ -68,17 +77,17 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 }
                 finally
                 {
-                    _dictionary.TryRemove(tokens.refreshToken, out _);
+                    _dictionary.TryRemove(userToken.RefreshToken, out _);
                 }
             }
 
-            return tokens.accessToken;
+            return userToken.AccessToken;
         }
 
         public async Task<TokenResponse> RefreshUserAccessTokenAsync()
         {
-            var tokens = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
-            var response = await _tokenEndpointService.RefreshUserAccessTokenAsync(tokens.refreshToken);
+            var userToken = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
+            var response = await _tokenEndpointService.RefreshUserAccessTokenAsync(userToken.RefreshToken);
 
             if (!response.IsError)
             {
@@ -90,11 +99,11 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
         public async Task RevokeRefreshTokenAsync()
         {
-            var tokens = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
+            var userToken = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
 
-            if (!string.IsNullOrEmpty(tokens.refreshToken))
+            if (!string.IsNullOrEmpty(userToken.RefreshToken))
             {
-                await _tokenEndpointService.RevokeRefreshTokenAsync(tokens.refreshToken);
+                await _tokenEndpointService.RevokeRefreshTokenAsync(userToken.RefreshToken);
             }
         }
     }
