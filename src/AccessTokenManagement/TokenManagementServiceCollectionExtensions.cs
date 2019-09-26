@@ -16,15 +16,22 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds the token management services to DI
         /// </summary>
         /// <param name="services"></param>
+        /// <param name="options"></param>
         /// <returns></returns>
-        public static TokenManagementBuilder AddAccessTokenManagement(this IServiceCollection services)
+        public static TokenManagementBuilder AddAccessTokenManagement(this IServiceCollection services, Action<AccessTokenManagementOptions> options = null)
         {
+            if (options != null)
+            {
+                services.Configure(options);
+            }
+
             services.AddHttpContextAccessor();
 
             services.AddTransient<IAccessTokenManagementService, AccessTokenManagementService>();
             services.AddHttpClient<ITokenEndpointService, TokenEndpointService>();
 
             services.AddTransient<UserAccessTokenHandler>();
+            services.AddTransient<ClientAccessTokenHandler>();
 
             services.AddTransient<IUserTokenStore, AuthenticationSessionUserTokenStore>();
 
@@ -32,7 +39,7 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
-        /// Adds a named HTTP client for the factory that automatically sends the current access token
+        /// Adds a named HTTP client for the factory that automatically sends the current user access token
         /// </summary>
         /// <param name="services"></param>
         /// <param name="name">The name of the client.</param>
@@ -48,6 +55,25 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services.AddHttpClient(name)
                 .AddHttpMessageHandler<UserAccessTokenHandler>();
+        }
+
+        /// <summary>
+        /// Adds a named HTTP client for the factory that automatically sends the a client access token
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="name">The name of the client.</param>
+        /// <param name="configureClient">Additional configuration.</param>
+        /// <returns></returns>
+        public static IHttpClientBuilder AddClientAccessTokenClient(this IServiceCollection services, string name, Action<HttpClient> configureClient = null)
+        {
+            if (configureClient != null)
+            {
+                return services.AddHttpClient(name, configureClient)
+                    .AddHttpMessageHandler<ClientAccessTokenHandler>();
+            }
+
+            return services.AddHttpClient(name)
+                .AddHttpMessageHandler<ClientAccessTokenHandler>();
         }
     }
 }

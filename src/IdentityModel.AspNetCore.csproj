@@ -41,10 +41,6 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="AccessTokenManagement\Client\" />
-  </ItemGroup>
   
   <!--SourceLink-->
   <PropertyGroup>

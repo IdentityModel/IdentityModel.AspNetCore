@@ -1,6 +1,4 @@
-﻿using IdentityModel.Client;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
@@ -26,7 +24,7 @@ namespace MvcCode.Controllers
 
         public async Task<IActionResult> CallApiAsUser()
         {
-            var client = _httpClientFactory.CreateClient("client");
+            var client = _httpClientFactory.CreateClient("user_client");
 
             var response = await client.GetStringAsync("https://demo.identityserver.io/api/test");
             ViewBag.Json = JArray.Parse(response).ToString();
@@ -36,10 +34,7 @@ namespace MvcCode.Controllers
 
         public async Task<IActionResult> CallApiAsClient()
         {
-            var client = _httpClientFactory.CreateClient();
-
-            // add dynamic parameters option
-            client.SetBearerToken(await HttpContext.GetClientAccessTokenAsync());
+            var client = _httpClientFactory.CreateClient("client");
 
             var response = await client.GetStringAsync("https://demo.identityserver.io/api/test");
             ViewBag.Json = JArray.Parse(response).ToString();

@@ -21,7 +21,8 @@ namespace MvcCode
                     client.Timeout = TimeSpan.FromSeconds(30);
                 });
 
-            services.AddUserAccessTokenClient("client");
+            services.AddUserAccessTokenClient("user_client");
+            services.AddClientAccessTokenClient("client");
 
             services.AddAuthentication(options =>
             {
