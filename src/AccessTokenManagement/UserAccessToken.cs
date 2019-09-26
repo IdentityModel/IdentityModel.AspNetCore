@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
-    public class UserToken
+    public class UserAccessToken
     {
         public string AccessToken { get; set; }
         public string RefreshToken { get; set; }

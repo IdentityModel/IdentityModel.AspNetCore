@@ -27,7 +27,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// </summary>
         /// <param name="user">User the tokens belong to</param>
         /// <returns>access and refresh token and access token expiration</returns>
-        Task<UserToken> GetTokenAsync(ClaimsPrincipal user);
+        Task<UserAccessToken> GetTokenAsync(ClaimsPrincipal user);
 
         /// <summary>
         /// Clears the stored tokens for a given user
