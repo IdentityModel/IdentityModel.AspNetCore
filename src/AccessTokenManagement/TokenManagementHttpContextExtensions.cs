@@ -5,10 +5,6 @@ using IdentityModel.AspNetCore.AccessTokenManagement;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Concurrent;
 using System.Threading.Tasks;
 
 namespace Microsoft.AspNetCore.Authentication
@@ -18,49 +14,24 @@ namespace Microsoft.AspNetCore.Authentication
     /// </summary>
     public static class TokenManagementHttpContextExtensions
     {
-        static readonly ConcurrentDictionary<string, Lazy<Task<string>>> _dictionary = 
-            new ConcurrentDictionary<string, Lazy<Task<string>>>();
-
         /// <summary>
-        /// Returns (and refreshes if needed) the current access token
+        /// Returns (and refreshes if needed) the current access token for the logged on user
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
         public static async Task<string> GetUserAccessTokenAsync(this HttpContext context)
         {
-            var store = context.RequestServices.GetRequiredService<IUserTokenStore>();
-            var clock = context.RequestServices.GetRequiredService<ISystemClock>();
-            var options = context.RequestServices.GetRequiredService<IOptions<AccessTokenManagementOptions>>().Value;
-            var loggerFactory = context.RequestServices.GetRequiredService<ILoggerFactory>();
-            var logger = loggerFactory.CreateLogger("IdentityModel.AspNetCore.TokenManagement");
+            var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
 
-            var tokens = await store.GetTokenAsync(context.User);
-
-            var dtRefresh = tokens.expiration.Subtract(options.User.RefreshBeforeExpiration);
-            if (dtRefresh < clock.UtcNow)
-            {
-                logger.LogDebug("Token {token} needs refreshing.", tokens.accessToken);
-
-                try
-                {
-                    return await _dictionary.GetOrAdd(tokens.refreshToken, (string refreshToken) =>
-                    {
-                        return new Lazy<Task<string>>(async () => 
-                        {
-                            var refreshed = await context.RefreshAccessTokenAsync();
-                            return refreshed.AccessToken;
-                        });
-                    }).Value;
-                }
-                finally
-                {
-                    _dictionary.TryRemove(tokens.refreshToken, out _);
-                }
-            }
-
-            return tokens.accessToken;
+            return await service.GetUserAccessTokenAsync();
         }
 
+        /// <summary>
+        /// Returns an access token for the standard client or a named client
+        /// </summary>
+        /// <param name="context"></param>
+        /// <param name="clientName">Name of the client configuration (or null to use the standard client).</param>
+        /// <returns></returns>
         public static async Task<string> GetClientAccessTokenAsync(this HttpContext context, string clientName = null)
         {
             var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
@@ -68,71 +39,30 @@ namespace Microsoft.AspNetCore.Authentication
             return await service.GetClientAccessTokenAsync(clientName);
         }
 
-
         /// <summary>
-        /// Refreshes an access token using a given refresh token
+        /// Refreshes the current user access token
         /// </summary>
         /// <param name="context"></param>
-        /// <param name="refreshToken"></param>
         /// <returns></returns>
-        public static async Task<TokenResponse> RefreshAccessTokenAsync(this HttpContext context, string refreshToken)
+        public static async Task<TokenResponse> RefreshUserAccessTokenAsync(this HttpContext context)
         {
-            var service = context.RequestServices.GetRequiredService<TokenEndpointService>();
-            var response = await service.RefreshUserAccessTokenAsync(refreshToken);
+            var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
 
-            return response;
+            return await service.RefreshUserAccessTokenAsync();
         }
 
         /// <summary>
-        /// Refreshes the current access token
+        /// Revokes the current user refresh token
         /// </summary>
         /// <param name="context"></param>
         /// <returns></returns>
-        public static async Task<TokenResponse> RefreshAccessTokenAsync(this HttpContext context)
+        public static async Task RevokeUserRefreshTokenAsync(this HttpContext context)
         {
+            var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
             var store = context.RequestServices.GetRequiredService<IUserTokenStore>();
 
-            var tokens = await store.GetTokenAsync(context.User);
-            var response = await context.RefreshAccessTokenAsync(tokens.refreshToken);
-
-            if (!response.IsError)
-            {
-                await store.StoreTokenAsync(context.User, response.AccessToken, response.ExpiresIn, response.RefreshToken);
-            }
-
-            return response;
-        }
-
-        /// <summary>
-        /// Revokes a given refresh token
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="refreshToken"></param>
-        /// <returns></returns>
-        public static async Task RevokeRefreshTokenAsync(this HttpContext context, string refreshToken)
-        {
-            if (!string.IsNullOrEmpty(refreshToken))
-            {
-                var service = context.RequestServices.GetRequiredService<TokenEndpointService>();
-                await service.RevokeRefreshTokenAsync(refreshToken);
-            }
-        }
-
-        /// <summary>
-        /// Revokes the current refresh token
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public static async Task RevokeRefreshTokenAsync(this HttpContext context)
-        {
-            var store = context.RequestServices.GetRequiredService<IUserTokenStore>();
-            var tokens = await store.GetTokenAsync(context.User);
-
-            if (!string.IsNullOrEmpty(tokens.refreshToken))
-            {
-                await context.RevokeRefreshTokenAsync(tokens.refreshToken);
-                await store.ClearTokenAsync(context.User);
-            }
+            await service.RevokeRefreshTokenAsync();
+            await store.ClearTokenAsync(context.User);
         }
     }
 }

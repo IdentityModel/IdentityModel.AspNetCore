@@ -21,7 +21,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddHttpContextAccessor();
 
-            services.AddTransient<IAccessTokenManagementService, DefaultAccessTokenManagementService>();
+            services.AddTransient<IAccessTokenManagementService, AccessTokenManagementService>();
             services.AddHttpClient<ITokenEndpointService, TokenEndpointService>();
 
             services.AddTransient<UserAccessTokenHandler>();
@@ -38,7 +38,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="name">The name of the client.</param>
         /// <param name="configureClient">Additional configuration.</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddAccessTokenClient(this IServiceCollection services, string name, Action<HttpClient> configureClient = null)
+        public static IHttpClientBuilder AddUserAccessTokenClient(this IServiceCollection services, string name, Action<HttpClient> configureClient = null)
         {
             if (configureClient != null)
             {
