@@ -11,13 +11,14 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
     public class AccessTokenManagementService : IAccessTokenManagementService
     {
-        static readonly ConcurrentDictionary<string, Lazy<Task<string>>> _dictionary =
+        static readonly ConcurrentDictionary<string, Lazy<Task<string>>> _userRefreshDictionary =
             new ConcurrentDictionary<string, Lazy<Task<string>>>();
 
         private readonly IUserTokenStore _userTokenStore;
         private readonly ISystemClock _clock;
         private readonly AccessTokenManagementOptions _options;
         private readonly TokenEndpointService _tokenEndpointService;
+        private readonly IClientAccessTokenCache _clientAccessTokenCache;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<AccessTokenManagementService> _logger;
 
@@ -26,6 +27,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             ISystemClock clock,
             IOptions<AccessTokenManagementOptions> options,
             TokenEndpointService tokenEndpointService,
+            IClientAccessTokenCache clientAccessTokenCache,
             IHttpContextAccessor httpContextAccessor,
             ILogger<AccessTokenManagementService> logger)
         {
@@ -33,25 +35,30 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             _clock = clock;
             _options = options.Value;
             _tokenEndpointService = tokenEndpointService;
+            _clientAccessTokenCache = clientAccessTokenCache;
             _httpContextAccessor = httpContextAccessor;
             _logger = logger;
         }
 
-        /// <summary>
-        /// Returns either a cached of a new access token for a given client configuration or the default client
-        /// </summary>
-        /// <param name="name">Name of the client configuration, of default</param>
-        /// <returns>The access token.</returns>
-        public async Task<string> GetClientAccessTokenAsync(string name = null)
+        /// <inheritdoc/>
+        public async Task<string> GetClientAccessTokenAsync(string clientName = null)
         {
-            var response = await _tokenEndpointService.RequestClientAccessToken(name);
+            if (clientName is null) clientName = "default";
+
+            var item = await _clientAccessTokenCache.GetAsync(clientName);
+            if (item != null)
+            {
+                return item.AccessToken;
+            }
+
+            var response = await _tokenEndpointService.RequestClientAccessToken(clientName);
 
             if (response.IsError)
             {
-                var configName = name ?? "default";
-                _logger.LogError("Error requesting access token for client {configName}. Error = {error}", configName, response.Error);
+                _logger.LogError("Error requesting access token for client {clientName}. Error = {error}", clientName, response.Error);
             }
 
+            await _clientAccessTokenCache.SetAsync(clientName, response.AccessToken, response.ExpiresIn);
             return response.AccessToken;
         }
 
@@ -66,7 +73,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
                 try
                 {
-                    return await _dictionary.GetOrAdd(userToken.RefreshToken, (string refreshToken) =>
+                    return await _userRefreshDictionary.GetOrAdd(userToken.RefreshToken, (string refreshToken) =>
                     {
                         return new Lazy<Task<string>>(async () =>
                         {
@@ -77,7 +84,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 }
                 finally
                 {
-                    _dictionary.TryRemove(userToken.RefreshToken, out _);
+                    _userRefreshDictionary.TryRemove(userToken.RefreshToken, out _);
                 }
             }
 

@@ -34,6 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddTransient<ClientAccessTokenHandler>();
 
             services.AddTransient<IUserTokenStore, AuthenticationSessionUserTokenStore>();
+            services.AddTransient<IClientAccessTokenCache, ClientAccessTokenCache>();
 
             return new TokenManagementBuilder(services);
         }

@@ -39,14 +39,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             TokenClientOptions tokenClientOptions;
 
             // if a named client configuration was passed in, try to load it
-            if (!string.IsNullOrEmpty(clientName))
-            {
-                if (!_accessTokenManagementOptions.Client.Clients.TryGetValue(clientName, out tokenClientOptions))
-                {
-                    throw new InvalidOperationException($"No access token client configuration found for client: {clientName}");
-                }
-            }
-            else
+            if (string.IsNullOrEmpty(clientName) || string.Equals(clientName, AccessTokenManagementOptions.DefaultClientName))
             {
                 // if only one client configuration exists, load that
                 if (_accessTokenManagementOptions.Client.Clients.Count == 1)
@@ -66,6 +59,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                         ClientId = oidcOptions.ClientId,
                         ClientSecret = oidcOptions.ClientSecret
                     };
+                }
+            }
+            else
+            {
+                if (!_accessTokenManagementOptions.Client.Clients.TryGetValue(clientName, out tokenClientOptions))
+                {
+                    throw new InvalidOperationException($"No access token client configuration found for client: {clientName}");
                 }
             }
 
