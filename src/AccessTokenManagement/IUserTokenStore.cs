@@ -5,12 +5,12 @@ using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace IdentityModel.AspNetCore
+namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
     /// <summary>
     /// Storage abstraction for access and refresh tokens
     /// </summary>
-    public interface ITokenStore
+    public interface IUserTokenStore
     {
         /// <summary>
         /// Stores tokens
@@ -27,7 +27,7 @@ namespace IdentityModel.AspNetCore
         /// </summary>
         /// <param name="user">User the tokens belong to</param>
         /// <returns>access and refresh token and access token expiration</returns>
-        Task<(string accessToken, string refreshToken, DateTimeOffset expiration)> GetTokenAsync(ClaimsPrincipal user);
+        Task<UserAccessToken> GetTokenAsync(ClaimsPrincipal user);
 
         /// <summary>
         /// Clears the stored tokens for a given user

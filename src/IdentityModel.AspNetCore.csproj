@@ -23,7 +23,9 @@
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
     <PackageReference Include="Microsoft.AspNetCore.Authentication" Version="2.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.OpenIdConnect" Version="2.1.0" />
+    
     <PackageReference Include="Microsoft.Extensions.Http" Version="2.1.0" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.1.0" />
 
     <PackageReference Include="minver" Version="1.2.0">
       <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>

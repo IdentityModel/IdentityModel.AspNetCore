@@ -11,37 +11,37 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
-namespace IdentityModel.AspNetCore
+namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
     /// <summary>
     /// Token store using the ASP.NET Core authentication session
     /// </summary>
-    public class AuthenticationSessionTokenStore : ITokenStore
+    public class AuthenticationSessionUserTokenStore : IUserTokenStore
     {
         private readonly IHttpContextAccessor _contextAccessor;
-        private readonly ILogger<AuthenticationSessionTokenStore> _logger;
+        private readonly ILogger<AuthenticationSessionUserTokenStore> _logger;
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="contextAccessor"></param>
         /// <param name="logger"></param>
-        public AuthenticationSessionTokenStore(
+        public AuthenticationSessionUserTokenStore(
             IHttpContextAccessor contextAccessor,
-            ILogger<AuthenticationSessionTokenStore> logger)
+            ILogger<AuthenticationSessionUserTokenStore> logger)
         {
             _contextAccessor = contextAccessor;
             _logger = logger;
         }
 
         /// <inheritdoc/>
-        public async Task<(string accessToken, string refreshToken, DateTimeOffset expiration)> GetTokenAsync(ClaimsPrincipal user)
+        public async Task<UserAccessToken> GetTokenAsync(ClaimsPrincipal user)
         {
             var result = await _contextAccessor.HttpContext.AuthenticateAsync();
 
             if (!result.Succeeded)
             {
-                return (null, null, default);
+                return new UserAccessToken();
             }
 
             var tokens = result.Properties.GetTokens();
@@ -70,7 +70,13 @@ namespace IdentityModel.AspNetCore
 
             var dtExpires = DateTimeOffset.Parse(expiresAt.Value, CultureInfo.InvariantCulture);
 
-            return (accessToken.Value, refreshToken.Value, dtExpires);
+            return new UserAccessToken
+            {
+                AccessToken = accessToken.Value,
+                RefreshToken = refreshToken.Value,
+                Expiration = dtExpires
+            };
+            
         }
 
         /// <inheritdoc/>

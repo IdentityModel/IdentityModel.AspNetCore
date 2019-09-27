@@ -1,6 +1,4 @@
-using IdentityModel.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -17,13 +15,14 @@ namespace MvcCode
 
             services.AddControllersWithViews();
 
-            services.AddAccessTokenClient("client");
-
             services.AddAccessTokenManagement()
                 .ConfigureBackchannelHttpClient(client =>
                 {
                     client.Timeout = TimeSpan.FromSeconds(30);
                 });
+
+            services.AddUserAccessTokenClient("user_client");
+            services.AddClientAccessTokenClient("client");
 
             services.AddAuthentication(options =>
             {
@@ -36,7 +35,7 @@ namespace MvcCode
 
                     options.Events.OnSigningOut = async e =>
                     {
-                        await e.HttpContext.RevokeRefreshTokenAsync();
+                        await e.HttpContext.RevokeUserRefreshTokenAsync();
                     };
                 })
                 .AddOpenIdConnect("oidc", options =>

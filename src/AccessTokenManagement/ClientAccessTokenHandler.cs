@@ -8,12 +8,12 @@ using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace IdentityModel.AspNetCore
+namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
     /// <summary>
-    /// Delegating handler that injects the current access token into an outgoing request
+    /// Delegating handler that injects a client access token into an outgoing request
     /// </summary>
-    public class AccessTokenHandler : DelegatingHandler
+    public class ClientAccessTokenHandler : DelegatingHandler
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
@@ -21,7 +21,7 @@ namespace IdentityModel.AspNetCore
         /// ctor
         /// </summary>
         /// <param name="httpContextAccessor"></param>
-        public AccessTokenHandler(IHttpContextAccessor httpContextAccessor)
+        public ClientAccessTokenHandler(IHttpContextAccessor httpContextAccessor)
         {
             _httpContextAccessor = httpContextAccessor;
         }
@@ -29,7 +29,7 @@ namespace IdentityModel.AspNetCore
         /// <inheritdoc/>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var token = await _httpContextAccessor.HttpContext.GetAccessTokenAsync();
+            var token = await _httpContextAccessor.HttpContext.GetClientAccessTokenAsync();
 
             if (!string.IsNullOrEmpty(token))
             {
