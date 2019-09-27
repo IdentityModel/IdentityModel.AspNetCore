@@ -12,6 +12,9 @@ using System.Threading.Tasks;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
+    /// <summary>
+    /// Implements basic token management logic
+    /// </summary>
     public class AccessTokenManagementService : IAccessTokenManagementService
     {
         static readonly ConcurrentDictionary<string, Lazy<Task<string>>> _userRefreshDictionary =
@@ -28,6 +31,16 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<AccessTokenManagementService> _logger;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="userTokenStore"></param>
+        /// <param name="clock"></param>
+        /// <param name="options"></param>
+        /// <param name="tokenEndpointService"></param>
+        /// <param name="clientAccessTokenCache"></param>
+        /// <param name="httpContextAccessor"></param>
+        /// <param name="logger"></param>
         public AccessTokenManagementService(
             IUserTokenStore userTokenStore,
             ISystemClock clock,
@@ -69,6 +82,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             return response.AccessToken;
         }
 
+        /// <inheritdoc/>
         public async Task<string> GetUserAccessTokenAsync()
         {
             var userToken = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
@@ -98,7 +112,23 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             return userToken.AccessToken;
         }
 
-        public async Task<TokenResponse> RefreshUserAccessTokenAsync()
+        /// <inheritdoc/>
+        public async Task RevokeRefreshTokenAsync()
+        {
+            var userToken = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
+
+            if (!string.IsNullOrEmpty(userToken.RefreshToken))
+            {
+                var response = await _tokenEndpointService.RevokeRefreshTokenAsync(userToken.RefreshToken);
+
+                if (response.IsError)
+                {
+                    _logger.LogError("Error revoking refresh token. Error = {error}", response.Error);
+                }
+            }
+        }
+
+        internal async Task<TokenResponse> RefreshUserAccessTokenAsync()
         {
             var userToken = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
             var response = await _tokenEndpointService.RefreshUserAccessTokenAsync(userToken.RefreshToken);
@@ -113,21 +143,6 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
 
             return response;
-        }
-
-        public async Task RevokeRefreshTokenAsync()
-        {
-            var userToken = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
-
-            if (!string.IsNullOrEmpty(userToken.RefreshToken))
-            {
-                var response = await _tokenEndpointService.RevokeRefreshTokenAsync(userToken.RefreshToken);
-
-                if (response.IsError)
-                {
-                    _logger.LogError("Error revoking refresh token. Error = {error}", response.Error);
-                }
-            }
         }
     }
 }

@@ -40,18 +40,6 @@ namespace Microsoft.AspNetCore.Authentication
         }
 
         /// <summary>
-        /// Refreshes the current user access token
-        /// </summary>
-        /// <param name="context"></param>
-        /// <returns></returns>
-        public static async Task<TokenResponse> RefreshUserAccessTokenAsync(this HttpContext context)
-        {
-            var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
-
-            return await service.RefreshUserAccessTokenAsync();
-        }
-
-        /// <summary>
         /// Revokes the current user refresh token
         /// </summary>
         /// <param name="context"></param>

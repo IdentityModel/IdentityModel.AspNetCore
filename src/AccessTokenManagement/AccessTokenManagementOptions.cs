@@ -14,9 +14,19 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     {
         internal const string DefaultClientName = "default";
 
+        /// <summary>
+        /// Options for user access tokens
+        /// </summary>
         public UserOptions User { get; set; } = new UserOptions();
+        
+        /// <summary>
+        /// Options for client acccess tokens
+        /// </summary>
         public ClientOptions Client { get; set; } = new ClientOptions();
 
+        /// <summary>
+        /// User access token options
+        /// </summary>
         public class UserOptions
         {
             /// <summary>
@@ -30,6 +40,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             public TimeSpan RefreshBeforeExpiration { get; set; } = TimeSpan.FromMinutes(1);
         }
 
+        /// <summary>
+        /// Client access token options
+        /// </summary>
         public class ClientOptions
         {
             /// <summary>

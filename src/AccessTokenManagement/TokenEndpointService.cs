@@ -4,7 +4,6 @@
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Linq;
@@ -13,6 +12,9 @@ using System.Threading.Tasks;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
+    /// <summary>
+    /// Implements token endpoint operations using IdentityModel
+    /// </summary>
     public class TokenEndpointService : ITokenEndpointService
     {
         private readonly AccessTokenManagementOptions _accessTokenManagementOptions;
@@ -21,6 +23,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly HttpClient _httpClient;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="accessTokenManagementOptions"></param>
+        /// <param name="oidcOptions"></param>
+        /// <param name="schemeProvider"></param>
+        /// <param name="httpClient"></param>
         public TokenEndpointService(
             IOptions<AccessTokenManagementOptions> accessTokenManagementOptions,
             IOptionsSnapshot<OpenIdConnectOptions> oidcOptions,
@@ -34,6 +43,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             _httpClient = httpClient;
         }
 
+        /// <inheritdoc/>
         public async Task<TokenResponse> RequestClientAccessToken(string clientName = null)
         {
             TokenClientOptions tokenClientOptions;
@@ -78,6 +88,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             });
         }
 
+        /// <inheritdoc/>
         public async Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken)
         {
             var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.User.Scheme);
@@ -93,6 +104,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             });
         }
 
+        /// <inheritdoc/>
         public async Task<TokenRevocationResponse> RevokeRefreshTokenAsync(string refreshToken)
         {
             var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.User.Scheme);
