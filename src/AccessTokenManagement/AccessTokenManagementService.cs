@@ -14,6 +14,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         static readonly ConcurrentDictionary<string, Lazy<Task<string>>> _userRefreshDictionary =
             new ConcurrentDictionary<string, Lazy<Task<string>>>();
 
+        static readonly ConcurrentDictionary<string, Lazy<Task<string>>> _clientTokenRequestDictionary =
+            new ConcurrentDictionary<string, Lazy<Task<string>>>();
+
         private readonly IUserTokenStore _userTokenStore;
         private readonly ISystemClock _clock;
         private readonly AccessTokenManagementOptions _options;
@@ -56,6 +59,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             if (response.IsError)
             {
                 _logger.LogError("Error requesting access token for client {clientName}. Error = {error}", clientName, response.Error);
+                return null;
             }
 
             await _clientAccessTokenCache.SetAsync(clientName, response.AccessToken, response.ExpiresIn);

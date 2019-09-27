@@ -6,12 +6,21 @@ using System.Threading.Tasks;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
+    /// <summary>
+    /// Client access token cache using IDistributedCache
+    /// </summary>
     public class ClientAccessTokenCache : IClientAccessTokenCache
     {
         private readonly IDistributedCache _cache;
         private readonly ILogger<ClientAccessTokenCache> _logger;
         private readonly AccessTokenManagementOptions _options;
 
+        /// <summary>
+        /// ctor
+        /// </summary>
+        /// <param name="cache"></param>
+        /// <param name="options"></param>
+        /// <param name="logger"></param>
         public ClientAccessTokenCache(IDistributedCache cache, IOptions<AccessTokenManagementOptions> options, ILogger<ClientAccessTokenCache> logger)
         {
             _cache = cache;
@@ -19,6 +28,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             _options = options.Value;
         }
 
+        /// <inheritdoc/>
         public async Task<ClientAccessToken> GetAsync(string clientName)
         {
             if (clientName is null) throw new ArgumentNullException(nameof(clientName));
@@ -42,6 +52,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             return null;
         }
 
+        /// <inheritdoc/>
         public async Task SetAsync(string clientName, string accessToken, int expiresIn)
         {
             if (clientName is null) throw new ArgumentNullException(nameof(clientName));
