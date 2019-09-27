@@ -20,21 +20,18 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         private readonly IOptionsSnapshot<OpenIdConnectOptions> _oidcOptions;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly HttpClient _httpClient;
-        private readonly ILogger<TokenEndpointService> _logger;
 
         public TokenEndpointService(
             IOptions<AccessTokenManagementOptions> accessTokenManagementOptions,
             IOptionsSnapshot<OpenIdConnectOptions> oidcOptions,
             IAuthenticationSchemeProvider schemeProvider,
-            HttpClient httpClient,
-            ILogger<TokenEndpointService> logger)
+            HttpClient httpClient)
         {
             _accessTokenManagementOptions = accessTokenManagementOptions.Value;
 
             _oidcOptions = oidcOptions;
             _schemeProvider = schemeProvider;
             _httpClient = httpClient;
-            _logger = logger;
         }
 
         public async Task<TokenResponse> RequestClientAccessToken(string clientName = null)
@@ -86,7 +83,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.User.Scheme);
             var configuration = await oidcOptions.ConfigurationManager.GetConfigurationAsync(default);
 
-            var response = await _httpClient.RequestRefreshTokenAsync(new RefreshTokenRequest
+            return await _httpClient.RequestRefreshTokenAsync(new RefreshTokenRequest
             {
                 Address = configuration.TokenEndpoint,
 
@@ -94,13 +91,6 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 ClientSecret = oidcOptions.ClientSecret,
                 RefreshToken = refreshToken
             });
-
-            if (response.IsError)
-            {
-                _logger.LogError("Error refreshing access token. Error = {error}", response.Error);
-            }
-
-            return response;
         }
 
         public async Task<TokenRevocationResponse> RevokeRefreshTokenAsync(string refreshToken)
@@ -108,7 +98,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.User.Scheme);
             var configuration = await oidcOptions.ConfigurationManager.GetConfigurationAsync(default);
 
-            var response = await _httpClient.RevokeTokenAsync(new TokenRevocationRequest
+            return await _httpClient.RevokeTokenAsync(new TokenRevocationRequest
             {
                 Address = configuration.AdditionalData[OidcConstants.Discovery.RevocationEndpoint].ToString(),
                 ClientId = oidcOptions.ClientId,
@@ -116,13 +106,6 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 Token = refreshToken,
                 TokenTypeHint = OidcConstants.TokenTypes.RefreshToken
             });
-
-            if (response.IsError)
-            {
-                _logger.LogError("Error revoking refresh token. Error = {error}", response.Error);
-            }
-
-            return response;
         }
 
         private async Task<OpenIdConnectOptions> GetOidcOptionsAsync(string schemeName)

@@ -3,6 +3,9 @@ using System.Threading.Tasks;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
+    /// <summary>
+    /// Abstraction for managing user and client accesss tokens
+    /// </summary>
     public interface IAccessTokenManagementService
     {
         Task<string> GetUserAccessTokenAsync();

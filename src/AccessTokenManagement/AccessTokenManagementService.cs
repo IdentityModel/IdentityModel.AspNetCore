@@ -93,6 +93,10 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             {
                 await _userTokenStore.StoreTokenAsync(_httpContextAccessor.HttpContext.User, response.AccessToken, response.ExpiresIn, response.RefreshToken);
             }
+            else
+            {
+                _logger.LogError("Error refreshing access token. Error = {error}", response.Error);
+            }
 
             return response;
         }
@@ -103,7 +107,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             if (!string.IsNullOrEmpty(userToken.RefreshToken))
             {
-                await _tokenEndpointService.RevokeRefreshTokenAsync(userToken.RefreshToken);
+                var response = await _tokenEndpointService.RevokeRefreshTokenAsync(userToken.RefreshToken);
+
+                if (response.IsError)
+                {
+                    _logger.LogError("Error revoking refresh token. Error = {error}", response.Error);
+                }
             }
         }
     }
