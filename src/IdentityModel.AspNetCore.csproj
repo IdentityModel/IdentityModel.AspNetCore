@@ -10,10 +10,14 @@
     <Description>OpenID Connect &amp; OAuth 2.0 client library for ASP.NET Core</Description>
     <PackageId>IdentityModel.AspNetCore</PackageId>
     <PackageTags>OAuth2;OAuth 2.0;OpenID Connect;Security;Identity;IdentityServer;ASP.NET Core</PackageTags>
-    <PackageIconUrl>https://identityserver.github.io/Documentation/assets/images/icons/IDmodel_icon128.png</PackageIconUrl>
+    <PackageIcon>icon.jpg</PackageIcon>
     <PackageProjectUrl>https://github.com/IdentityModel/IdentityModel.AspNetCore</PackageProjectUrl>
     <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../icon.jpg" Pack="true" Visible="false" PackagePath="" />
+  </ItemGroup>
   
   <ItemGroup>
     <PackageReference Include="IdentityModel" Version="4.0.0" />
