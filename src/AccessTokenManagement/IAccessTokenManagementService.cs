@@ -28,6 +28,6 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// </summary>
         /// <param name="clientName">Name of the client configuration, or default is omitted.</param>
         /// <returns>The access token or null if the no token can be requested.</returns>
-        Task<string> GetClientAccessTokenAsync(string clientName = null);
+        Task<string> GetClientAccessTokenAsync(string clientName = "default");
     }
 }

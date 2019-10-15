@@ -24,15 +24,15 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Secure">Secure</a>
                         </li>
+                        
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CallApiAsClient">Call API (as Client)</a>
+                        </li>
 
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CallApiAsUser">Call API (as User)</a>
-                            </li>
-
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="CallApiAsClient">Call API (as Client)</a>
                             </li>
 
                             <li class="nav-item">

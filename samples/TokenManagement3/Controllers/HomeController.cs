@@ -32,6 +32,7 @@ namespace MvcCode.Controllers
             return View("CallApi");
         }
 
+        [AllowAnonymous]
         public async Task<IActionResult> CallApiAsClient()
         {
             var client = _httpClientFactory.CreateClient("client");
