@@ -60,26 +60,37 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetClientAccessTokenAsync(string clientName = null)
+        public async Task<string> GetClientAccessTokenAsync(string clientName = "default")
         {
-            if (clientName is null) clientName = "default";
-
             var item = await _clientAccessTokenCache.GetAsync(clientName);
             if (item != null)
             {
                 return item.AccessToken;
             }
 
-            var response = await _tokenEndpointService.RequestClientAccessToken(clientName);
-
-            if (response.IsError)
+            try
             {
-                _logger.LogError("Error requesting access token for client {clientName}. Error = {error}", clientName, response.Error);
-                return null;
-            }
+                return await _clientTokenRequestDictionary.GetOrAdd(clientName, (string _) =>
+                {
+                    return new Lazy<Task<string>>(async () =>
+                    {
+                        var response = await _tokenEndpointService.RequestClientAccessToken(clientName);
 
-            await _clientAccessTokenCache.SetAsync(clientName, response.AccessToken, response.ExpiresIn);
-            return response.AccessToken;
+                        if (response.IsError)
+                        {
+                            _logger.LogError("Error requesting access token for client {clientName}. Error = {error}", clientName, response.Error);
+                            return null;
+                        }
+
+                        await _clientAccessTokenCache.SetAsync(clientName, response.AccessToken, response.ExpiresIn);
+                        return response.AccessToken;
+                    });
+                }).Value;
+            }
+            finally
+            {
+                _clientTokenRequestDictionary.TryRemove(clientName, out _);
+            }
         }
 
         /// <inheritdoc/>
