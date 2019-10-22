@@ -26,7 +26,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         private readonly IUserTokenStore _userTokenStore;
         private readonly ISystemClock _clock;
         private readonly AccessTokenManagementOptions _options;
-        private readonly TokenEndpointService _tokenEndpointService;
+        private readonly ITokenEndpointService _tokenEndpointService;
         private readonly IClientAccessTokenCache _clientAccessTokenCache;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly ILogger<AccessTokenManagementService> _logger;
@@ -45,7 +45,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             IUserTokenStore userTokenStore,
             ISystemClock clock,
             IOptions<AccessTokenManagementOptions> options,
-            TokenEndpointService tokenEndpointService,
+            ITokenEndpointService tokenEndpointService,
             IClientAccessTokenCache clientAccessTokenCache,
             IHttpContextAccessor httpContextAccessor,
             ILogger<AccessTokenManagementService> logger)
