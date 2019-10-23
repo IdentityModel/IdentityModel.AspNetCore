@@ -43,7 +43,7 @@ namespace MvcCode
                     options.Authority = "https://demo.identityserver.io";
                     options.RequireHttpsMetadata = false;
 
-                    options.ClientId = "server.code.short";
+                    options.ClientId = "interactive.confidential.short";
                     options.ClientSecret = "secret";
 
                     // code flow + PKCE (PKCE is turned on by default)
