@@ -27,7 +27,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddHttpContextAccessor();
 
-#if netcoreapp3_0
+#if NETCOREAPP3_0
             services.AddDistributedMemoryCache();
 #endif
 
