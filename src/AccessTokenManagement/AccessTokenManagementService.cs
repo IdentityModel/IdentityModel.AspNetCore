@@ -96,12 +96,15 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc/>
         public async Task<string> GetUserAccessTokenAsync()
         {
+            var user = _httpContextAccessor.HttpContext.User;
+
+            var userName = user.FindFirst(JwtClaimTypes.Name)?.Value ?? user.FindFirst(JwtClaimTypes.Subject)?.Value ?? "unknown";
             var userToken = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
 
             var dtRefresh = userToken.Expiration.Subtract(_options.User.RefreshBeforeExpiration);
             if (dtRefresh < _clock.UtcNow)
             {
-                _logger.LogDebug("Token {token} needs refreshing.", userToken.AccessToken);
+                _logger.LogDebug("Token for user {user} needs refreshing.", userName);
 
                 try
                 {
