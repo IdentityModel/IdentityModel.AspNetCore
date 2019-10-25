@@ -26,7 +26,7 @@ namespace MvcCode.Controllers
         {
             var client = _httpClientFactory.CreateClient("user_client");
 
-            var response = await client.GetStringAsync("https://demo.identityserver.io/api/test");
+            var response = await client.GetStringAsync("test");
             ViewBag.Json = JArray.Parse(response).ToString();
 
             return View("CallApi");
@@ -37,7 +37,7 @@ namespace MvcCode.Controllers
         {
             var client = _httpClientFactory.CreateClient("client");
 
-            var response = await client.GetStringAsync("https://demo.identityserver.io/api/test");
+            var response = await client.GetStringAsync("test");
             ViewBag.Json = JArray.Parse(response).ToString();
 
             return View("CallApi");

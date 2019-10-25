@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using Polly;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 
@@ -14,15 +15,6 @@ namespace MvcCode
             JwtSecurityTokenHandler.DefaultMapInboundClaims = false;
 
             services.AddControllersWithViews();
-
-            services.AddAccessTokenManagement()
-                .ConfigureBackchannelHttpClient(client =>
-                {
-                    client.Timeout = TimeSpan.FromSeconds(30);
-                });
-
-            services.AddUserAccessTokenClient("user_client");
-            services.AddClientAccessTokenClient("client");
 
             services.AddAuthentication(options =>
             {
@@ -70,6 +62,28 @@ namespace MvcCode
                         RoleClaimType = "role"
                     };
                 });
+
+            // adds user and client access token management
+            services.AddAccessTokenManagement()
+                .ConfigureBackchannelHttpClient()
+                    .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
+                    {
+                        TimeSpan.FromSeconds(1),
+                        TimeSpan.FromSeconds(2),
+                        TimeSpan.FromSeconds(3)
+                    }));
+
+            // registers HTTP client that uses the managed user access token
+            services.AddUserAccessTokenClient("user_client", client =>
+            {
+                client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
+            });
+
+            // registers HTTP client that uses the managed client access token
+            services.AddClientAccessTokenClient("client", client =>
+            {
+                client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
+            });
         }
 
         public void Configure(IApplicationBuilder app)
