@@ -74,5 +74,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             _logger.LogDebug("Caching access token for client: {clientName}. Expiration: {expiration}", clientName, cacheExpiration);
             await _cache.SetStringAsync(_options.Client.CacheKeyPrefix + clientName, data, entryOptions);
         }
+
+        /// <inheritdoc/>
+        public Task DeleteAsync(string clientName)
+        {
+            if (clientName is null) throw new ArgumentNullException(nameof(clientName));
+
+            return _cache.RemoveAsync(_options.Client.CacheKeyPrefix + clientName);
+        }
     }
 }

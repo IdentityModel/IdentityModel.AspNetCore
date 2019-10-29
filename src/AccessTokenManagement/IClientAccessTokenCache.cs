@@ -25,5 +25,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="clientName"></param>
         /// <returns></returns>
         Task<ClientAccessToken> GetAsync(string clientName);
+
+        /// <summary>
+        /// Deletes a client access token from the cache
+        /// </summary>
+        /// <param name="clientName"></param>
+        /// <returns></returns>
+        Task DeleteAsync(string clientName);
     }
 }

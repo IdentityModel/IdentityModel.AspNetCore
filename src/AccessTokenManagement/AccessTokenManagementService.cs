@@ -94,6 +94,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
+        public Task DeleteClientAccessTokenAsync(string clientName = "default")
+        {
+            return _clientAccessTokenCache.DeleteAsync(clientName);
+        }
+
+        /// <inheritdoc/>
         public async Task<string> GetUserAccessTokenAsync()
         {
             var user = _httpContextAccessor.HttpContext.User;
