@@ -10,9 +10,28 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http;
+using System.Threading.Tasks;
+using IdentityModel.Client;
+using Microsoft.AspNetCore.Http;
 
 namespace AspNetCoreSecurity
 {
+    public class TypedHttpClient
+    {
+        private readonly HttpClient _httpClient;
+
+        public TypedHttpClient(HttpClient httpClient)
+        {
+            _httpClient = httpClient;
+        }
+
+        public Task<string> ApiTest()
+        {
+            return _httpClient.GetStringAsync("api/test");
+        }
+    }
+
     public class Startup
     {
         public Startup()
@@ -26,7 +45,26 @@ namespace AspNetCoreSecurity
             services.AddHttpClient("client")
                 .AddHttpMessageHandler<UserAccessTokenHandler>();
 
-            services.AddAccessTokenManagement()
+            services.AddHttpClient<TypedHttpClient>(client =>
+                {
+                    client.BaseAddress = new Uri("https://demo.identityserver.io");
+                })
+                .AddHttpMessageHandler(provider =>
+                {
+                    var httpContextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
+
+                    return new ClientAccessTokenHandler(httpContextAccessor, "m2m");
+                });
+
+            services.AddAccessTokenManagement(options =>
+                {
+                    options.Client.Clients.Add("m2m", new TokenClientOptions
+                    {
+                        Address = "https://demo.identityserver.io/connect/token",
+                        ClientId = "m2m",
+                        ClientSecret = "secret",
+                    });
+                })
                 .ConfigureBackchannelHttpClient(client =>
                 {
                     client.Timeout = TimeSpan.FromSeconds(30);

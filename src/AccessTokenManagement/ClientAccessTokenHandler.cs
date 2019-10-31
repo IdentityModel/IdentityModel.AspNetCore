@@ -17,19 +17,23 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
 
+        private readonly string _clientName;
+
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="httpContextAccessor"></param>
-        public ClientAccessTokenHandler(IHttpContextAccessor httpContextAccessor)
+        /// <param name="clientName"></param>
+        public ClientAccessTokenHandler(IHttpContextAccessor httpContextAccessor, string clientName = null)
         {
             _httpContextAccessor = httpContextAccessor;
+            _clientName = clientName;
         }
 
         /// <inheritdoc/>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            var token = await _httpContextAccessor.HttpContext.GetClientAccessTokenAsync();
+            var token = await _httpContextAccessor.HttpContext.GetClientAccessTokenAsync(_clientName);
 
             if (!string.IsNullOrEmpty(token))
             {

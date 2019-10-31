@@ -15,9 +15,12 @@ namespace AspNetCoreSecurity.Controllers
     {
         private readonly IHttpClientFactory _httpClientFactory;
 
-        public HomeController(IHttpClientFactory httpClientFactory)
+        private readonly TypedHttpClient _typedHttpClient;
+
+        public HomeController(IHttpClientFactory httpClientFactory, TypedHttpClient typedHttpClient)
         {
             _httpClientFactory = httpClientFactory;
+            _typedHttpClient = typedHttpClient;
         }
 
         [AllowAnonymous]
@@ -41,6 +44,16 @@ namespace AspNetCoreSecurity.Controllers
             return View();
         }
 
+        [AllowAnonymous]
+        public async Task<IActionResult> CallApi2()
+        {
+            var client = _httpClientFactory.CreateClient("m2m");
+
+            ViewBag.Json = await _typedHttpClient.ApiTest();
+
+            return View("CallApi");
+        }
+
         public async Task<IActionResult> CallApiManual()
         {
             var token = await HttpContext.GetUserAccessTokenAsync();
@@ -51,7 +64,7 @@ namespace AspNetCoreSecurity.Controllers
             var response = await client.GetStringAsync("https://demo.identityserver.io/api/test");
             ViewBag.Json = JArray.Parse(response).ToString();
 
-            return View();
+            return View("CallApi");
         }
     }
 }
