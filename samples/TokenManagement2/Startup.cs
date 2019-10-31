@@ -10,28 +10,11 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http;
-using System.Threading.Tasks;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Http;
 
 namespace AspNetCoreSecurity
 {
-    public class TypedHttpClient
-    {
-        private readonly HttpClient _httpClient;
-
-        public TypedHttpClient(HttpClient httpClient)
-        {
-            _httpClient = httpClient;
-        }
-
-        public Task<string> ApiTest()
-        {
-            return _httpClient.GetStringAsync("api/test");
-        }
-    }
-
     public class Startup
     {
         public Startup()

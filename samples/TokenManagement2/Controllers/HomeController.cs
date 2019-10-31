@@ -49,7 +49,8 @@ namespace AspNetCoreSecurity.Controllers
         {
             var client = _httpClientFactory.CreateClient("m2m");
 
-            ViewBag.Json = await _typedHttpClient.ApiTest();
+            var response = await _typedHttpClient.ApiTest();
+            ViewBag.Json = JArray.Parse(response).ToString();
 
             return View("CallApi");
         }
