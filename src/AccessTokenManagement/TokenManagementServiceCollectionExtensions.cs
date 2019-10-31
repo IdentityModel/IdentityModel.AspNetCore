@@ -4,6 +4,7 @@
 using IdentityModel.AspNetCore.AccessTokenManagement;
 using System;
 using System.Net.Http;
+using Microsoft.AspNetCore.Http;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -79,6 +80,16 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services.AddHttpClient(name)
                 .AddHttpMessageHandler<ClientAccessTokenHandler>();
+        }
+
+        public static IHttpClientBuilder AddClientAccessTokenClient(this IHttpClientBuilder httpClientBuilder, string clientName)
+        {
+            return httpClientBuilder.AddHttpMessageHandler(provider =>
+            {
+                var httpContextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
+
+                return new ClientAccessTokenHandler(httpContextAccessor, clientName);
+            });
         }
     }
 }

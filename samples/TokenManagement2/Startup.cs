@@ -32,12 +32,7 @@ namespace AspNetCoreSecurity
                 {
                     client.BaseAddress = new Uri("https://demo.identityserver.io");
                 })
-                .AddHttpMessageHandler(provider =>
-                {
-                    var httpContextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
-
-                    return new ClientAccessTokenHandler(httpContextAccessor, "m2m");
-                });
+                .AddClientAccessTokenClient("m2m");
 
             services.AddAccessTokenManagement(options =>
                 {
