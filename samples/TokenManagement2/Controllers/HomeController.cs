@@ -47,8 +47,6 @@ namespace AspNetCoreSecurity.Controllers
         [AllowAnonymous]
         public async Task<IActionResult> CallApi2()
         {
-            var client = _httpClientFactory.CreateClient("m2m");
-
             var response = await _typedHttpClient.ApiTest();
             ViewBag.Json = JArray.Parse(response).ToString();
 
