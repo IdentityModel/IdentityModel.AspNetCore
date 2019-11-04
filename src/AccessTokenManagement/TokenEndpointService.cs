@@ -49,7 +49,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             TokenClientOptions tokenClientOptions;
 
             // if a named client configuration was passed in, try to load it
-            if (string.IsNullOrEmpty(clientName) || string.Equals(clientName, AccessTokenManagementOptions.DefaultClientName))
+            if (string.IsNullOrEmpty(clientName) || string.Equals(clientName, AccessTokenManagementDefaults.DefaultTokenClientName))
             {
                 // if only one client configuration exists, load that
                 if (_accessTokenManagementOptions.Client.Clients.Count == 1)

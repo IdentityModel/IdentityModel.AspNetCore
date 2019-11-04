@@ -2,6 +2,7 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel.AspNetCore.AccessTokenManagement;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Net.Http;
 
@@ -55,30 +56,56 @@ namespace Microsoft.Extensions.DependencyInjection
             if (configureClient != null)
             {
                 return services.AddHttpClient(name, configureClient)
-                    .AddHttpMessageHandler<UserAccessTokenHandler>();
+                    .AddUserAccessTokenHandler();
             }
 
             return services.AddHttpClient(name)
-                .AddHttpMessageHandler<UserAccessTokenHandler>();
+                .AddUserAccessTokenHandler();
         }
 
         /// <summary>
         /// Adds a named HTTP client for the factory that automatically sends the a client access token
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="name">The name of the client.</param>
+        /// <param name="clientName">The name of the client.</param>
         /// <param name="configureClient">Additional configuration.</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddClientAccessTokenClient(this IServiceCollection services, string name, Action<HttpClient> configureClient = null)
+        public static IHttpClientBuilder AddClientAccessTokenClient(this IServiceCollection services, string clientName, Action<HttpClient> configureClient = null)
         {
             if (configureClient != null)
             {
-                return services.AddHttpClient(name, configureClient)
-                    .AddHttpMessageHandler<ClientAccessTokenHandler>();
+                return services.AddHttpClient(clientName, configureClient)
+                    .AddClientAccessTokenHandler(AccessTokenManagementDefaults.DefaultTokenClientName);
             }
 
-            return services.AddHttpClient(name)
-                .AddHttpMessageHandler<ClientAccessTokenHandler>();
+            return services.AddHttpClient(clientName)
+                .AddClientAccessTokenHandler(AccessTokenManagementDefaults.DefaultTokenClientName);
+        }
+
+        /// <summary>
+        /// Adds the client access token handler to an HttpClient
+        /// </summary>
+        /// <param name="httpClientBuilder"></param>
+        /// <param name="tokenClientName"></param>
+        /// <returns></returns>
+        public static IHttpClientBuilder AddClientAccessTokenHandler(this IHttpClientBuilder httpClientBuilder, string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName)
+        {
+            return httpClientBuilder.AddHttpMessageHandler(provider =>
+            {
+                var httpContextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
+
+                return new ClientAccessTokenHandler(httpContextAccessor, tokenClientName);
+            });
+        }
+
+        /// <summary>
+        /// Adds the user access token handler to an HttpClient
+        /// </summary>
+        /// <param name="httpClientBuilder"></param>
+        /// <returns></returns>
+        public static IHttpClientBuilder AddUserAccessTokenHandler(this IHttpClientBuilder httpClientBuilder)
+        {
+            return httpClientBuilder.AddHttpMessageHandler<UserAccessTokenHandler>();
         }
     }
 }

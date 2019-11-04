@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Polly;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using TokenManagement3.Clients;
 
 namespace MvcCode
 {
@@ -84,6 +85,13 @@ namespace MvcCode
             {
                 client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
             });
+
+            // register a typed HTTP client with token management support
+            services.AddHttpClient<TypedUserClient>(client =>
+            {
+                client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
+            })
+                .AddUserAccessTokenHandler();
         }
 
         public void Configure(IApplicationBuilder app)

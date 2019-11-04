@@ -32,7 +32,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="context"></param>
         /// <param name="clientName">Name of the client configuration (or null to use the standard client).</param>
         /// <returns></returns>
-        public static async Task<string> GetClientAccessTokenAsync(this HttpContext context, string clientName = "default")
+        public static async Task<string> GetClientAccessTokenAsync(this HttpContext context, string clientName = AccessTokenManagementDefaults.DefaultTokenClientName)
         {
             var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
 

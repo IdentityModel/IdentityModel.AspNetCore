@@ -12,8 +12,6 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// </summary>
     public class AccessTokenManagementOptions
     {
-        internal const string DefaultClientName = "default";
-
         /// <summary>
         /// Options for user access tokens
         /// </summary>

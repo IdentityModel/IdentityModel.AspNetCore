@@ -28,13 +28,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// </summary>
         /// <param name="clientName">Name of the client configuration, or default is omitted.</param>
         /// <returns>The access token or null if the no token can be requested.</returns>
-        Task<string> GetClientAccessTokenAsync(string clientName = "default");
+        Task<string> GetClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName);
 
         /// <summary>
         /// Deletes a client access token from the cache
         /// </summary>
         /// <param name="clientName">Name of the client configuration, or default is omitted.</param>
         /// <returns>The access token or null if the no token can be requested.</returns>
-        Task DeleteClientAccessTokenAsync(string clientName = "default");
+        Task DeleteClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName);
     }
 }
