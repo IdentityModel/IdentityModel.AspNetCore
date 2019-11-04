@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
-using TokenManagement3.Clients;
 
 namespace MvcCode.Controllers
 {
@@ -47,6 +46,15 @@ namespace MvcCode.Controllers
             var client = _httpClientFactory.CreateClient("client");
 
             var response = await client.GetStringAsync("test");
+            ViewBag.Json = JArray.Parse(response).ToString();
+
+            return View("CallApi");
+        }
+
+        [AllowAnonymous]
+        public async Task<IActionResult> CallApiAsClientTyped([FromServices] TypedClientClient client)
+        {
+            var response = await client.CallApi();
             ViewBag.Json = JArray.Parse(response).ToString();
 
             return View("CallApi");
