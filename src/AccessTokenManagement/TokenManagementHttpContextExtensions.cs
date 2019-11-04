@@ -17,12 +17,13 @@ namespace Microsoft.AspNetCore.Authentication
         /// Returns (and refreshes if needed) the current access token for the logged on user
         /// </summary>
         /// <param name="context"></param>
+        /// <param name="forceRenewal">If set to true, the cached user token is ignored, and a new one gets requested. Default to false.</param>
         /// <returns></returns>
-        public static async Task<string> GetUserAccessTokenAsync(this HttpContext context)
+        public static async Task<string> GetUserAccessTokenAsync(this HttpContext context, bool forceRenewal = false)
         {
             var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
 
-            return await service.GetUserAccessTokenAsync();
+            return await service.GetUserAccessTokenAsync(forceRenewal);
         }
 
         /// <summary>
@@ -30,13 +31,13 @@ namespace Microsoft.AspNetCore.Authentication
         /// </summary>
         /// <param name="context"></param>
         /// <param name="clientName">Name of the client configuration (or null to use the standard client).</param>
-        /// <param name="skipCache">If set to true, the cached access token is ignored, and a new one gets requested. Default to false.</param>
+        /// <param name="forceRenewal">If set to true, the cached access token is ignored, and a new one gets requested. Default to false.</param>
         /// <returns></returns>
-        public static async Task<string> GetClientAccessTokenAsync(this HttpContext context, string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, bool ignoreCache = false)
+        public static async Task<string> GetClientAccessTokenAsync(this HttpContext context, string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, bool forceRenewal = false)
         {
             var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
 
-            return await service.GetClientAccessTokenAsync(clientName);
+            return await service.GetClientAccessTokenAsync(clientName, forceRenewal);
         }
 
         /// <summary>

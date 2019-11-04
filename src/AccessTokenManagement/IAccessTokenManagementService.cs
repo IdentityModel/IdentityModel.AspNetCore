@@ -14,7 +14,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// Returns the user access token. If the current token is expired, it will try to refresh it.
         /// </summary>
         /// <returns>An access token or null if refreshing did not work.</returns>
-        Task<string> GetUserAccessTokenAsync();
+        Task<string> GetUserAccessTokenAsync(bool forceRenewal = false);
 
         /// <summary>
         /// Revokes the current refresh token
@@ -26,9 +26,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// Returns either a cached or a new access token for a given client configuration or the default client
         /// </summary>
         /// <param name="clientName">Name of the client configuration, or default is omitted.</param>
-        /// <param name="ignoreCache">Ignores the cached token, and gets a new one.</param>
+        /// <param name="forceRenewal">Ignores the cached token, and gets a new one.</param>
         /// <returns>The access token or null if the no token can be requested.</returns>
-        Task<string> GetClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, bool ignoreCache = false);
+        Task<string> GetClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, bool forceRenewal = false);
 
         /// <summary>
         /// Deletes a client access token from the cache

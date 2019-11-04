@@ -32,13 +32,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc/>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            await SetTokenAsync(request, ignoreCache: false);
+            await SetTokenAsync(request, forceRenewal: false);
             var response = await base.SendAsync(request, cancellationToken);
 
             // retry if 401
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
-                await SetTokenAsync(request, ignoreCache: true);
+                await SetTokenAsync(request, forceRenewal: true);
                 response = await base.SendAsync(request, cancellationToken);
             }
 
@@ -49,11 +49,11 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// Set an access token on the HTTP request
         /// </summary>
         /// <param name="request"></param>
-        /// <param name="ignoreCache"></param>
+        /// <param name="forceRenewal"></param>
         /// <returns></returns>
-        protected virtual async Task SetTokenAsync(HttpRequestMessage request, bool ignoreCache)
+        protected virtual async Task SetTokenAsync(HttpRequestMessage request, bool forceRenewal)
         {
-            var token = await _httpContextAccessor.HttpContext.GetClientAccessTokenAsync(_tokenClientName);
+            var token = await _httpContextAccessor.HttpContext.GetClientAccessTokenAsync(_tokenClientName, forceRenewal);
 
             if (!string.IsNullOrEmpty(token))
             {

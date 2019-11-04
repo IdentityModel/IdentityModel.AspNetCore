@@ -103,7 +103,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetUserAccessTokenAsync()
+        public async Task<string> GetUserAccessTokenAsync(bool forceRenewal = false)
         {
             var user = _httpContextAccessor.HttpContext.User;
 
@@ -111,7 +111,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             var userToken = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
 
             var dtRefresh = userToken.Expiration.Subtract(_options.User.RefreshBeforeExpiration);
-            if (dtRefresh < _clock.UtcNow)
+            if ((dtRefresh < _clock.UtcNow) || forceRenewal == true)
             {
                 _logger.LogDebug("Token for user {user} needs refreshing.", userName);
 
