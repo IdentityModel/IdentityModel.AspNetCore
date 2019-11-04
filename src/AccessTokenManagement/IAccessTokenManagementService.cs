@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityModel.Client;
 using System.Threading.Tasks;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
@@ -22,13 +21,14 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// </summary>
         /// <returns></returns>
         Task RevokeRefreshTokenAsync();
-        
+
         /// <summary>
         /// Returns either a cached or a new access token for a given client configuration or the default client
         /// </summary>
         /// <param name="clientName">Name of the client configuration, or default is omitted.</param>
+        /// <param name="ignoreCache">Ignores the cached token, and gets a new one.</param>
         /// <returns>The access token or null if the no token can be requested.</returns>
-        Task<string> GetClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName);
+        Task<string> GetClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, bool ignoreCache = false);
 
         /// <summary>
         /// Deletes a client access token from the cache

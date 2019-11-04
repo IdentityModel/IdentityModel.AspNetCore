@@ -2,7 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel.AspNetCore.AccessTokenManagement;
-using IdentityModel.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
@@ -31,8 +30,9 @@ namespace Microsoft.AspNetCore.Authentication
         /// </summary>
         /// <param name="context"></param>
         /// <param name="clientName">Name of the client configuration (or null to use the standard client).</param>
+        /// <param name="skipCache">If set to true, the cached access token is ignored, and a new one gets requested. Default to false.</param>
         /// <returns></returns>
-        public static async Task<string> GetClientAccessTokenAsync(this HttpContext context, string clientName = AccessTokenManagementDefaults.DefaultTokenClientName)
+        public static async Task<string> GetClientAccessTokenAsync(this HttpContext context, string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, bool ignoreCache = false)
         {
             var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
 

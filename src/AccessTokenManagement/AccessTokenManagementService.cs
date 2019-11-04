@@ -60,12 +60,15 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName)
+        public async Task<string> GetClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, bool ignoreCache = false)
         {
-            var item = await _clientAccessTokenCache.GetAsync(clientName);
-            if (item != null)
+            if (ignoreCache == false)
             {
-                return item.AccessToken;
+                var item = await _clientAccessTokenCache.GetAsync(clientName);
+                if (item != null)
+                {
+                    return item.AccessToken;
+                }
             }
 
             try

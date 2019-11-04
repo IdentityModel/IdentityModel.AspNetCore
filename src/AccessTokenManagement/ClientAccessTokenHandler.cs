@@ -32,14 +32,33 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc/>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
+            await SetTokenAsync(request, ignoreCache: false);
+            var response = await base.SendAsync(request, cancellationToken);
+
+            // retry if 401
+            if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+            {
+                await SetTokenAsync(request, ignoreCache: true);
+                response = await base.SendAsync(request, cancellationToken);
+            }
+
+            return response;
+        }
+
+        /// <summary>
+        /// Set an access token on the HTTP request
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="ignoreCache"></param>
+        /// <returns></returns>
+        protected virtual async Task SetTokenAsync(HttpRequestMessage request, bool ignoreCache)
+        {
             var token = await _httpContextAccessor.HttpContext.GetClientAccessTokenAsync(_tokenClientName);
 
             if (!string.IsNullOrEmpty(token))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
-
-            return await base.SendAsync(request, cancellationToken);
         }
     }
 }
