@@ -86,7 +86,7 @@ namespace MvcCode
                 client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
             });
 
-            // register a typed HTTP client with token management support
+            // registers a typed HTTP client with token management support
             services.AddHttpClient<TypedUserClient>(client =>
             {
                 client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
