@@ -5,6 +5,7 @@ using IdentityModel.Client;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System;
 using System.Linq;
 using System.Net.Http;
@@ -18,7 +19,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     public class TokenEndpointService : ITokenEndpointService
     {
         private readonly AccessTokenManagementOptions _accessTokenManagementOptions;
-        
+
         private readonly IOptionsSnapshot<OpenIdConnectOptions> _oidcOptions;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly HttpClient _httpClient;
@@ -60,7 +61,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 else
                 {
                     var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.Client.OidcSchemeClient);
-                    var configuration = await oidcOptions.ConfigurationManager.GetConfigurationAsync(default);
+                    var configuration = await GetOidcConfiguration(oidcOptions);
 
                     tokenClientOptions = new TokenClientOptions
                     {
@@ -92,7 +93,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         public async Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken)
         {
             var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.User.Scheme);
-            var configuration = await oidcOptions.ConfigurationManager.GetConfigurationAsync(default);
+            var configuration = await GetOidcConfiguration(oidcOptions);
 
             return await _httpClient.RequestRefreshTokenAsync(new RefreshTokenRequest
             {
@@ -108,7 +109,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         public async Task<TokenRevocationResponse> RevokeRefreshTokenAsync(string refreshToken)
         {
             var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.User.Scheme);
-            var configuration = await oidcOptions.ConfigurationManager.GetConfigurationAsync(default);
+            var configuration = await GetOidcConfiguration(oidcOptions);
 
             return await _httpClient.RevokeTokenAsync(new TokenRevocationRequest
             {
@@ -122,14 +123,32 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
         private async Task<OpenIdConnectOptions> GetOidcOptionsAsync(string schemeName)
         {
-            if (string.IsNullOrEmpty(schemeName))
+            if (string.IsNullOrWhiteSpace(schemeName))
             {
                 var scheme = await _schemeProvider.GetDefaultChallengeSchemeAsync();
+
+                if (scheme is null)
+                {
+                    throw new InvalidOperationException("No OpenID Connect authentication scheme configured for getting client configuration. Either set the scheme name explicitly or set the default challenge scheme");
+                }
+
                 return _oidcOptions.Get(scheme.Name);
             }
             else
             {
                 return _oidcOptions.Get(schemeName);
+            }
+        }
+
+        private async Task<OpenIdConnectConfiguration> GetOidcConfiguration(OpenIdConnectOptions options)
+        {
+            try
+            {
+                return await options.ConfigurationManager.GetConfigurationAsync(default);
+            }
+            catch (Exception e)
+            {
+                throw new InvalidOperationException($"Unable to load OpenID configuration for configured scheme: {e.Message}");
             }
         }
     }
