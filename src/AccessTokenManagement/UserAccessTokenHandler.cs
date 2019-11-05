@@ -35,8 +35,10 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             // retry if 401
             if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
             {
+                response.Dispose();
+
                 await SetTokenAsync(request, forceRenewal: true);
-                response = await base.SendAsync(request, cancellationToken);
+                return await base.SendAsync(request, cancellationToken);
             }
 
             return response;

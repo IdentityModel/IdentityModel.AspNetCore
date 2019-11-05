@@ -10,6 +10,9 @@
         /// </summary>
         public const string DefaultTokenClientName = "default";
 
+        /// <summary>
+        /// Name of the back-channel HTTP client
+        /// </summary>
         public const string BackChannelHttpClientName = "IdentityModel.AspNetCore.AccessTokenManagement.TokenEndpointService";
     }
 }
