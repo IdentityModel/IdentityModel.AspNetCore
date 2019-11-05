@@ -10,16 +10,15 @@ namespace Tests
 {
     public class TokenEndpointServicesTests
     {
-        
-
         [Fact]
         public async Task Using_default_configuration_with_no_scheme_or_explicit_client_config_should_fail()
         {
-            var collection = Setup.Collection()
-                .AddTransient<TokenEndpointService>(p => p.GetRequiredService<ITokenEndpointService>() as TokenEndpointService);
-            var service = collection.BuildServiceProvider().GetRequiredService<TokenEndpointService>();
+            var service = Setup.Collection()
+                .AddTransient(p => p.GetRequiredService<ITokenEndpointService>() as TokenEndpointService)
+                .BuildServiceProvider()
+                .GetRequiredService<TokenEndpointService>();
 
-            Func<Task> act = async () => { var token = await service.GetOpenIdConnectSettingsAsync(null); };
+            Func<Task> act = async () => { var settings = await service.GetOpenIdConnectSettingsAsync(null); };
 
             await act.Should().ThrowAsync<InvalidOperationException>();            
         }
@@ -27,11 +26,12 @@ namespace Tests
         [Fact]
         public async Task Using_default_configuration_with_wrong_scheme_or_explicit_client_config_should_fail()
         {
-            var collection = Setup.Collection()
-                .AddTransient<TokenEndpointService>(p => p.GetRequiredService<ITokenEndpointService>() as TokenEndpointService);
-            var service = collection.BuildServiceProvider().GetRequiredService<TokenEndpointService>();
+            var service = Setup.Collection()
+                .AddTransient(p => p.GetRequiredService<ITokenEndpointService>() as TokenEndpointService)
+                .BuildServiceProvider()
+                .GetRequiredService<TokenEndpointService>();
 
-            Func<Task> act = async () => { var token = await service.GetOpenIdConnectSettingsAsync("invalid"); };
+            Func<Task> act = async () => { var settings = await service.GetOpenIdConnectSettingsAsync("invalid"); };
 
             await act.Should().ThrowAsync<InvalidOperationException>();
         }

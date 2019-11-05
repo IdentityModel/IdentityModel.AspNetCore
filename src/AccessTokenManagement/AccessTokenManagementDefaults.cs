@@ -9,5 +9,7 @@
         /// Name of the default client access token configuration
         /// </summary>
         public const string DefaultTokenClientName = "default";
+
+        public const string BackChannelHttpClientName = "IdentityModel.AspNetCore.AccessTokenManagement.TokenEndpointService";
     }
 }

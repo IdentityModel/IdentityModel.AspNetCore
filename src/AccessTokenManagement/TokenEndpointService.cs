@@ -30,18 +30,18 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="accessTokenManagementOptions"></param>
         /// <param name="oidcOptions"></param>
         /// <param name="schemeProvider"></param>
-        /// <param name="httpClient"></param>
+        /// <param name="httpClientFactory"></param>
         public TokenEndpointService(
             IOptions<AccessTokenManagementOptions> accessTokenManagementOptions,
             IOptionsSnapshot<OpenIdConnectOptions> oidcOptions,
             IAuthenticationSchemeProvider schemeProvider,
-            HttpClient httpClient)
+            IHttpClientFactory httpClientFactory)
         {
             _accessTokenManagementOptions = accessTokenManagementOptions.Value;
 
             _oidcOptions = oidcOptions;
             _schemeProvider = schemeProvider;
-            _httpClient = httpClient;
+            _httpClient = httpClientFactory.CreateClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
         }
 
         /// <inheritdoc/>
