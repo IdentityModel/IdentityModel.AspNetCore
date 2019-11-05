@@ -45,12 +45,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<TokenResponse> RequestClientAccessToken(string clientName = null)
+        public async Task<TokenResponse> RequestClientAccessToken(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName)
         {
             TokenClientOptions tokenClientOptions;
 
             // if a named client configuration was passed in, try to load it
-            if (string.IsNullOrEmpty(clientName) || string.Equals(clientName, AccessTokenManagementDefaults.DefaultTokenClientName))
+            if (string.Equals(clientName, AccessTokenManagementDefaults.DefaultTokenClientName))
             {
                 // if only one client configuration exists, load that
                 if (_accessTokenManagementOptions.Client.Clients.Count == 1)
@@ -60,15 +60,14 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 // otherwise fall back to the scheme configuration
                 else
                 {
-                    var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.Client.OidcSchemeClient);
-                    var configuration = await GetOidcConfiguration(oidcOptions);
+                    var (options, configuration) = await GetOpenIdConnectSettingsAsync(_accessTokenManagementOptions.User.Scheme);
 
                     tokenClientOptions = new TokenClientOptions
                     {
                         Address = configuration.TokenEndpoint,
 
-                        ClientId = oidcOptions.ClientId,
-                        ClientSecret = oidcOptions.ClientSecret
+                        ClientId = options.ClientId,
+                        ClientSecret = options.ClientSecret
                     };
                 }
             }
@@ -92,15 +91,14 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc/>
         public async Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken)
         {
-            var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.User.Scheme);
-            var configuration = await GetOidcConfiguration(oidcOptions);
+            var (options, configuration) = await GetOpenIdConnectSettingsAsync(_accessTokenManagementOptions.User.Scheme);
 
             return await _httpClient.RequestRefreshTokenAsync(new RefreshTokenRequest
             {
                 Address = configuration.TokenEndpoint,
 
-                ClientId = oidcOptions.ClientId,
-                ClientSecret = oidcOptions.ClientSecret,
+                ClientId = options.ClientId,
+                ClientSecret = options.ClientSecret,
                 RefreshToken = refreshToken
             });
         }
@@ -108,21 +106,22 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc/>
         public async Task<TokenRevocationResponse> RevokeRefreshTokenAsync(string refreshToken)
         {
-            var oidcOptions = await GetOidcOptionsAsync(_accessTokenManagementOptions.User.Scheme);
-            var configuration = await GetOidcConfiguration(oidcOptions);
+            var (options, configuration) = await GetOpenIdConnectSettingsAsync(_accessTokenManagementOptions.User.Scheme);
 
             return await _httpClient.RevokeTokenAsync(new TokenRevocationRequest
             {
                 Address = configuration.AdditionalData[OidcConstants.Discovery.RevocationEndpoint].ToString(),
-                ClientId = oidcOptions.ClientId,
-                ClientSecret = oidcOptions.ClientSecret,
+                ClientId = options.ClientId,
+                ClientSecret = options.ClientSecret,
                 Token = refreshToken,
                 TokenTypeHint = OidcConstants.TokenTypes.RefreshToken
             });
         }
 
-        private async Task<OpenIdConnectOptions> GetOidcOptionsAsync(string schemeName)
+        internal async Task<(OpenIdConnectOptions options, OpenIdConnectConfiguration configuration)> GetOpenIdConnectSettingsAsync(string schemeName)
         {
+            OpenIdConnectOptions options;
+
             if (string.IsNullOrWhiteSpace(schemeName))
             {
                 var scheme = await _schemeProvider.GetDefaultChallengeSchemeAsync();
@@ -132,24 +131,57 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                     throw new InvalidOperationException("No OpenID Connect authentication scheme configured for getting client configuration. Either set the scheme name explicitly or set the default challenge scheme");
                 }
 
-                return _oidcOptions.Get(scheme.Name);
+                options = _oidcOptions.Get(scheme.Name);
             }
             else
             {
-                return _oidcOptions.Get(schemeName);
+                options = _oidcOptions.Get(schemeName);
             }
-        }
 
-        private async Task<OpenIdConnectConfiguration> GetOidcConfiguration(OpenIdConnectOptions options)
-        {
+            OpenIdConnectConfiguration configuration;
             try
             {
-                return await options.ConfigurationManager.GetConfigurationAsync(default);
+                configuration = await options.ConfigurationManager.GetConfigurationAsync(default);
             }
             catch (Exception e)
             {
                 throw new InvalidOperationException($"Unable to load OpenID configuration for configured scheme: {e.Message}");
             }
+
+            return (options, configuration);
         }
+
+        //private async Task<OpenIdConnectOptions> GetOidcOptionsAsync(string schemeName)
+        //{
+        //    if (string.IsNullOrWhiteSpace(schemeName))
+        //    {
+        //        var scheme = await _schemeProvider.GetDefaultChallengeSchemeAsync();
+
+        //        if (scheme is null)
+        //        {
+        //            throw new InvalidOperationException("No OpenID Connect authentication scheme configured for getting client configuration. Either set the scheme name explicitly or set the default challenge scheme");
+        //        }
+
+        //        return _oidcOptions.Get(scheme.Name);
+        //    }
+        //    else
+        //    {
+        //        return _oidcOptions.Get(schemeName);
+        //    }
+
+
+        //}
+
+        //private async Task<OpenIdConnectConfiguration> GetOidcConfiguration(OpenIdConnectOptions options)
+        //{
+        //    try
+        //    {
+        //        return await options.ConfigurationManager.GetConfigurationAsync(default);
+        //    }
+        //    catch (Exception e)
+        //    {
+        //        throw new InvalidOperationException($"Unable to load OpenID configuration for configured scheme: {e.Message}");
+        //    }
+        //}
     }
 }
