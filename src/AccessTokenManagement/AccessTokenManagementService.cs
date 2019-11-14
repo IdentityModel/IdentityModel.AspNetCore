@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel.Client;
@@ -109,6 +109,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             var userName = user.FindFirst(JwtClaimTypes.Name)?.Value ?? user.FindFirst(JwtClaimTypes.Subject)?.Value ?? "unknown";
             var userToken = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
+
+            if(userToken.Expiration == default || string.IsNullOrWhiteSpace(userToken.RefreshToken))
+            {
+                _logger.LogDebug("Token for {user} has no expiration set. Can't refresh.", userName);
+                return userToken.AccessToken;
+            }
 
             var dtRefresh = userToken.Expiration.Subtract(_options.User.RefreshBeforeExpiration);
             if ((dtRefresh < _clock.UtcNow) || forceRenewal == true)
