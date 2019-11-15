@@ -107,6 +107,11 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         {
             var user = _httpContextAccessor.HttpContext.User;
 
+            if (!user.Identity.IsAuthenticated)
+            {
+                return null;
+            }
+
             var userName = user.FindFirst(JwtClaimTypes.Name)?.Value ?? user.FindFirst(JwtClaimTypes.Subject)?.Value ?? "unknown";
             var userToken = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
 

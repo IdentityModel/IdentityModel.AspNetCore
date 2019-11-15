@@ -57,7 +57,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         {
             var token = await _httpContextAccessor.HttpContext.GetClientAccessTokenAsync(_tokenClientName, forceRenewal);
 
-            if (!string.IsNullOrEmpty(token))
+            if (!string.IsNullOrWhiteSpace(token))
             {
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
