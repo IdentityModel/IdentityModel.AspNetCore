@@ -9,11 +9,11 @@ namespace Tests.Infrastructure
     {
         public Uri Address { get; set; }
 
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
+        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
             Address = request.RequestUri;
 
-            return new HttpResponseMessage(System.Net.HttpStatusCode.NotFound);
+            return Task.FromResult(new HttpResponseMessage(System.Net.HttpStatusCode.NotFound));
         }
     }
 }
