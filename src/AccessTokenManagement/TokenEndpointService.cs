@@ -20,7 +20,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     {
         private readonly AccessTokenManagementOptions _accessTokenManagementOptions;
 
-        private readonly IOptionsSnapshot<OpenIdConnectOptions> _oidcOptions;
+        private readonly IOptionsMonitor<OpenIdConnectOptions> _oidcOptions;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly HttpClient _httpClient;
 
@@ -33,7 +33,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="httpClientFactory"></param>
         public TokenEndpointService(
             IOptions<AccessTokenManagementOptions> accessTokenManagementOptions,
-            IOptionsSnapshot<OpenIdConnectOptions> oidcOptions,
+            IOptionsMonitor<OpenIdConnectOptions> oidcOptions,
             IAuthenticationSchemeProvider schemeProvider,
             IHttpClientFactory httpClientFactory)
         {
