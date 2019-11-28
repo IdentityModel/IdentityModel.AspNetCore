@@ -3,7 +3,6 @@
 
 using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using System;
 using System.Net.Http;
@@ -29,6 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             services.AddHttpContextAccessor();
+            services.TryAddSingleton<ISystemClock, SystemClock>();
 
 #if NETCOREAPP3_0
             services.AddDistributedMemoryCache();
