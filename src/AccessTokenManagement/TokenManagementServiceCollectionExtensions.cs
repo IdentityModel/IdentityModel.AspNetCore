@@ -96,9 +96,9 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return httpClientBuilder.AddHttpMessageHandler(provider =>
             {
-                var httpContextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
+                var accessTokenManagementService = provider.GetRequiredService<IAccessTokenManagementService>();
 
-                return new ClientAccessTokenHandler(httpContextAccessor, tokenClientName);
+                return new ClientAccessTokenHandler(accessTokenManagementService, tokenClientName);
             });
         }
 

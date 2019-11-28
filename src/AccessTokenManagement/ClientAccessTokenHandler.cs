@@ -15,17 +15,17 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// </summary>
     public class ClientAccessTokenHandler : DelegatingHandler
     {
-        private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly IAccessTokenManagementService _accessTokenManagementService;
         private readonly string _tokenClientName;
 
         /// <summary>
         /// ctor
         /// </summary>
-        /// <param name="httpContextAccessor">The HTTP context accessor</param>
+        /// <param name="accessTokenManagementService">The Access Token Management Service</param>
         /// <param name="tokenClientName">The name of the token client configuration</param>
-        public ClientAccessTokenHandler(IHttpContextAccessor httpContextAccessor, string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName)
+        public ClientAccessTokenHandler(IAccessTokenManagementService accessTokenManagementService, string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName)
         {
-            _httpContextAccessor = httpContextAccessor;
+            _accessTokenManagementService = accessTokenManagementService;
             _tokenClientName = tokenClientName;
         }
 
@@ -55,7 +55,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <returns></returns>
         protected virtual async Task SetTokenAsync(HttpRequestMessage request, bool forceRenewal)
         {
-            var token = await _httpContextAccessor.HttpContext.GetClientAccessTokenAsync(_tokenClientName, forceRenewal);
+            var token = await _accessTokenManagementService.GetClientAccessTokenAsync(_tokenClientName, forceRenewal);
 
             if (!string.IsNullOrWhiteSpace(token))
             {
