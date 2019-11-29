@@ -1,11 +1,9 @@
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 
 namespace WorkerService
 {
@@ -27,7 +25,7 @@ namespace WorkerService
                 _logger.LogInformation("\n\nWorker running at: {time}", DateTimeOffset.Now);
 
                 var response = await _client.GetStringAsync("test");
-                Console.WriteLine(response);
+                _logger.LogInformation("API response: {response}", response);
 
                 await Task.Delay(5000, stoppingToken);
             }

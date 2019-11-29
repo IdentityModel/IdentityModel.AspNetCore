@@ -19,7 +19,7 @@ namespace MvcCode
                 {
                     webBuilder.UseStartup<Startup>();
                     webBuilder.UseSerilog((context, config) =>
-                     {
+                    {
                          config
                              .MinimumLevel.Warning()
                              .MinimumLevel.Override("IdentityModel", LogEventLevel.Debug)
@@ -27,12 +27,7 @@ namespace MvcCode
                              .MinimumLevel.Override("Microsoft.AspNetCore.Authentication", LogEventLevel.Information)
                              .Enrich.FromLogContext()
                              .WriteTo.Console(outputTemplate: "[{Timestamp:HH:mm:ss} {Level}] {SourceContext}{NewLine}{Message:lj}{NewLine}{Exception}{NewLine}");
-                     });
+                    });
                 });
-
-        private static void UseSerilog(Func<object, object, object> p)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
