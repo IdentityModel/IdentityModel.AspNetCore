@@ -28,7 +28,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             services.AddHttpContextAccessor();
-            services.TryAddSingleton<ISystemClock, SystemClock>();
+            services.AddAuthentication();
 
 #if NETCOREAPP3_0
             services.AddDistributedMemoryCache();
