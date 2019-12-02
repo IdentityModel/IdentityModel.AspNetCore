@@ -84,7 +84,8 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 Address = tokenClientOptions.Address,
 
                 ClientId = tokenClientOptions.ClientId,
-                ClientSecret = tokenClientOptions.ClientSecret
+                ClientSecret = tokenClientOptions.ClientSecret,
+                Parameters = tokenClientOptions.Parameters
             });
         }
 
