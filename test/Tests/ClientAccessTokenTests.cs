@@ -2,6 +2,7 @@ using FluentAssertions;
 using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using Tests.Infrastructure;
 using Xunit;
@@ -93,6 +94,30 @@ namespace Tests
 
             result = await service.GetClientAccessTokenAsync("test2");
             handler.Address.Should().Be(new Uri("https://test2"));
+        }
+
+        [Fact]
+        public async Task Using_default_configuration_should_pass_client_parameters()
+        {
+            var handler = new NetworkHandler();
+
+            void options(AccessTokenManagementOptions o)
+            {
+                o.Client.Clients.Add("test", new IdentityModel.Client.TokenClientOptions
+                {
+                    Address = "https://test",
+                    ClientId = "test",
+                    Parameters = new Dictionary<string, string> { { "audience", "test123" } }
+                });
+            }
+
+            var service = Setup.Collection(options, handler)
+                .BuildServiceProvider()
+                .GetRequiredService<IAccessTokenManagementService>();
+
+            var result = await service.GetClientAccessTokenAsync();
+            var requestContent = await handler.Content.ReadAsStringAsync();
+            requestContent.Should().Contain("audience=test123");
         }
     }
 }
