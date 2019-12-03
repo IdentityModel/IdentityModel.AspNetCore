@@ -32,7 +32,7 @@ namespace WorkerService
                         });
                     });
 
-                    services.AddClientAccessTokenClient("client", client =>
+                    services.AddClientAccessTokenClient("client", configureClient: client =>
                     {
                         client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
                     });

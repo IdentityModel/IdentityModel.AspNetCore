@@ -72,9 +72,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services"></param>
         /// <param name="clientName">The name of the client.</param>
+        /// <param name="tokenClientName">The name of the token client.</param>
         /// <param name="configureClient">Additional configuration.</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddClientAccessTokenClient(this IServiceCollection services, string clientName, Action<HttpClient> configureClient = null)
+        public static IHttpClientBuilder AddClientAccessTokenClient(this IServiceCollection services, string clientName, string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName, Action<HttpClient> configureClient = null)
         {
             if (configureClient != null)
             {
@@ -83,7 +84,7 @@ namespace Microsoft.Extensions.DependencyInjection
             }
 
             return services.AddHttpClient(clientName)
-                .AddClientAccessTokenHandler(AccessTokenManagementDefaults.DefaultTokenClientName);
+                .AddClientAccessTokenHandler(tokenClientName);
         }
 
         /// <summary>
