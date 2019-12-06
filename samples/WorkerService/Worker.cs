@@ -22,7 +22,8 @@ namespace WorkerService
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogInformation("\n\nWorker running at: {time}", DateTimeOffset.Now);
+                Console.WriteLine("\n\n");
+                _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
                 var response = await _client.GetStringAsync("test");
                 _logger.LogInformation("API response: {response}", response);
