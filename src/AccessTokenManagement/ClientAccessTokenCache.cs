@@ -40,15 +40,23 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             if (entry != null)
             {
-                _logger.LogDebug("Cache hit for access token for client: {clientName}", clientName);
-
-                var values = entry.Split(new[] { "___" }, StringSplitOptions.RemoveEmptyEntries);
-
-                return new ClientAccessToken
+                try
                 {
-                    AccessToken = values[0],
-                    Expiration = DateTimeOffset.FromUnixTimeSeconds(long.Parse(values[1]))
-                };
+                    _logger.LogDebug("Cache hit for access token for client: {clientName}", clientName);
+
+                    var values = entry.Split(new[] { "___" }, StringSplitOptions.RemoveEmptyEntries);
+
+                    return new ClientAccessToken
+                    {
+                        AccessToken = values[0],
+                        Expiration = DateTimeOffset.FromUnixTimeSeconds(long.Parse(values[1]))
+                    };
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogCritical(ex, "Error parsing cached access token for client {clientName}", clientName);
+                    return null;
+                }
             }
 
             _logger.LogDebug("Cache miss for access token for client: {clientName}", clientName);
