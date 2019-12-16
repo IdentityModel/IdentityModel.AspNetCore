@@ -17,10 +17,10 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// </summary>
     public class AccessTokenManagementService : IAccessTokenManagementService
     {
-        static readonly ConcurrentDictionary<string, Lazy<Task<string>>> _userRefreshDictionary =
+        static readonly ConcurrentDictionary<string, Lazy<Task<string>>> UserRefreshDictionary =
             new ConcurrentDictionary<string, Lazy<Task<string>>>();
 
-        static readonly ConcurrentDictionary<string, Lazy<Task<string>>> _clientTokenRequestDictionary =
+        static readonly ConcurrentDictionary<string, Lazy<Task<string>>> ClientTokenRequestDictionary =
             new ConcurrentDictionary<string, Lazy<Task<string>>>();
 
         private readonly IUserTokenStore _userTokenStore;
@@ -73,7 +73,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             try
             {
-                return await _clientTokenRequestDictionary.GetOrAdd(clientName, (string _) =>
+                return await ClientTokenRequestDictionary.GetOrAdd(clientName, _ =>
                 {
                     return new Lazy<Task<string>>(async () =>
                     {
@@ -92,7 +92,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
             finally
             {
-                _clientTokenRequestDictionary.TryRemove(clientName, out _);
+                ClientTokenRequestDictionary.TryRemove(clientName, out _);
             }
         }
 
@@ -116,13 +116,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             var userToken = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
 
             var dtRefresh = userToken.Expiration.Subtract(_options.User.RefreshBeforeExpiration);
-            if ((dtRefresh < _clock.UtcNow) || forceRenewal == true)
+            if (dtRefresh < _clock.UtcNow || forceRenewal == true)
             {
                 _logger.LogDebug("Token for user {user} needs refreshing.", userName);
 
                 try
                 {
-                    return await _userRefreshDictionary.GetOrAdd(userToken.RefreshToken, (string refreshToken) =>
+                    return await UserRefreshDictionary.GetOrAdd(userToken.RefreshToken, _ =>
                     {
                         return new Lazy<Task<string>>(async () =>
                         {
@@ -133,7 +133,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 }
                 finally
                 {
-                    _userRefreshDictionary.TryRemove(userToken.RefreshToken, out _);
+                    UserRefreshDictionary.TryRemove(userToken.RefreshToken, out _);
                 }
             }
 

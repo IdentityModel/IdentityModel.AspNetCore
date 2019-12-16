@@ -2,6 +2,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using System;
+using Serilog.Sinks.SystemConsole.Themes;
 
 namespace WorkerService
 {
@@ -11,7 +12,7 @@ namespace WorkerService
         {
             Log.Logger = new LoggerConfiguration()
                                 .MinimumLevel.Debug()
-                                .WriteTo.Console()
+                                .WriteTo.Console(theme: AnsiConsoleTheme.Code)
                                 .CreateLogger();
 
             CreateHostBuilder(args).Build().Run();

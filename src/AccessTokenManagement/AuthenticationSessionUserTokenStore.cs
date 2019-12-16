@@ -19,19 +19,15 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     public class AuthenticationSessionUserTokenStore : IUserTokenStore
     {
         private readonly IHttpContextAccessor _contextAccessor;
-        private readonly ILogger<AuthenticationSessionUserTokenStore> _logger;
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="contextAccessor"></param>
-        /// <param name="logger"></param>
         public AuthenticationSessionUserTokenStore(
-            IHttpContextAccessor contextAccessor,
-            ILogger<AuthenticationSessionUserTokenStore> logger)
+            IHttpContextAccessor contextAccessor)
         {
             _contextAccessor = contextAccessor;
-            _logger = logger;
         }
 
         /// <inheritdoc/>

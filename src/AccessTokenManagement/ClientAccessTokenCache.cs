@@ -70,7 +70,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             var expiration = DateTimeOffset.UtcNow.AddSeconds(expiresIn);
             var expirationEpoch = expiration.ToUnixTimeSeconds();
-            var cacheExpiration = expiration.AddSeconds(-(_options.Client.CacheLifetimeBuffer));
+            var cacheExpiration = expiration.AddSeconds(-_options.Client.CacheLifetimeBuffer);
 
             var data = $"{accessToken}___{expirationEpoch.ToString()}";
 

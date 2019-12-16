@@ -1,7 +1,6 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using IdentityModel.AspNetCore.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Net.Http;
@@ -37,13 +36,8 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             {
                 return Services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
             }
-            else
-            {
-                return Services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName, configureClient);
-            }
 
-
-            //return Services.AddOrUpdateHttpClient<TokenEndpointService>(configureClient);
+            return Services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName, configureClient);
         }
     }
 }
