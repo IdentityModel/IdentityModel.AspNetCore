@@ -78,7 +78,7 @@ namespace Microsoft.Extensions.DependencyInjection
             if (configureClient != null)
             {
                 return services.AddHttpClient(clientName, configureClient)
-                    .AddClientAccessTokenHandler(AccessTokenManagementDefaults.DefaultTokenClientName);
+                    .AddClientAccessTokenHandler(tokenClientName);
             }
 
             return services.AddHttpClient(clientName)
