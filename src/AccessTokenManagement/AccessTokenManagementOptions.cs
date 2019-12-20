@@ -44,10 +44,10 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         public class ClientOptions
         {
             /// <summary>
-            /// Set the scheme name of an OpenID Connect handler, if the client configuration can be derived from it.
+            /// Sets the scheme name of an OpenID Connect handler, if the client configuration should be derived from it.
             /// This will be used as a default if no explicit clients are configured (and will fallback to the default challenge scheme if left empty).
             /// </summary>
-            public string OidcSchemeClient { get; set; }
+            public string Scheme { get; set; }
 
             /// <summary>
             /// Used to prefix the cache key
