@@ -37,7 +37,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             if (!result.Succeeded)
             {
-                return new UserAccessToken();
+                return null;
             }
 
             var tokens = result.Properties.GetTokens();

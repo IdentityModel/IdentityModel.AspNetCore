@@ -115,6 +115,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             var userName = user.FindFirst(JwtClaimTypes.Name)?.Value ?? user.FindFirst(JwtClaimTypes.Subject)?.Value ?? "unknown";
             var userToken = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
 
+            if (userToken == null)
+            {
+                _logger.LogDebug("No token data found in user token store.");
+                return null;
+            }
+
             var dtRefresh = userToken.Expiration.Subtract(_options.User.RefreshBeforeExpiration);
             if (dtRefresh < _clock.UtcNow || forceRenewal == true)
             {
