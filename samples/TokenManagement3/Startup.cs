@@ -33,7 +33,6 @@ namespace MvcCode
                 .AddOpenIdConnect("oidc", options =>
                 {
                     options.Authority = "https://demo.identityserver.io";
-                    options.RequireHttpsMetadata = false;
 
                     options.ClientId = "interactive.confidential.short";
                     options.ClientSecret = "secret";
