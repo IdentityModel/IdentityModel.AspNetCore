@@ -25,8 +25,16 @@ namespace WorkerService
                 Console.WriteLine("\n\n");
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-                var response = await _client.GetStringAsync("test");
-                _logger.LogInformation("API response: {response}", response);
+                var response = await _client.GetAsync("test", stoppingToken);
+                if (response.IsSuccessStatusCode)
+                {
+                    var content = await response.Content.ReadAsStringAsync();
+                    _logger.LogInformation("API response: {response}", content);    
+                }
+                else
+                {
+                    _logger.LogError("API returned: {statusCode}", response.StatusCode);
+                }
 
                 await Task.Delay(5000, stoppingToken);
             }
