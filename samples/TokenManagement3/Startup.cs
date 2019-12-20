@@ -5,6 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Polly;
 using System;
 using System.IdentityModel.Tokens.Jwt;
+using System.Linq;
 
 namespace MvcCode
 {
@@ -63,7 +64,10 @@ namespace MvcCode
                 });
 
             // adds user and client access token management
-            services.AddAccessTokenManagement()
+            services.AddAccessTokenManagement(options =>
+                {
+                    options.Client.Scope.Add("api");
+                })
                 .ConfigureBackchannelHttpClient()
                     .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
                     {
