@@ -151,38 +151,5 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             return (options, configuration);
         }
-
-        //private async Task<OpenIdConnectOptions> GetOidcOptionsAsync(string schemeName)
-        //{
-        //    if (string.IsNullOrWhiteSpace(schemeName))
-        //    {
-        //        var scheme = await _schemeProvider.GetDefaultChallengeSchemeAsync();
-
-        //        if (scheme is null)
-        //        {
-        //            throw new InvalidOperationException("No OpenID Connect authentication scheme configured for getting client configuration. Either set the scheme name explicitly or set the default challenge scheme");
-        //        }
-
-        //        return _oidcOptions.Get(scheme.Name);
-        //    }
-        //    else
-        //    {
-        //        return _oidcOptions.Get(schemeName);
-        //    }
-
-
-        //}
-
-        //private async Task<OpenIdConnectConfiguration> GetOidcConfiguration(OpenIdConnectOptions options)
-        //{
-        //    try
-        //    {
-        //        return await options.ConfigurationManager.GetConfigurationAsync(default);
-        //    }
-        //    catch (Exception e)
-        //    {
-        //        throw new InvalidOperationException($"Unable to load OpenID configuration for configured scheme: {e.Message}");
-        //    }
-        //}
     }
 }
