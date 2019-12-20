@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using IdentityModel.Client;
 using Tests.Infrastructure;
 using Xunit;
 
@@ -18,7 +19,7 @@ namespace Tests
 
             void options(AccessTokenManagementOptions o)
             {
-                o.Client.Clients.Add("test", new IdentityModel.Client.TokenClientOptions
+                o.Client.Clients.Add("test", new ClientCredentialsTokenRequest
                 {
                     Address = "https://test",
                     ClientId = "test"
@@ -41,13 +42,13 @@ namespace Tests
 
             void options(AccessTokenManagementOptions o)
             {
-                o.Client.Clients.Add("test1", new IdentityModel.Client.TokenClientOptions
+                o.Client.Clients.Add("test1", new ClientCredentialsTokenRequest
                 {
                     Address = "https://test1",
                     ClientId = "test1"
                 });
 
-                o.Client.Clients.Add("test2", new IdentityModel.Client.TokenClientOptions
+                o.Client.Clients.Add("test2", new ClientCredentialsTokenRequest
                 {
                     Address = "https://test2",
                     ClientId = "test2"
@@ -71,13 +72,13 @@ namespace Tests
 
             void options(AccessTokenManagementOptions o)
             {
-                o.Client.Clients.Add("test1", new IdentityModel.Client.TokenClientOptions
+                o.Client.Clients.Add("test1", new ClientCredentialsTokenRequest
                 {
                     Address = "https://test1",
                     ClientId = "test1"
                 });
 
-                o.Client.Clients.Add("test2", new IdentityModel.Client.TokenClientOptions
+                o.Client.Clients.Add("test2", new ClientCredentialsTokenRequest
                 {
                     Address = "https://test2",
                     ClientId = "test2"
@@ -103,7 +104,7 @@ namespace Tests
 
             void options(AccessTokenManagementOptions o)
             {
-                o.Client.Clients.Add("test", new IdentityModel.Client.TokenClientOptions
+                o.Client.Clients.Add("test", new ClientCredentialsTokenRequest
                 {
                     Address = "https://test",
                     ClientId = "test",

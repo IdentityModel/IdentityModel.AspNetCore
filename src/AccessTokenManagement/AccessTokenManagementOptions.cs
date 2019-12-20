@@ -50,6 +50,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             public string Scheme { get; set; }
 
             /// <summary>
+            /// Scopes to use when client configuration is inferred from OpenID Connect scheme.
+            /// If not set, token request will omit scope parameter.
+            /// </summary>
+            public ICollection<string> Scope { get; set; } = new HashSet<string>();
+
+            /// <summary>
             /// Used to prefix the cache key
             /// </summary>
             public string CacheKeyPrefix { get; set; } = "IdentityModel.AspNetCore.AccessTokenManagement:";
@@ -62,7 +68,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             /// <summary>
             /// Configures named client configurations for requesting client tokens.
             /// </summary>
-            public IDictionary<string, TokenClientOptions> Clients { get; set; } = new Dictionary<string, TokenClientOptions>();
+            public IDictionary<string, ClientCredentialsTokenRequest> Clients { get; set; } = new Dictionary<string, ClientCredentialsTokenRequest>();
         }
     }
 }
