@@ -70,9 +70,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                         ClientSecret = options.ClientSecret
                     };
 
-                    if (_accessTokenManagementOptions.Client.Scope.Any())
+                    if (!string.IsNullOrWhiteSpace(_accessTokenManagementOptions.Client.Scope))
                     {
-                        requestDetails.Scope = String.Join(" ", _accessTokenManagementOptions.Client.Scope);
+                        requestDetails.Scope = _accessTokenManagementOptions.Client.Scope;
                     }
                 }
             }
