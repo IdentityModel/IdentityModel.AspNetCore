@@ -33,6 +33,7 @@ namespace Microsoft.Extensions.DependencyInjection
 #endif
 
             services.AddTransient<IAccessTokenManagementService, AccessTokenManagementService>();
+            services.AddTransient<ITokenClientConfigurationService, OptionsTokenClientConfigurationService>();
             services.AddTransient<ITokenEndpointService, TokenEndpointService>();
 
             services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName);

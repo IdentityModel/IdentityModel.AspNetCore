@@ -8,15 +8,15 @@ using Xunit;
 
 namespace Tests
 {
-    public class TokenEndpointServicesTests
+    public class OptionsConfigServicesTests
     {
         [Fact]
         public async Task Using_default_configuration_with_no_scheme_or_explicit_client_config_should_fail()
         {
             var service = Setup.Collection()
-                .AddTransient(p => p.GetRequiredService<ITokenEndpointService>() as TokenEndpointService)
+                .AddTransient(p => p.GetRequiredService<ITokenClientConfigurationService>() as OptionsTokenClientConfigurationService)
                 .BuildServiceProvider()
-                .GetRequiredService<TokenEndpointService>();
+                .GetRequiredService<OptionsTokenClientConfigurationService>();
 
             Func<Task> act = async () => { var settings = await service.GetOpenIdConnectSettingsAsync(null); };
 
@@ -27,9 +27,9 @@ namespace Tests
         public async Task Using_default_configuration_with_wrong_scheme_or_explicit_client_config_should_fail()
         {
             var service = Setup.Collection()
-                .AddTransient(p => p.GetRequiredService<ITokenEndpointService>() as TokenEndpointService)
+                .AddTransient(p => p.GetRequiredService<ITokenClientConfigurationService>() as OptionsTokenClientConfigurationService)
                 .BuildServiceProvider()
-                .GetRequiredService<TokenEndpointService>();
+                .GetRequiredService<OptionsTokenClientConfigurationService>();
 
             Func<Task> act = async () => { var settings = await service.GetOpenIdConnectSettingsAsync("invalid"); };
 
