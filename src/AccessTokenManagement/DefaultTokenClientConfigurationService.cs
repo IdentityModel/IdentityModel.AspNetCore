@@ -12,7 +12,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// <summary>
     /// Options-based configuration service for token clients
     /// </summary>
-    public class OptionsTokenClientConfigurationService : ITokenClientConfigurationService
+    public class DefaultTokenClientConfigurationService : ITokenClientConfigurationService
     {
         private readonly AccessTokenManagementOptions _accessTokenManagementOptions;
         private readonly IOptionsMonitor<OpenIdConnectOptions> _oidcOptions;
@@ -24,7 +24,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="accessTokenManagementOptions"></param>
         /// <param name="oidcOptions"></param>
         /// <param name="schemeProvider"></param>
-        public OptionsTokenClientConfigurationService(
+        public DefaultTokenClientConfigurationService(
             IOptions<AccessTokenManagementOptions> accessTokenManagementOptions,
             IOptionsMonitor<OpenIdConnectOptions> oidcOptions,
             IAuthenticationSchemeProvider schemeProvider)
@@ -92,9 +92,17 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc />
-        public Task<TokenRevocationRequest> GetTokenRevocationRequestAsync()
+        public async Task<TokenRevocationRequest> GetTokenRevocationRequestAsync()
         {
-            throw new System.NotImplementedException();
+            var (options, configuration) = await GetOpenIdConnectSettingsAsync(_accessTokenManagementOptions.User.Scheme);
+            
+            return new TokenRevocationRequest
+            {
+                Address = configuration.AdditionalData[OidcConstants.Discovery.RevocationEndpoint].ToString(),
+
+                ClientId = options.ClientId,
+                ClientSecret = options.ClientSecret
+            };
         }
         
         /// <summary>
