@@ -35,7 +35,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
         
         /// <inheritdoc />
-        public async Task<ClientCredentialsTokenRequest> GetClientCredentialsRequestAsync(string clientName)
+        public virtual async Task<ClientCredentialsTokenRequest> GetClientCredentialsRequestAsync(string clientName)
         {
             ClientCredentialsTokenRequest requestDetails;
             
@@ -78,7 +78,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc />
-        public async Task<RefreshTokenRequest> GetRefreshTokenRequestAsync()
+        public virtual async Task<RefreshTokenRequest> GetRefreshTokenRequestAsync()
         {
             var (options, configuration) = await GetOpenIdConnectSettingsAsync(_accessTokenManagementOptions.User.Scheme);
 
@@ -92,7 +92,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc />
-        public async Task<TokenRevocationRequest> GetTokenRevocationRequestAsync()
+        public virtual async Task<TokenRevocationRequest> GetTokenRevocationRequestAsync()
         {
             var (options, configuration) = await GetOpenIdConnectSettingsAsync(_accessTokenManagementOptions.User.Scheme);
             
