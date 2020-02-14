@@ -4,6 +4,7 @@
 using IdentityModel.AspNetCore.AccessTokenManagement;
 using System;
 using System.Net.Http;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -33,7 +34,7 @@ namespace Microsoft.Extensions.DependencyInjection
 #endif
 
             services.AddTransient<IAccessTokenManagementService, AccessTokenManagementService>();
-            services.AddTransient<ITokenClientConfigurationService, DefaultTokenClientConfigurationService>();
+            services.TryAddTransient<ITokenClientConfigurationService, DefaultTokenClientConfigurationService>();
             services.AddTransient<ITokenEndpointService, TokenEndpointService>();
 
             services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
