@@ -151,7 +151,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         {
             var userToken = await _userTokenStore.GetTokenAsync(_httpContextAccessor.HttpContext.User);
 
-            if (!string.IsNullOrEmpty(userToken.RefreshToken))
+            if (!string.IsNullOrEmpty(userToken?.RefreshToken))
             {
                 var response = await _tokenEndpointService.RevokeRefreshTokenAsync(userToken.RefreshToken);
 
