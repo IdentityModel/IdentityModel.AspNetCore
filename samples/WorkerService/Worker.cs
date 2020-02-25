@@ -10,12 +10,12 @@ namespace WorkerService
     public class Worker : BackgroundService
     {
         private readonly ILogger<Worker> _logger;
-        private readonly HttpClient _client;
+        private readonly IHttpClientFactory _clientFactory;
 
         public Worker(ILogger<Worker> logger, IHttpClientFactory factory)
         {
             _logger = logger;
-            _client = factory.CreateClient("client");
+            _clientFactory = factory;
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -25,7 +25,8 @@ namespace WorkerService
                 Console.WriteLine("\n\n");
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-                var response = await _client.GetAsync("test", stoppingToken);
+                var client = _clientFactory.CreateClient("client");
+                var response = await client.GetAsync("test", stoppingToken);
                 if (response.IsSuccessStatusCode)
                 {
                     var content = await response.Content.ReadAsStringAsync();
