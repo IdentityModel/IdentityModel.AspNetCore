@@ -12,6 +12,8 @@ namespace Tests.Infrastructure
             var services = new ServiceCollection();
 
             services.AddAuthentication();
+            services.AddDistributedMemoryCache();
+            
             var builder = services.AddAccessTokenManagement(options);
 
             if (networkHandler != null)
