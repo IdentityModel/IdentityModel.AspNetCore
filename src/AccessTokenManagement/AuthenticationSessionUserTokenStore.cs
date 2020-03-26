@@ -86,7 +86,10 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
 
             result.Properties.UpdateTokenValue(OpenIdConnectParameterNames.AccessToken, accessToken);
-            result.Properties.UpdateTokenValue(OpenIdConnectParameterNames.RefreshToken, refreshToken);
+            if (refreshToken != null)
+            {
+                result.Properties.UpdateTokenValue(OpenIdConnectParameterNames.RefreshToken, refreshToken);
+            }
 
             var newExpiresAt = DateTime.UtcNow + TimeSpan.FromSeconds(expiresIn);
             result.Properties.UpdateTokenValue("expires_at", newExpiresAt.ToString("o", CultureInfo.InvariantCulture));
