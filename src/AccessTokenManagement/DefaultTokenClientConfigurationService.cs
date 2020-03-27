@@ -64,6 +64,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                     {
                         requestDetails.Scope = _accessTokenManagementOptions.Client.Scope;
                     }
+
+                    var assertion = await CreateAssertionAsync(clientName);
+                    if (assertion != null)
+                    {
+                        requestDetails.ClientAssertion = assertion;
+                    }
                 }
             }
             else
@@ -82,13 +88,21 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         {
             var (options, configuration) = await GetOpenIdConnectSettingsAsync(_accessTokenManagementOptions.User.Scheme);
 
-            return new RefreshTokenRequest
+            var requestDetails = new RefreshTokenRequest
             {
                 Address = configuration.TokenEndpoint,
 
                 ClientId = options.ClientId,
                 ClientSecret = options.ClientSecret
             };
+            
+            var assertion = await CreateAssertionAsync();
+            if (assertion != null)
+            {
+                requestDetails.ClientAssertion = assertion;
+            }
+
+            return requestDetails;
         }
 
         /// <inheritdoc />
@@ -96,13 +110,21 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         {
             var (options, configuration) = await GetOpenIdConnectSettingsAsync(_accessTokenManagementOptions.User.Scheme);
             
-            return new TokenRevocationRequest
+            var requestDetails = new TokenRevocationRequest
             {
                 Address = configuration.AdditionalData[OidcConstants.Discovery.RevocationEndpoint].ToString(),
 
                 ClientId = options.ClientId,
                 ClientSecret = options.ClientSecret
             };
+            
+            var assertion = await CreateAssertionAsync();
+            if (assertion != null)
+            {
+                requestDetails.ClientAssertion = assertion;
+            }
+
+            return requestDetails;
         }
         
         /// <summary>
@@ -142,6 +164,16 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
 
             return (options, configuration);
+        }
+
+        /// <summary>
+        /// Allows injecting a client assertion into outgoing requests
+        /// </summary>
+        /// <param name="clientName">Name of client (if present)</param>
+        /// <returns></returns>
+        protected virtual Task<ClientAssertion> CreateAssertionAsync(string clientName = default)
+        {
+            return Task.FromResult<ClientAssertion>(null);
         }
     }
 }
