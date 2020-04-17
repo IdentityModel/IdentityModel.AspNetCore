@@ -41,7 +41,7 @@ namespace build
 
             Target(Targets.SignBinary, DependsOn(Targets.Build, Targets.RestoreTools), () =>
             {
-                Sign("./src/bin/Release", "IdentityModel.dll");
+                Sign("./src/bin/Release", "IdentityModel.AspNetCore.dll");
             });
 
             Target(Targets.Test, DependsOn(Targets.Build), () =>
