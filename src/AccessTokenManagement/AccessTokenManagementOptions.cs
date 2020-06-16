@@ -33,7 +33,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             public string Scheme { get; set; }
 
             /// <summary>
-            /// Timespan that specifies how long before expiration, the token should be refreshed
+            /// Timespan that specifies how long before expiration, the token should be refreshed (defaults to 1 minute)
             /// </summary>
             public TimeSpan RefreshBeforeExpiration { get; set; } = TimeSpan.FromMinutes(1);
         }
