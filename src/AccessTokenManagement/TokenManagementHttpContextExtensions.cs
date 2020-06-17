@@ -23,7 +23,7 @@ namespace Microsoft.AspNetCore.Authentication
         {
             var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
 
-            return await service.GetUserAccessTokenAsync(forceRenewal);
+            return await service.GetUserAccessTokenAsync(context.User, forceRenewal);
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace Microsoft.AspNetCore.Authentication
             var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
             var store = context.RequestServices.GetRequiredService<IUserTokenStore>();
 
-            await service.RevokeRefreshTokenAsync();
+            await service.RevokeRefreshTokenAsync(context.User);
             await store.ClearTokenAsync(context.User);
         }
     }
