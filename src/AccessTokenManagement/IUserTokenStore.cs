@@ -1,6 +1,7 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System;
 using System.Security.Claims;
 using System.Threading.Tasks;
 
@@ -16,10 +17,10 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// </summary>
         /// <param name="user">User the tokens belong to</param>
         /// <param name="accessToken">The access token</param>
-        /// <param name="expiresIn">The access token lifetime in seconds</param>
+        /// <param name="expiration">The access token expiration</param>
         /// <param name="refreshToken">The refresh token</param>
         /// <returns></returns>
-        Task StoreTokenAsync(ClaimsPrincipal user, string accessToken, int expiresIn, string refreshToken);
+        Task StoreTokenAsync(ClaimsPrincipal user, string accessToken, DateTimeOffset expiration, string refreshToken);
 
         /// <summary>
         /// Retrieves tokens from store

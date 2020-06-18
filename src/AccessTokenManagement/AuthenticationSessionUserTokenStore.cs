@@ -1,4 +1,4 @@
-﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using Microsoft.AspNetCore.Authentication;
@@ -76,7 +76,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task StoreTokenAsync(ClaimsPrincipal user, string accessToken, int expiresIn, string refreshToken)
+        public async Task StoreTokenAsync(ClaimsPrincipal user, string accessToken, DateTimeOffset expiration, string refreshToken)
         {
             var result = await _contextAccessor.HttpContext.AuthenticateAsync();
 
@@ -91,8 +91,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 result.Properties.UpdateTokenValue(OpenIdConnectParameterNames.RefreshToken, refreshToken);
             }
 
-            var newExpiresAt = DateTime.UtcNow + TimeSpan.FromSeconds(expiresIn);
-            result.Properties.UpdateTokenValue("expires_at", newExpiresAt.ToString("o", CultureInfo.InvariantCulture));
+            result.Properties.UpdateTokenValue("expires_at", expiration.ToString("o", CultureInfo.InvariantCulture));
 
             await _contextAccessor.HttpContext.SignInAsync(result.Principal, result.Properties);
         }
