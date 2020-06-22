@@ -164,7 +164,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             if (!response.IsError)
             {
-                await _userTokenStore.StoreTokenAsync(user, response.AccessToken, response.ExpiresIn, response.RefreshToken);
+                var expiration = DateTime.UtcNow + TimeSpan.FromSeconds(response.ExpiresIn);
+
+                await _userTokenStore.StoreTokenAsync(user, response.AccessToken, expiration, response.RefreshToken);
             }
             else
             {
