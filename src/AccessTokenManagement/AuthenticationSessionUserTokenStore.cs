@@ -1,4 +1,4 @@
-// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using Microsoft.AspNetCore.Authentication;
@@ -53,11 +53,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
 
             var refreshToken = tokens.SingleOrDefault(t => t.Name == OpenIdConnectParameterNames.RefreshToken);
-            if (refreshToken == null)
-            {
-                throw new InvalidOperationException("No refresh token found in cookie properties. A refresh token must be requested and SaveTokens must be enabled.");
-            }
-
+            
             var expiresAt = tokens.SingleOrDefault(t => t.Name == "expires_at");
             if (expiresAt == null)
             {
@@ -69,7 +65,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             return new UserAccessToken
             {
                 AccessToken = accessToken.Value,
-                RefreshToken = refreshToken.Value,
+                RefreshToken = refreshToken?.Value,
                 Expiration = dtExpires
             };
             

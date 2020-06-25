@@ -1,4 +1,4 @@
-// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
+﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel.Client;
@@ -114,6 +114,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             {
                 _logger.LogDebug("No token data found in user token store.");
                 return null;
+            }
+
+            if (string.IsNullOrWhiteSpace(userToken.RefreshToken))
+            {
+                _logger.LogDebug("No refresh token found in user token store for user {user}. Returning current access token.", userName);
+                return userToken.AccessToken;
             }
 
             var dtRefresh = userToken.Expiration.Subtract(_options.User.RefreshBeforeExpiration);
