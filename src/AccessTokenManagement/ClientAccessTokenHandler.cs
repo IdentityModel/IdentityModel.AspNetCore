@@ -30,7 +30,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc/>
         protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
         {
-            await SetTokenAsync(request, forceRenewal: false);
+            await SetTokenAsync(request, forceRenewal: false, cancellationToken);
             var response = await base.SendAsync(request, cancellationToken);
 
             // retry if 401
@@ -38,7 +38,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             {
                 response.Dispose();
 
-                await SetTokenAsync(request, forceRenewal: true);
+                await SetTokenAsync(request, forceRenewal: true, cancellationToken);
                 return await base.SendAsync(request, cancellationToken);
             }
 
@@ -50,10 +50,11 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// </summary>
         /// <param name="request"></param>
         /// <param name="forceRenewal"></param>
+        /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        protected virtual async Task SetTokenAsync(HttpRequestMessage request, bool forceRenewal)
+        protected virtual async Task SetTokenAsync(HttpRequestMessage request, bool forceRenewal, CancellationToken cancellationToken)
         {
-            var token = await _accessTokenManagementService.GetClientAccessTokenAsync(_tokenClientName, forceRenewal);
+            var token = await _accessTokenManagementService.GetClientAccessTokenAsync(_tokenClientName, forceRenewal, cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(token))
             {

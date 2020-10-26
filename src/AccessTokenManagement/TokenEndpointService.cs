@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System;
 using System.Linq;
 using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
@@ -35,30 +36,32 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<TokenResponse> RequestClientAccessToken(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName)
+        public async Task<TokenResponse> RequestClientAccessToken(
+            string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, 
+            CancellationToken cancellationToken = default)
         {
             var requestDetails = await _configService.GetClientCredentialsRequestAsync(clientName);
 
-            return await _httpClient.RequestClientCredentialsTokenAsync(requestDetails);
+            return await _httpClient.RequestClientCredentialsTokenAsync(requestDetails, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken)
+        public async Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
             var requestDetails = await _configService.GetRefreshTokenRequestAsync();
             requestDetails.RefreshToken = refreshToken;
 
-            return await _httpClient.RequestRefreshTokenAsync(requestDetails);
+            return await _httpClient.RequestRefreshTokenAsync(requestDetails, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<TokenRevocationResponse> RevokeRefreshTokenAsync(string refreshToken)
+        public async Task<TokenRevocationResponse> RevokeRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
         {
             var requestDetails = await _configService.GetTokenRevocationRequestAsync();
             requestDetails.Token = refreshToken;
             requestDetails.TokenTypeHint = OidcConstants.TokenTypes.RefreshToken;
 
-            return await _httpClient.RevokeTokenAsync(requestDetails);
+            return await _httpClient.RevokeTokenAsync(requestDetails, cancellationToken: cancellationToken);
         }
     }
 }
