@@ -3,12 +3,12 @@
 
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
 using System.Collections.Concurrent;
 using System.Security.Claims;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
@@ -57,11 +57,14 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, bool forceRenewal = false)
+        public async Task<string> GetClientAccessTokenAsync(
+            string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, 
+            bool forceRenewal = false,
+            CancellationToken cancellationToken = default)
         {
             if (forceRenewal == false)
             {
-                var item = await _clientAccessTokenCache.GetAsync(clientName);
+                var item = await _clientAccessTokenCache.GetAsync(clientName, cancellationToken);
                 if (item != null)
                 {
                     return item.AccessToken;
@@ -74,7 +77,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 {
                     return new Lazy<Task<string>>(async () =>
                     {
-                        var response = await _tokenEndpointService.RequestClientAccessToken(clientName);
+                        var response = await _tokenEndpointService.RequestClientAccessToken(clientName, cancellationToken);
 
                         if (response.IsError)
                         {
@@ -82,7 +85,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                             return null;
                         }
 
-                        await _clientAccessTokenCache.SetAsync(clientName, response.AccessToken, response.ExpiresIn);
+                        await _clientAccessTokenCache.SetAsync(clientName, response.AccessToken, response.ExpiresIn, cancellationToken);
                         return response.AccessToken;
                     });
                 }).Value;
@@ -94,13 +97,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public Task DeleteClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName)
+        public Task DeleteClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, CancellationToken cancellationToken = default)
         {
-            return _clientAccessTokenCache.DeleteAsync(clientName);
+            return _clientAccessTokenCache.DeleteAsync(clientName, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetUserAccessTokenAsync(ClaimsPrincipal user, bool forceRenewal = false)
+        public async Task<string> GetUserAccessTokenAsync(ClaimsPrincipal user, bool forceRenewal = false, CancellationToken cancellationToken = default)
         {
             if (user == null || !user.Identity.IsAuthenticated)
             {
@@ -133,7 +136,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                     {
                         return new Lazy<Task<string>>(async () =>
                         {
-                            var refreshed = await RefreshUserAccessTokenAsync(user);
+                            var refreshed = await RefreshUserAccessTokenAsync(user, cancellationToken);
                             return refreshed.AccessToken;
                         });
                     }).Value;
@@ -148,13 +151,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task RevokeRefreshTokenAsync(ClaimsPrincipal user)
+        public async Task RevokeRefreshTokenAsync(ClaimsPrincipal user, CancellationToken cancellationToken = default)
         {
             var userToken = await _userTokenStore.GetTokenAsync(user);
 
             if (!string.IsNullOrEmpty(userToken?.RefreshToken))
             {
-                var response = await _tokenEndpointService.RevokeRefreshTokenAsync(userToken.RefreshToken);
+                var response = await _tokenEndpointService.RevokeRefreshTokenAsync(userToken.RefreshToken, cancellationToken);
 
                 if (response.IsError)
                 {
@@ -163,10 +166,10 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
         }
 
-        internal async Task<TokenResponse> RefreshUserAccessTokenAsync(ClaimsPrincipal user)
+        internal async Task<TokenResponse> RefreshUserAccessTokenAsync(ClaimsPrincipal user, CancellationToken cancellationToken = default)
         {
             var userToken = await _userTokenStore.GetTokenAsync(user);
-            var response = await _tokenEndpointService.RefreshUserAccessTokenAsync(userToken.RefreshToken);
+            var response = await _tokenEndpointService.RefreshUserAccessTokenAsync(userToken.RefreshToken, cancellationToken);
 
             if (!response.IsError)
             {
