@@ -11,6 +11,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.IdentityModel.Tokens;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
@@ -46,10 +47,15 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+        public async Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken, string resource = null, CancellationToken cancellationToken = default)
         {
             var requestDetails = await _configService.GetRefreshTokenRequestAsync();
             requestDetails.RefreshToken = refreshToken;
+
+            if (!string.IsNullOrEmpty(resource))
+            {
+                requestDetails.Resource.Add(resource);
+            }
 
             return await _httpClient.RequestRefreshTokenAsync(requestDetails, cancellationToken: cancellationToken);
         }

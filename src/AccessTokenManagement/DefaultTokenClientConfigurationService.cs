@@ -65,6 +65,11 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                         requestDetails.Scope = _accessTokenManagementOptions.Client.Scope;
                     }
 
+                    if (!string.IsNullOrEmpty(_accessTokenManagementOptions.Client.Resource))
+                    {
+                        requestDetails.Resource.Add(_accessTokenManagementOptions.Client.Resource);
+                    }
+                    
                     var assertion = await CreateAssertionAsync(clientName);
                     if (assertion != null)
                     {

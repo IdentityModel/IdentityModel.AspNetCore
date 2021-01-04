@@ -54,6 +54,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             /// If not set, token request will omit scope parameter.
             /// </summary>
             public string Scope { get; set; }
+            
+            /// <summary>
+            /// Resource value when client configuration is inferred from OpenID Connect scheme.
+            /// If not set, token request will omit resource parameter.
+            /// </summary>
+            public string Resource { get; set; }
 
             /// <summary>
             /// Used to prefix the cache key

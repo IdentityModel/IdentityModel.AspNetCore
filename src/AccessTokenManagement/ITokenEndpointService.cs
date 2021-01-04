@@ -16,9 +16,10 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// Refreshes a user access token.
         /// </summary>
         /// <param name="refreshToken"></param>
+        /// <param name="resource"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
+        Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken, string resource = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Requests a client access token.
