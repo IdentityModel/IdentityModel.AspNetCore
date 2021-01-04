@@ -6,6 +6,7 @@ using Polly;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace MvcCode
 {
@@ -38,19 +39,20 @@ namespace MvcCode
                     options.ClientId = "interactive.confidential.short";
                     options.ClientSecret = "secret";
 
-                    // code flow + PKCE (PKCE is turned on by default)
                     options.ResponseType = "code";
-                    options.UsePkce = true;
+                    options.ResponseMode = "query";
 
                     options.Scope.Clear();
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
                     options.Scope.Add("email");
                     options.Scope.Add("offline_access");
-                    options.Scope.Add("api");
-
-                    // not mapped by default
-                    options.ClaimActions.MapJsonKey("website", "website");
+                    
+                    options.Scope.Add("resource1.scope1");
+                    options.Scope.Add("resource2.scope1");
+                    options.Scope.Add("resource3.scope1");
+                    options.Scope.Add("scope3");
+                    options.Scope.Add("scope4");
 
                     // keeps id_token smaller
                     options.GetClaimsFromUserInfoEndpoint = true;
@@ -60,6 +62,13 @@ namespace MvcCode
                     {
                         NameClaimType = "name",
                         RoleClaimType = "role"
+                    };
+
+                    options.Events.OnRedirectToIdentityProvider = e =>
+                    {
+                        e.ProtocolMessage.Resource = "urn:resource3";
+                    
+                        return Task.CompletedTask;
                     };
                 });
 

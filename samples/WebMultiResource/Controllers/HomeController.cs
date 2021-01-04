@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authentication;
 
 namespace MvcCode.Controllers
 {
@@ -24,6 +25,7 @@ namespace MvcCode.Controllers
 
         public async Task<IActionResult> CallApiAsUser()
         {
+            var token = await HttpContext.GetUserAccessTokenAsync(resource: "urn:resource3");
             var client = _httpClientFactory.CreateClient("user_client");
 
             var response = await client.GetStringAsync("test");

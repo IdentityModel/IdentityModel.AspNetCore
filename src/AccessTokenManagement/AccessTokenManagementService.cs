@@ -124,11 +124,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 _logger.LogDebug("No refresh token found in user token store for user {user} / resource {resource}. Returning current access token.", userName, resource ?? "default");
                 return userToken.AccessToken;
             }
-            
+
             if (userToken.AccessToken.IsMissing() && userToken.RefreshToken.IsPresent())
             {
-                _logger.LogDebug("No refresh token found in user token store for user {user} / resource {resource}. Trying to refresh.", userName, resource ?? "default");
-                return userToken.AccessToken;
+                _logger.LogDebug(
+                    "No refresh token found in user token store for user {user} / resource {resource}. Trying to refresh.",
+                    userName, resource ?? "default");
             }
 
             DateTimeOffset dtRefresh = DateTimeOffset.MinValue;
@@ -186,7 +187,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             {
                 var expiration = DateTime.UtcNow + TimeSpan.FromSeconds(response.ExpiresIn);
 
-                await _userTokenStore.StoreTokenAsync(user, response.AccessToken, expiration, response.RefreshToken);
+                await _userTokenStore.StoreTokenAsync(user, response.AccessToken, expiration, response.RefreshToken, resource);
             }
             else
             {
