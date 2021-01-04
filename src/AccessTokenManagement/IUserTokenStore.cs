@@ -18,16 +18,18 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="user">User the tokens belong to</param>
         /// <param name="accessToken">The access token</param>
         /// <param name="expiration">The access token expiration</param>
-        /// <param name="refreshToken">The refresh token</param>
+        /// <param name="refreshToken">The refresh token (optional)</param>
+        /// <param name="resource">The resource for this access token (optional)</param>
         /// <returns></returns>
-        Task StoreTokenAsync(ClaimsPrincipal user, string accessToken, DateTimeOffset expiration, string refreshToken);
+        Task StoreTokenAsync(ClaimsPrincipal user, string accessToken, DateTimeOffset expiration, string refreshToken = null, string resource = null);
 
         /// <summary>
         /// Retrieves tokens from store
         /// </summary>
         /// <param name="user">User the tokens belong to</param>
+        /// <param name="resource">The resource for the access token (optional)</param>
         /// <returns>access and refresh token and access token expiration</returns>
-        Task<UserAccessToken> GetTokenAsync(ClaimsPrincipal user);
+        Task<UserAccessToken> GetTokenAsync(ClaimsPrincipal user, string resource = null);
 
         /// <summary>
         /// Clears the stored tokens for a given user

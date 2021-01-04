@@ -31,7 +31,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<UserAccessToken> GetTokenAsync(ClaimsPrincipal user)
+        public async Task<UserAccessToken> GetTokenAsync(ClaimsPrincipal user, string resource)
         {
             var result = await _contextAccessor.HttpContext.AuthenticateAsync();
 
@@ -40,28 +40,39 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 return null;
             }
 
-            var tokens = result.Properties.GetTokens();
+            var tokens = result.Properties.GetTokens().ToList();
             if (tokens == null || !tokens.Any())
             {
                 throw new InvalidOperationException("No tokens found in cookie properties. SaveTokens must be enabled for automatic token refresh.");
             }
+            
+            string tokenName = OpenIdConnectParameterNames.AccessToken;
+            if (!string.IsNullOrEmpty(resource))
+            {
+                tokenName += $"::{resource}";
+            }
 
-            var accessToken = tokens.SingleOrDefault(t => t.Name == OpenIdConnectParameterNames.AccessToken);
+            string expiresName = "expires_at";
+            if (!string.IsNullOrEmpty(resource))
+            {
+                expiresName += $"::{resource}";
+            }
+
+            var accessToken = tokens.SingleOrDefault(t => t.Name == tokenName);
             if (accessToken == null)
             {
                 throw new InvalidOperationException("No access token found in cookie properties. An access token must be requested and SaveTokens must be enabled.");
             }
-
-            var refreshToken = tokens.SingleOrDefault(t => t.Name == OpenIdConnectParameterNames.RefreshToken);
             
-            var expiresAt = tokens.SingleOrDefault(t => t.Name == "expires_at");
+            var expiresAt = tokens.SingleOrDefault(t => t.Name == expiresName);
             if (expiresAt == null)
             {
                 throw new InvalidOperationException("No expires_at value found in cookie properties.");
             }
-
+            
             var dtExpires = DateTimeOffset.Parse(expiresAt.Value, CultureInfo.InvariantCulture);
-
+            var refreshToken = tokens.SingleOrDefault(t => t.Name == OpenIdConnectParameterNames.RefreshToken);
+            
             return new UserAccessToken
             {
                 AccessToken = accessToken.Value,
@@ -72,22 +83,34 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task StoreTokenAsync(ClaimsPrincipal user, string accessToken, DateTimeOffset expiration, string refreshToken)
+        public async Task StoreTokenAsync(ClaimsPrincipal user, string accessToken, DateTimeOffset expiration, string refreshToken = null, string resource = null)
         {
             var result = await _contextAccessor.HttpContext.AuthenticateAsync();
 
             if (!result.Succeeded)
             {
-                throw new Exception("can't store tokens. User is anonymous");
+                throw new Exception("Can't store tokens. User is anonymous");
             }
 
-            result.Properties.UpdateTokenValue(OpenIdConnectParameterNames.AccessToken, accessToken);
+            string tokenName = OpenIdConnectParameterNames.AccessToken;
+            if (!string.IsNullOrEmpty(resource))
+            {
+                tokenName += $"::{resource}";
+            }
+
+            string expiresName = "expires_at";
+            if (!string.IsNullOrEmpty(resource))
+            {
+                expiresName += $"::{resource}";
+            }
+            
+            result.Properties.UpdateTokenValue(tokenName, accessToken);
+            result.Properties.UpdateTokenValue(expiresName, expiration.ToString("o", CultureInfo.InvariantCulture));
+            
             if (refreshToken != null)
             {
                 result.Properties.UpdateTokenValue(OpenIdConnectParameterNames.RefreshToken, refreshToken);
             }
-
-            result.Properties.UpdateTokenValue("expires_at", expiration.ToString("o", CultureInfo.InvariantCulture));
 
             await _contextAccessor.HttpContext.SignInAsync(result.Principal, result.Properties);
         }
