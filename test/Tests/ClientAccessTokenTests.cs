@@ -108,7 +108,10 @@ namespace Tests
                 {
                     Address = "https://test",
                     ClientId = "test",
-                    Parameters = new Dictionary<string, string> { { "audience", "test123" } }
+                    Parameters = 
+                    {
+                        { "audience", "test123" }
+                    }
                 });
             }
 
