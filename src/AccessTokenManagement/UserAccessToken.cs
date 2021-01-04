@@ -18,7 +18,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// The access token expiration
         /// </summary>
-        public DateTimeOffset Expiration { get; set; }
+        public DateTimeOffset? Expiration { get; set; }
         
         /// <summary>
         /// The refresh token

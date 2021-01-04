@@ -111,21 +111,32 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
 
             var userName = user.FindFirst(JwtClaimTypes.Name)?.Value ?? user.FindFirst(JwtClaimTypes.Subject)?.Value ?? "unknown";
-            var userToken = await _userTokenStore.GetTokenAsync(user);
+            var userToken = await _userTokenStore.GetTokenAsync(user, resource);
 
             if (userToken == null)
             {
                 _logger.LogDebug("No token data found in user token store.");
                 return null;
             }
-
-            if (string.IsNullOrWhiteSpace(userToken.RefreshToken))
+            
+            if (userToken.AccessToken.IsPresent() && userToken.RefreshToken.IsMissing())
             {
-                _logger.LogDebug("No refresh token found in user token store for user {user}. Returning current access token.", userName);
+                _logger.LogDebug("No refresh token found in user token store for user {user} / resource {resource}. Returning current access token.", userName, resource ?? "default");
+                return userToken.AccessToken;
+            }
+            
+            if (userToken.AccessToken.IsMissing() && userToken.RefreshToken.IsPresent())
+            {
+                _logger.LogDebug("No refresh token found in user token store for user {user} / resource {resource}. Trying to refresh.", userName, resource ?? "default");
                 return userToken.AccessToken;
             }
 
-            var dtRefresh = userToken.Expiration.Subtract(_options.User.RefreshBeforeExpiration);
+            DateTimeOffset dtRefresh = DateTimeOffset.MinValue;
+            if (userToken.Expiration.HasValue)
+            {
+                dtRefresh = userToken.Expiration.Value.Subtract(_options.User.RefreshBeforeExpiration);
+            }
+            
             if (dtRefresh < _clock.UtcNow || forceRenewal == true)
             {
                 _logger.LogDebug("Token for user {user} needs refreshing.", userName);
