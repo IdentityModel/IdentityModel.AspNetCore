@@ -25,8 +25,17 @@ namespace MvcCode.Controllers
 
         public async Task<IActionResult> CallApiAsUser()
         {
-            var token = await HttpContext.GetUserAccessTokenAsync(resource: "urn:resource3");
             var client = _httpClientFactory.CreateClient("user_client");
+
+            var response = await client.GetStringAsync("test");
+            ViewBag.Json = JArray.Parse(response).ToString();
+
+            return View("CallApi");
+        }
+        
+        public async Task<IActionResult> CallApiAsUserResource3()
+        {
+            var client = _httpClientFactory.CreateClient("user_client_resource3");
 
             var response = await client.GetStringAsync("test");
             ViewBag.Json = JArray.Parse(response).ToString();

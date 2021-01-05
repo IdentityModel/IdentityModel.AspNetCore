@@ -2,7 +2,6 @@ using FluentAssertions;
 using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.Extensions.DependencyInjection;
 using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
 using IdentityModel.Client;
 using Tests.Infrastructure;

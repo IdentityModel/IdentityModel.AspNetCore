@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using Polly;
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace MvcCode
@@ -66,6 +65,7 @@ namespace MvcCode
 
                     options.Events.OnRedirectToIdentityProvider = e =>
                     {
+                        // prepare token requests, so a resource specific token can be requested
                         e.ProtocolMessage.Resource = "urn:resource3";
                     
                         return Task.CompletedTask;
@@ -75,9 +75,11 @@ namespace MvcCode
             // adds user and client access token management
             services.AddAccessTokenManagement(options =>
                 {
-                    // client config is inferred from OpenID Connect settings
-                    // if you want to specify scopes explicitly, do it here, otherwise the scope parameter will not be sent
-                    options.Client.Scope = "api";
+                    // ask for a token for a specific resource
+                    //options.Client.Resource = "urn:resource3";
+                    
+                    // ask for a specific scope
+                    //options.Client.Scope = "shared.scope";
                 })
                 .ConfigureBackchannelHttpClient()
                     .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
@@ -88,7 +90,13 @@ namespace MvcCode
                     }));
 
             // registers HTTP client that uses the managed user access token
-            services.AddUserAccessTokenClient("user_client", client =>
+            services.AddUserAccessTokenClient("user_client", configureClient: client =>
+            {
+                client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
+            });
+            
+            // registers HTTP client that uses the managed user access token for a specific resource
+            services.AddUserAccessTokenClient("user_client_resource3", "urn:resource3", configureClient: client =>
             {
                 client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
             });

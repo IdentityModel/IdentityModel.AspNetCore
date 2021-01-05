@@ -3,7 +3,6 @@
 
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System;
 using System.Globalization;
@@ -18,6 +17,8 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// </summary>
     public class AuthenticationSessionUserTokenStore : IUserTokenStore
     {
+        private const string TokenPrefix = ".Token.";
+            
         private readonly IHttpContextAccessor _contextAccessor;
 
         /// <summary>
@@ -40,39 +41,39 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 return null;
             }
 
-            var tokens = result.Properties.GetTokens().ToList();
+            var tokens = result.Properties.Items.Where(i => i.Key.StartsWith(TokenPrefix)).ToList();
             if (tokens == null || !tokens.Any())
             {
                 throw new InvalidOperationException(
                     "No tokens found in cookie properties. SaveTokens must be enabled for automatic token refresh.");
             }
 
-            string tokenName = OpenIdConnectParameterNames.AccessToken;
+            string tokenName = $"{TokenPrefix}{OpenIdConnectParameterNames.AccessToken}";
             if (!string.IsNullOrEmpty(resource))
             {
                 tokenName += $"::{resource}";
             }
 
-            string expiresName = "expires_at";
+            string expiresName = $"{TokenPrefix}expires_at";
             if (!string.IsNullOrEmpty(resource))
             {
                 expiresName += $"::{resource}";
             }
 
-            var accessToken = tokens.SingleOrDefault(t => t.Name == tokenName);
-            var refreshToken = tokens.SingleOrDefault(t => t.Name == OpenIdConnectParameterNames.RefreshToken);
-            var expiresAt = tokens.SingleOrDefault(t => t.Name == expiresName);
+            var accessToken = tokens.SingleOrDefault(t => t.Key == tokenName);
+            var refreshToken = tokens.SingleOrDefault(t => t.Key == $"{TokenPrefix}{OpenIdConnectParameterNames.RefreshToken}");
+            var expiresAt = tokens.SingleOrDefault(t => t.Key == expiresName);
 
             DateTimeOffset? dtExpires = null;
-            if (expiresAt != null)
+            if (expiresAt.Value != null)
             {
                 dtExpires = DateTimeOffset.Parse(expiresAt.Value, CultureInfo.InvariantCulture);
             }
 
             return new UserAccessToken
             {
-                AccessToken = accessToken?.Value,
-                RefreshToken = refreshToken?.Value,
+                AccessToken = accessToken.Value,
+                RefreshToken = refreshToken.Value,
                 Expiration = dtExpires
             };
         }

@@ -128,7 +128,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             if (userToken.AccessToken.IsMissing() && userToken.RefreshToken.IsPresent())
             {
                 _logger.LogDebug(
-                    "No refresh token found in user token store for user {user} / resource {resource}. Trying to refresh.",
+                    "No access token found in user token store for user {user} / resource {resource}. Trying to refresh.",
                     userName, resource ?? "default");
             }
 
