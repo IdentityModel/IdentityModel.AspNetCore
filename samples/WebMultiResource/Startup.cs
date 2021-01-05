@@ -5,7 +5,7 @@ using Microsoft.IdentityModel.Tokens;
 using Polly;
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+using System.Threading.Tasks;
 
 namespace MvcCode
 {
@@ -33,24 +33,25 @@ namespace MvcCode
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
-                    options.Authority = "https://demo.identityserver.io";
+                    options.Authority = "https://demo.duendesoftware.com";
 
                     options.ClientId = "interactive.confidential.short";
                     options.ClientSecret = "secret";
 
-                    // code flow + PKCE (PKCE is turned on by default)
                     options.ResponseType = "code";
-                    options.UsePkce = true;
+                    options.ResponseMode = "query";
 
                     options.Scope.Clear();
                     options.Scope.Add("openid");
                     options.Scope.Add("profile");
                     options.Scope.Add("email");
                     options.Scope.Add("offline_access");
-                    options.Scope.Add("api");
-
-                    // not mapped by default
-                    options.ClaimActions.MapJsonKey("website", "website");
+                    
+                    options.Scope.Add("resource1.scope1");
+                    options.Scope.Add("resource2.scope1");
+                    options.Scope.Add("resource3.scope1");
+                    options.Scope.Add("scope3");
+                    options.Scope.Add("scope4");
 
                     // keeps id_token smaller
                     options.GetClaimsFromUserInfoEndpoint = true;
@@ -61,14 +62,24 @@ namespace MvcCode
                         NameClaimType = "name",
                         RoleClaimType = "role"
                     };
+
+                    options.Events.OnRedirectToIdentityProvider = e =>
+                    {
+                        // prepare token requests, so a resource specific token can be requested
+                        e.ProtocolMessage.Resource = "urn:resource3";
+                    
+                        return Task.CompletedTask;
+                    };
                 });
 
             // adds user and client access token management
             services.AddAccessTokenManagement(options =>
                 {
-                    // client config is inferred from OpenID Connect settings
-                    // if you want to specify scopes explicitly, do it here, otherwise the scope parameter will not be sent
-                    options.Client.Scope = "api";
+                    // ask for a token for a specific resource
+                    //options.Client.Resource = "urn:resource3";
+                    
+                    // ask for a specific scope
+                    //options.Client.Scope = "shared.scope";
                 })
                 .ConfigureBackchannelHttpClient()
                     .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]
@@ -79,27 +90,33 @@ namespace MvcCode
                     }));
 
             // registers HTTP client that uses the managed user access token
-            services.AddUserAccessTokenClient("user_client", client =>
+            services.AddUserAccessTokenClient("user_client", configureClient: client =>
             {
-                client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
+                client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
+            });
+            
+            // registers HTTP client that uses the managed user access token for a specific resource
+            services.AddUserAccessTokenClient("user_client_resource3", "urn:resource3", configureClient: client =>
+            {
+                client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
             });
 
             // registers HTTP client that uses the managed client access token
             services.AddClientAccessTokenClient("client", configureClient: client =>
             {
-                client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
+                client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
             });
 
             // registers a typed HTTP client with token management support
             services.AddHttpClient<TypedUserClient>(client =>
             {
-                client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
+                client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
             })
                 .AddUserAccessTokenHandler();
 
             services.AddHttpClient<TypedClientClient>(client =>
             {
-                client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
+                client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
             })
                 .AddClientAccessTokenHandler();
         }

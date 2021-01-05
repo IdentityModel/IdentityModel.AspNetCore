@@ -17,15 +17,16 @@ namespace Microsoft.AspNetCore.Authentication
         /// <summary>
         /// Returns (and refreshes if needed) the current access token for the logged on user
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="context">The HTTP context</param>
+        /// <param name="resource">Set this value to retrieve an access token for a specific resource.</param>
         /// <param name="forceRenewal">If set to true, the cached user token is ignored, and a new one gets requested. Default to false.</param>
         /// <param name="cancellationToken">A cancellation token to cancel operation.</param>
         /// <returns></returns>
-        public static async Task<string> GetUserAccessTokenAsync(this HttpContext context, bool forceRenewal = false, CancellationToken cancellationToken = default)
+        public static async Task<string> GetUserAccessTokenAsync(this HttpContext context, string resource = null, bool forceRenewal = false, CancellationToken cancellationToken = default)
         {
             var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
 
-            return await service.GetUserAccessTokenAsync(context.User, forceRenewal, cancellationToken);
+            return await service.GetUserAccessTokenAsync(context.User, resource, forceRenewal, cancellationToken);
         }
 
         /// <summary>

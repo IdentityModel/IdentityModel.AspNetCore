@@ -16,14 +16,17 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     public class UserAccessTokenHandler : DelegatingHandler
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
+        private readonly string _resource;
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="httpContextAccessor"></param>
-        public UserAccessTokenHandler(IHttpContextAccessor httpContextAccessor)
+        /// <param name="resource"></param>
+        public UserAccessTokenHandler(IHttpContextAccessor httpContextAccessor, string resource = null)
         {
             _httpContextAccessor = httpContextAccessor;
+            _resource = resource;
         }
 
         /// <inheritdoc/>
@@ -52,7 +55,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <returns></returns>
         protected virtual async Task SetTokenAsync(HttpRequestMessage request, bool forceRenewal)
         {
-            var token = await _httpContextAccessor.HttpContext.GetUserAccessTokenAsync(forceRenewal);
+            var token = await _httpContextAccessor.HttpContext.GetUserAccessTokenAsync(resource: _resource, forceRenewal: forceRenewal);
 
             if (!string.IsNullOrWhiteSpace(token))
             {

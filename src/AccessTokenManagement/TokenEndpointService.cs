@@ -2,12 +2,6 @@
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
 using IdentityModel.Client;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Extensions.Options;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
-using System;
-using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,10 +40,15 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+        public async Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken, string resource = null, CancellationToken cancellationToken = default)
         {
             var requestDetails = await _configService.GetRefreshTokenRequestAsync();
             requestDetails.RefreshToken = refreshToken;
+
+            if (!string.IsNullOrEmpty(resource))
+            {
+                requestDetails.Resource.Add(resource);
+            }
 
             return await _httpClient.RequestRefreshTokenAsync(requestDetails, cancellationToken: cancellationToken);
         }

@@ -5,7 +5,6 @@ using Microsoft.IdentityModel.Tokens;
 using Polly;
 using System;
 using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
 
 namespace MvcCode
 {
@@ -79,7 +78,7 @@ namespace MvcCode
                     }));
 
             // registers HTTP client that uses the managed user access token
-            services.AddUserAccessTokenClient("user_client", client =>
+            services.AddUserAccessTokenClient("user_client", configureClient: client =>
             {
                 client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
             });

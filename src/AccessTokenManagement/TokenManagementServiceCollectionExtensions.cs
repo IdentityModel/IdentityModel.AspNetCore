@@ -4,7 +4,9 @@
 using IdentityModel.AspNetCore.AccessTokenManagement;
 using System;
 using System.Net.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace Microsoft.Extensions.DependencyInjection
 {
@@ -50,18 +52,19 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services"></param>
         /// <param name="name">The name of the client.</param>
+        /// <param name="resource">The name of resource (optional)</param>
         /// <param name="configureClient">Additional configuration.</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddUserAccessTokenClient(this IServiceCollection services, string name, Action<HttpClient> configureClient = null)
+        public static IHttpClientBuilder AddUserAccessTokenClient(this IServiceCollection services, string name, string resource = null, Action<HttpClient> configureClient = null)
         {
             if (configureClient != null)
             {
                 return services.AddHttpClient(name, configureClient)
-                    .AddUserAccessTokenHandler();
+                    .AddUserAccessTokenHandler(resource);
             }
 
             return services.AddHttpClient(name)
-                .AddUserAccessTokenHandler();
+                .AddUserAccessTokenHandler(resource);
         }
 
         /// <summary>
@@ -104,10 +107,23 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds the user access token handler to an HttpClient
         /// </summary>
         /// <param name="httpClientBuilder"></param>
+        /// <param name="resource">Specify the resource for this handler (optional)</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddUserAccessTokenHandler(this IHttpClientBuilder httpClientBuilder)
+        public static IHttpClientBuilder AddUserAccessTokenHandler(this IHttpClientBuilder httpClientBuilder, string resource = null)
         {
-            return httpClientBuilder.AddHttpMessageHandler<UserAccessTokenHandler>();
+            if (resource == null)
+            {
+                return httpClientBuilder.AddHttpMessageHandler<UserAccessTokenHandler>();
+            }
+            else
+            {
+                return httpClientBuilder.AddHttpMessageHandler(provider =>
+                {
+                    var contextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
+
+                    return new UserAccessTokenHandler(contextAccessor, resource);
+                });
+            }
         }
     }
 }
