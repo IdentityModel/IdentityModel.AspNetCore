@@ -22,7 +22,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// Revokes the current refresh token
         /// </summary>
         /// <returns></returns>
-        Task RevokeRefreshTokenAsync(ClaimsPrincipal user, CancellationToken cancellationToken = default);
+        Task RevokeRefreshTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Returns either a cached or a new access token for a given client configuration or the default client

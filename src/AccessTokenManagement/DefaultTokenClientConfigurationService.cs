@@ -89,9 +89,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc />
-        public virtual async Task<RefreshTokenRequest> GetRefreshTokenRequestAsync()
+        public virtual async Task<RefreshTokenRequest> GetRefreshTokenRequestAsync(UserAccessTokenParameters parameters = null)
         {
-            var (options, configuration) = await GetOpenIdConnectSettingsAsync(_accessTokenManagementOptions.User.Scheme);
+            var (options, configuration) = await GetOpenIdConnectSettingsAsync(parameters?.SchemeName ?? _accessTokenManagementOptions.User.Scheme);
 
             var requestDetails = new RefreshTokenRequest
             {
@@ -111,9 +111,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc />
-        public virtual async Task<TokenRevocationRequest> GetTokenRevocationRequestAsync()
+        public virtual async Task<TokenRevocationRequest> GetTokenRevocationRequestAsync(UserAccessTokenParameters parameters = null)
         {
-            var (options, configuration) = await GetOpenIdConnectSettingsAsync(_accessTokenManagementOptions.User.Scheme);
+            var (options, configuration) = await GetOpenIdConnectSettingsAsync(parameters?.SchemeName ?? _accessTokenManagementOptions.User.Scheme);
             
             var requestDetails = new TokenRevocationRequest
             {

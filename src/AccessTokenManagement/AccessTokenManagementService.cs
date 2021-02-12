@@ -165,13 +165,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task RevokeRefreshTokenAsync(ClaimsPrincipal user, CancellationToken cancellationToken = default)
+        public async Task RevokeRefreshTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default)
         {
             var userToken = await _userTokenStore.GetTokenAsync(user);
 
             if (!string.IsNullOrEmpty(userToken?.RefreshToken))
             {
-                var response = await _tokenEndpointService.RevokeRefreshTokenAsync(userToken.RefreshToken, cancellationToken);
+                var response = await _tokenEndpointService.RevokeRefreshTokenAsync(userToken.RefreshToken, parameters, cancellationToken);
 
                 if (response.IsError)
                 {
@@ -183,7 +183,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         internal async Task<TokenResponse> RefreshUserAccessTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters, CancellationToken cancellationToken = default)
         {
             var userToken = await _userTokenStore.GetTokenAsync(user);
-            var response = await _tokenEndpointService.RefreshUserAccessTokenAsync(userToken.RefreshToken, parameters.Resource, cancellationToken);
+            var response = await _tokenEndpointService.RefreshUserAccessTokenAsync(userToken.RefreshToken, parameters, cancellationToken);
 
             if (!response.IsError)
             {

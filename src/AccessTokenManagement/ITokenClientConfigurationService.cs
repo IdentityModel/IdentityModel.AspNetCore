@@ -19,12 +19,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// Returns the request details for a refresh token request
         /// </summary>
         /// <returns></returns>
-        Task<RefreshTokenRequest> GetRefreshTokenRequestAsync();
+        Task<RefreshTokenRequest> GetRefreshTokenRequestAsync(UserAccessTokenParameters parameters = null);
 
         /// <summary>
         /// Returns the request details for a token revocation request
         /// </summary>
         /// <returns></returns>
-        Task<TokenRevocationRequest> GetTokenRevocationRequestAsync();
+        Task<TokenRevocationRequest> GetTokenRevocationRequestAsync(UserAccessTokenParameters parameters = null);
     }
 }

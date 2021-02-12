@@ -53,12 +53,12 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="context"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static async Task RevokeUserRefreshTokenAsync(this HttpContext context, CancellationToken cancellationToken = default)
+        public static async Task RevokeUserRefreshTokenAsync(this HttpContext context, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default)
         {
             var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
             var store = context.RequestServices.GetRequiredService<IUserTokenStore>();
 
-            await service.RevokeRefreshTokenAsync(context.User, cancellationToken);
+            await service.RevokeRefreshTokenAsync(context.User, parameters, cancellationToken);
             await store.ClearTokenAsync(context.User);
         }
     }

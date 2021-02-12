@@ -40,21 +40,21 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken, string resource = null, CancellationToken cancellationToken = default)
+        public async Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default)
         {
             var requestDetails = await _configService.GetRefreshTokenRequestAsync();
             requestDetails.RefreshToken = refreshToken;
 
-            if (!string.IsNullOrEmpty(resource))
+            if (!string.IsNullOrEmpty(parameters?.Resource))
             {
-                requestDetails.Resource.Add(resource);
+                requestDetails.Resource.Add(parameters.Resource);
             }
 
             return await _httpClient.RequestRefreshTokenAsync(requestDetails, cancellationToken: cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<TokenRevocationResponse> RevokeRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default)
+        public async Task<TokenRevocationResponse> RevokeRefreshTokenAsync(string refreshToken, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default)
         {
             var requestDetails = await _configService.GetTokenRevocationRequestAsync();
             requestDetails.Token = refreshToken;
