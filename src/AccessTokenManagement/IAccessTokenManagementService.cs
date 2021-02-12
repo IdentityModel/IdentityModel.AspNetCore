@@ -16,7 +16,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// Returns the user access token. If the current token is expired, it will try to refresh it.
         /// </summary>
         /// <returns>An access token or null if refreshing did not work.</returns>
-        Task<string> GetUserAccessTokenAsync(ClaimsPrincipal user, string resource = null, bool forceRenewal = false, CancellationToken cancellationToken = default);
+        Task<string> GetUserAccessTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Revokes the current refresh token

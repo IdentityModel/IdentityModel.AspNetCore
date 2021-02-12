@@ -55,7 +55,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <returns></returns>
         protected virtual async Task SetTokenAsync(HttpRequestMessage request, bool forceRenewal)
         {
-            var token = await _httpContextAccessor.HttpContext.GetUserAccessTokenAsync(resource: _resource, forceRenewal: forceRenewal);
+            var parameters = new UserAccessTokenParameters
+            {
+                Resource = _resource,
+                ForceRenewal = forceRenewal
+            };
+              
+            var token = await _httpContextAccessor.HttpContext.GetUserAccessTokenAsync(parameters);
 
             if (!string.IsNullOrWhiteSpace(token))
             {

@@ -103,15 +103,17 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetUserAccessTokenAsync(ClaimsPrincipal user, string resource = null, bool forceRenewal = false, CancellationToken cancellationToken = default)
+        public async Task<string> GetUserAccessTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default)
         {
+            parameters ??= new UserAccessTokenParameters();
+            
             if (user == null || !user.Identity.IsAuthenticated)
             {
                 return null;
             }
 
             var userName = user.FindFirst(JwtClaimTypes.Name)?.Value ?? user.FindFirst(JwtClaimTypes.Subject)?.Value ?? "unknown";
-            var userToken = await _userTokenStore.GetTokenAsync(user, resource);
+            var userToken = await _userTokenStore.GetTokenAsync(user, parameters);
 
             if (userToken == null)
             {
@@ -121,7 +123,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             
             if (userToken.AccessToken.IsPresent() && userToken.RefreshToken.IsMissing())
             {
-                _logger.LogDebug("No refresh token found in user token store for user {user} / resource {resource}. Returning current access token.", userName, resource ?? "default");
+                _logger.LogDebug("No refresh token found in user token store for user {user} / resource {resource}. Returning current access token.", userName, parameters.Resource ?? "default");
                 return userToken.AccessToken;
             }
 
@@ -129,7 +131,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             {
                 _logger.LogDebug(
                     "No access token found in user token store for user {user} / resource {resource}. Trying to refresh.",
-                    userName, resource ?? "default");
+                    userName, parameters.Resource ?? "default");
             }
 
             DateTimeOffset dtRefresh = DateTimeOffset.MinValue;
@@ -138,7 +140,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 dtRefresh = userToken.Expiration.Value.Subtract(_options.User.RefreshBeforeExpiration);
             }
             
-            if (dtRefresh < _clock.UtcNow || forceRenewal == true)
+            if (dtRefresh < _clock.UtcNow || parameters.ForceRenewal == true)
             {
                 _logger.LogDebug("Token for user {user} needs refreshing.", userName);
 
@@ -148,7 +150,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                     {
                         return new Lazy<Task<string>>(async () =>
                         {
-                            var refreshed = await RefreshUserAccessTokenAsync(user, resource, cancellationToken);
+                            var refreshed = await RefreshUserAccessTokenAsync(user, parameters, cancellationToken);
                             return refreshed.AccessToken;
                         });
                     }).Value;
@@ -178,16 +180,16 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
         }
 
-        internal async Task<TokenResponse> RefreshUserAccessTokenAsync(ClaimsPrincipal user, string resource = null, CancellationToken cancellationToken = default)
+        internal async Task<TokenResponse> RefreshUserAccessTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters, CancellationToken cancellationToken = default)
         {
             var userToken = await _userTokenStore.GetTokenAsync(user);
-            var response = await _tokenEndpointService.RefreshUserAccessTokenAsync(userToken.RefreshToken, resource, cancellationToken);
+            var response = await _tokenEndpointService.RefreshUserAccessTokenAsync(userToken.RefreshToken, parameters.Resource, cancellationToken);
 
             if (!response.IsError)
             {
                 var expiration = DateTime.UtcNow + TimeSpan.FromSeconds(response.ExpiresIn);
 
-                await _userTokenStore.StoreTokenAsync(user, response.AccessToken, expiration, response.RefreshToken, resource);
+                await _userTokenStore.StoreTokenAsync(user, response.AccessToken, expiration, response.RefreshToken, parameters);
             }
             else
             {
