@@ -21,7 +21,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services"></param>
         /// <param name="options"></param>
         /// <returns></returns>
-        public static TokenManagementBuilder AddAccessTokenManagement(this IServiceCollection services, Action<AccessTokenManagementOptions> options = null)
+        public static TokenManagementBuilder AddAccessTokenManagement(this IServiceCollection services,
+            Action<AccessTokenManagementOptions> options = null)
         {
             if (options != null)
             {
@@ -55,16 +56,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="resource">The name of resource (optional)</param>
         /// <param name="configureClient">Additional configuration.</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddUserAccessTokenClient(this IServiceCollection services, string name, string resource = null, Action<HttpClient> configureClient = null)
+        public static IHttpClientBuilder AddUserAccessTokenClient(this IServiceCollection services, string name,
+            UserAccessTokenParameters parameters = null, Action<HttpClient> configureClient = null)
         {
             if (configureClient != null)
             {
                 return services.AddHttpClient(name, configureClient)
-                    .AddUserAccessTokenHandler(resource);
+                    .AddUserAccessTokenHandler(parameters);
             }
 
             return services.AddHttpClient(name)
-                .AddUserAccessTokenHandler(resource);
+                .AddUserAccessTokenHandler(parameters);
         }
 
         /// <summary>
@@ -75,7 +77,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="tokenClientName">The name of the token client.</param>
         /// <param name="configureClient">Additional configuration.</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddClientAccessTokenClient(this IServiceCollection services, string clientName, string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName, Action<HttpClient> configureClient = null)
+        public static IHttpClientBuilder AddClientAccessTokenClient(this IServiceCollection services, string clientName,
+            string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName,
+            Action<HttpClient> configureClient = null)
         {
             if (configureClient != null)
             {
@@ -93,7 +97,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="httpClientBuilder"></param>
         /// <param name="tokenClientName"></param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddClientAccessTokenHandler(this IHttpClientBuilder httpClientBuilder, string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName)
+        public static IHttpClientBuilder AddClientAccessTokenHandler(this IHttpClientBuilder httpClientBuilder,
+            string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName)
         {
             return httpClientBuilder.AddHttpMessageHandler(provider =>
             {
@@ -107,23 +112,17 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds the user access token handler to an HttpClient
         /// </summary>
         /// <param name="httpClientBuilder"></param>
-        /// <param name="resource">Specify the resource for this handler (optional)</param>
+        /// <param name="parameters"></param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddUserAccessTokenHandler(this IHttpClientBuilder httpClientBuilder, string resource = null)
+        public static IHttpClientBuilder AddUserAccessTokenHandler(this IHttpClientBuilder httpClientBuilder,
+            UserAccessTokenParameters parameters = null)
         {
-            if (resource == null)
+            return httpClientBuilder.AddHttpMessageHandler(provider =>
             {
-                return httpClientBuilder.AddHttpMessageHandler<UserAccessTokenHandler>();
-            }
-            else
-            {
-                return httpClientBuilder.AddHttpMessageHandler(provider =>
-                {
-                    var contextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
+                var contextAccessor = provider.GetRequiredService<IHttpContextAccessor>();
 
-                    return new UserAccessTokenHandler(contextAccessor, resource);
-                });
-            }
+                return new UserAccessTokenHandler(contextAccessor, parameters);
+            });
         }
     }
 }
