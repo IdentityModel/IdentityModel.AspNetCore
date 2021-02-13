@@ -23,7 +23,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <returns></returns>
         public static async Task<string> GetUserAccessTokenAsync(this HttpContext httpContext, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default)
         {
-            var service = httpContext.RequestServices.GetRequiredService<IAccessTokenManagementService>();
+            var service = httpContext.RequestServices.GetRequiredService<IUserTokenManagementService>();
 
             return await service.GetUserAccessTokenAsync(httpContext.User, parameters, cancellationToken);
         }
@@ -42,7 +42,7 @@ namespace Microsoft.AspNetCore.Authentication
             ClientAccessTokenParameters parameters = null,
             CancellationToken cancellationToken = default)
         {
-            var service = httpContext.RequestServices.GetRequiredService<IAccessTokenManagementService>();
+            var service = httpContext.RequestServices.GetRequiredService<IClientTokenManagementService>();
 
             return await service.GetClientAccessTokenAsync(clientName, parameters, cancellationToken);
         }
@@ -59,7 +59,7 @@ namespace Microsoft.AspNetCore.Authentication
             UserAccessTokenParameters parameters = null, 
             CancellationToken cancellationToken = default)
         {
-            var service = httpContext.RequestServices.GetRequiredService<IAccessTokenManagementService>();
+            var service = httpContext.RequestServices.GetRequiredService<IUserTokenManagementService>();
             var store = httpContext.RequestServices.GetRequiredService<IUserTokenStore>();
 
             await service.RevokeRefreshTokenAsync(httpContext.User, parameters, cancellationToken);

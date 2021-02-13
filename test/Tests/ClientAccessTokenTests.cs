@@ -27,7 +27,7 @@ namespace Tests
 
             var service = Setup.Collection(options, handler)
                 .BuildServiceProvider()
-                .GetRequiredService<IAccessTokenManagementService>();
+                .GetRequiredService<IClientTokenManagementService>();
 
             var result = await service.GetClientAccessTokenAsync();
 
@@ -56,7 +56,7 @@ namespace Tests
 
             var service = Setup.Collection(options, handler)
                 .BuildServiceProvider()
-                .GetRequiredService<IAccessTokenManagementService>();
+                .GetRequiredService<IClientTokenManagementService>();
 
             
             Func<Task> act = async () => { var result = await service.GetClientAccessTokenAsync(); };
@@ -86,7 +86,7 @@ namespace Tests
 
             var service = Setup.Collection(options, handler)
                 .BuildServiceProvider()
-                .GetRequiredService<IAccessTokenManagementService>();
+                .GetRequiredService<IClientTokenManagementService>();
 
 
             var result = await service.GetClientAccessTokenAsync("test1");
@@ -116,7 +116,7 @@ namespace Tests
 
             var service = Setup.Collection(options, handler)
                 .BuildServiceProvider()
-                .GetRequiredService<IAccessTokenManagementService>();
+                .GetRequiredService<IClientTokenManagementService>();
 
             var result = await service.GetClientAccessTokenAsync();
             var requestContent = await handler.Content.ReadAsStringAsync();

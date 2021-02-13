@@ -1,32 +1,16 @@
 // Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
-using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
     /// <summary>
-    /// Abstraction for managing user and client access tokens
+    /// Abstraction for managing client access tokens
     /// </summary>
-    public interface IAccessTokenManagementService
+    public interface IClientTokenManagementService
     {
-        /// <summary>
-        /// Returns the user access token. If the current token is expired, it will try to refresh it.
-        /// </summary>
-        /// <param name="user"></param>
-        /// <param name="parameters"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        Task<string> GetUserAccessTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default);
-
-        /// <summary>
-        /// Revokes the current refresh token
-        /// </summary>
-        /// <returns></returns>
-        Task RevokeRefreshTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default);
-
         /// <summary>
         /// Returns either a cached or a new access token for a given client configuration or the default client
         /// </summary>

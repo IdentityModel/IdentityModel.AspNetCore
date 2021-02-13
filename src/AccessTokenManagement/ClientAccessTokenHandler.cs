@@ -13,7 +13,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// </summary>
     public class ClientAccessTokenHandler : DelegatingHandler
     {
-        private readonly IAccessTokenManagementService _accessTokenManagementService;
+        private readonly IClientTokenManagementService _accessTokenManagementService;
         private readonly string _tokenClientName;
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// </summary>
         /// <param name="accessTokenManagementService">The Access Token Management Service</param>
         /// <param name="tokenClientName">The name of the token client configuration</param>
-        public ClientAccessTokenHandler(IAccessTokenManagementService accessTokenManagementService, string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName)
+        public ClientAccessTokenHandler(IClientTokenManagementService accessTokenManagementService, string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName)
         {
             _accessTokenManagementService = accessTokenManagementService;
             _tokenClientName = tokenClientName;
