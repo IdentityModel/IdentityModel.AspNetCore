@@ -17,32 +17,32 @@ namespace Microsoft.AspNetCore.Authentication
         /// <summary>
         /// Returns (and refreshes if needed) the current access token for the logged on user
         /// </summary>
-        /// <param name="context">The HTTP context</param>
+        /// <param name="httpContext">The HTTP context</param>
         /// <param name="parameters">Extra optional parameters</param>
         /// <param name="cancellationToken">A cancellation token to cancel operation.</param>
         /// <returns></returns>
-        public static async Task<string> GetUserAccessTokenAsync(this HttpContext context, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default)
+        public static async Task<string> GetUserAccessTokenAsync(this HttpContext httpContext, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default)
         {
-            var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
+            var service = httpContext.RequestServices.GetRequiredService<IAccessTokenManagementService>();
 
-            return await service.GetUserAccessTokenAsync(context.User, parameters, cancellationToken);
+            return await service.GetUserAccessTokenAsync(httpContext.User, parameters, cancellationToken);
         }
 
         /// <summary>
         /// Returns an access token for the standard client or a named client
         /// </summary>
-        /// <param name="context"></param>
+        /// <param name="httpContext">The HTTP context</param>
         /// <param name="clientName">Name of the client configuration (or null to use the standard client).</param>
         /// <param name="forceRenewal">If set to true, the cached access token is ignored, and a new one gets requested. Default to false.</param>
         /// <param name="cancellationToken">A cancellation token to cancel operation.</param>
         /// <returns></returns>
         public static async Task<string> GetClientAccessTokenAsync(
-            this HttpContext context, 
+            this HttpContext httpContext, 
             string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, 
             bool forceRenewal = false,
             CancellationToken cancellationToken = default)
         {
-            var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
+            var service = httpContext.RequestServices.GetRequiredService<IAccessTokenManagementService>();
 
             return await service.GetClientAccessTokenAsync(clientName, forceRenewal, cancellationToken);
         }
@@ -50,16 +50,20 @@ namespace Microsoft.AspNetCore.Authentication
         /// <summary>
         /// Revokes the current user refresh token
         /// </summary>
-        /// <param name="context"></param>
-        /// <param name="cancellationToken"></param>
+        /// <param name="httpContext">The HTTP context</param>
+        /// <param name="parameters">Extra optional parameters</param>
+        /// <param name="cancellationToken">A cancellation token to cancel operation.</param>
         /// <returns></returns>
-        public static async Task RevokeUserRefreshTokenAsync(this HttpContext context, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default)
+        public static async Task RevokeUserRefreshTokenAsync(
+            this HttpContext httpContext, 
+            UserAccessTokenParameters parameters = null, 
+            CancellationToken cancellationToken = default)
         {
-            var service = context.RequestServices.GetRequiredService<IAccessTokenManagementService>();
-            var store = context.RequestServices.GetRequiredService<IUserTokenStore>();
+            var service = httpContext.RequestServices.GetRequiredService<IAccessTokenManagementService>();
+            var store = httpContext.RequestServices.GetRequiredService<IUserTokenStore>();
 
-            await service.RevokeRefreshTokenAsync(context.User, parameters, cancellationToken);
-            await store.ClearTokenAsync(context.User);
+            await service.RevokeRefreshTokenAsync(httpContext.User, parameters, cancellationToken);
+            await store.ClearTokenAsync(httpContext.User);
         }
     }
 }
