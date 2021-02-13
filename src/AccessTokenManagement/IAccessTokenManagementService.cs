@@ -15,7 +15,10 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// Returns the user access token. If the current token is expired, it will try to refresh it.
         /// </summary>
-        /// <returns>An access token or null if refreshing did not work.</returns>
+        /// <param name="user"></param>
+        /// <param name="parameters"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         Task<string> GetUserAccessTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -28,17 +31,18 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// Returns either a cached or a new access token for a given client configuration or the default client
         /// </summary>
         /// <param name="clientName">Name of the client configuration, or default is omitted.</param>
-        /// <param name="forceRenewal">Ignores the cached token, and gets a new one.</param>
+        /// <param name="parameters"></param>
         /// <param name="cancellationToken">A cancellation token to cancel the operation</param>
         /// <returns>The access token or null if the no token can be requested.</returns>
-        Task<string> GetClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, bool forceRenewal = false, CancellationToken cancellationToken = default);
+        Task<string> GetClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, ClientAccessTokenParameters parameters = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Deletes a client access token from the cache
         /// </summary>
         /// <param name="clientName">Name of the client configuration, or default is omitted.</param>
+        /// <param name="parameters"></param>
         /// <param name="cancellationToken">A cancellation token to cancel operation.</param>
         /// <returns>The access token or null if the no token can be requested.</returns>
-        Task DeleteClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, CancellationToken cancellationToken = default);
+        Task DeleteClientAccessTokenAsync(string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, ClientAccessTokenParameters parameters = null, CancellationToken cancellationToken = default);
     }
 }

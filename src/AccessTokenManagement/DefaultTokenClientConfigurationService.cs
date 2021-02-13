@@ -35,7 +35,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
         
         /// <inheritdoc />
-        public virtual async Task<ClientCredentialsTokenRequest> GetClientCredentialsRequestAsync(string clientName)
+        public virtual async Task<ClientCredentialsTokenRequest> GetClientCredentialsRequestAsync(string clientName, ClientAccessTokenParameters parameters)
         {
             ClientCredentialsTokenRequest requestDetails;
             

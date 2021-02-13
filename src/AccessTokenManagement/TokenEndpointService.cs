@@ -32,17 +32,21 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc/>
         public async Task<TokenResponse> RequestClientAccessToken(
             string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, 
+            ClientAccessTokenParameters parameters = null,
             CancellationToken cancellationToken = default)
         {
-            var requestDetails = await _configService.GetClientCredentialsRequestAsync(clientName);
+            var requestDetails = await _configService.GetClientCredentialsRequestAsync(clientName, parameters);
 
-            return await _httpClient.RequestClientCredentialsTokenAsync(requestDetails, cancellationToken: cancellationToken);
+            return await _httpClient.RequestClientCredentialsTokenAsync(requestDetails, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default)
+        public async Task<TokenResponse> RefreshUserAccessTokenAsync(
+            string refreshToken, 
+            UserAccessTokenParameters parameters = null, 
+            CancellationToken cancellationToken = default)
         {
-            var requestDetails = await _configService.GetRefreshTokenRequestAsync();
+            var requestDetails = await _configService.GetRefreshTokenRequestAsync(parameters);
             requestDetails.RefreshToken = refreshToken;
 
             if (!string.IsNullOrEmpty(parameters?.Resource))
@@ -50,17 +54,20 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 requestDetails.Resource.Add(parameters.Resource);
             }
 
-            return await _httpClient.RequestRefreshTokenAsync(requestDetails, cancellationToken: cancellationToken);
+            return await _httpClient.RequestRefreshTokenAsync(requestDetails, cancellationToken);
         }
 
         /// <inheritdoc/>
-        public async Task<TokenRevocationResponse> RevokeRefreshTokenAsync(string refreshToken, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default)
+        public async Task<TokenRevocationResponse> RevokeRefreshTokenAsync(
+            string refreshToken, 
+            UserAccessTokenParameters parameters = null, 
+            CancellationToken cancellationToken = default)
         {
-            var requestDetails = await _configService.GetTokenRevocationRequestAsync();
+            var requestDetails = await _configService.GetTokenRevocationRequestAsync(parameters);
             requestDetails.Token = refreshToken;
             requestDetails.TokenTypeHint = OidcConstants.TokenTypes.RefreshToken;
 
-            return await _httpClient.RevokeTokenAsync(requestDetails, cancellationToken: cancellationToken);
+            return await _httpClient.RevokeTokenAsync(requestDetails, cancellationToken);
         }
     }
 }

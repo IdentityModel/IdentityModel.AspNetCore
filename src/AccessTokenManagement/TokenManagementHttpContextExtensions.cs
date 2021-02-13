@@ -33,18 +33,18 @@ namespace Microsoft.AspNetCore.Authentication
         /// </summary>
         /// <param name="httpContext">The HTTP context</param>
         /// <param name="clientName">Name of the client configuration (or null to use the standard client).</param>
-        /// <param name="forceRenewal">If set to true, the cached access token is ignored, and a new one gets requested. Default to false.</param>
+        /// <param name="parameters"></param>
         /// <param name="cancellationToken">A cancellation token to cancel operation.</param>
         /// <returns></returns>
         public static async Task<string> GetClientAccessTokenAsync(
             this HttpContext httpContext, 
             string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, 
-            bool forceRenewal = false,
+            ClientAccessTokenParameters parameters = null,
             CancellationToken cancellationToken = default)
         {
             var service = httpContext.RequestServices.GetRequiredService<IAccessTokenManagementService>();
 
-            return await service.GetClientAccessTokenAsync(clientName, forceRenewal, cancellationToken);
+            return await service.GetClientAccessTokenAsync(clientName, parameters, cancellationToken);
         }
 
         /// <summary>
