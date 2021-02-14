@@ -16,25 +16,27 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// Refreshes a user access token.
         /// </summary>
         /// <param name="refreshToken"></param>
-        /// <param name="resource"></param>
+        /// <param name="parameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken, string resource = null, CancellationToken cancellationToken = default);
+        Task<TokenResponse> RefreshUserAccessTokenAsync(string refreshToken, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Requests a client access token.
         /// </summary>
         /// <param name="clientName"></param>
+        /// <param name="parameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<TokenResponse> RequestClientAccessToken(string clientName = null, CancellationToken cancellationToken = default);
+        Task<TokenResponse> RequestClientAccessToken(string clientName = null, ClientAccessTokenParameters parameters = null, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Revokes a refresh token.
         /// </summary>
         /// <param name="refreshToken"></param>
+        /// <param name="parameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<TokenRevocationResponse> RevokeRefreshTokenAsync(string refreshToken, CancellationToken cancellationToken = default);
+        Task<TokenRevocationResponse> RevokeRefreshTokenAsync(string refreshToken, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default);
     }
 }

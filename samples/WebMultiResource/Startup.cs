@@ -6,6 +6,7 @@ using Polly;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Threading.Tasks;
+using IdentityModel.AspNetCore.AccessTokenManagement;
 
 namespace MvcCode
 {
@@ -96,7 +97,7 @@ namespace MvcCode
             });
             
             // registers HTTP client that uses the managed user access token for a specific resource
-            services.AddUserAccessTokenClient("user_client_resource3", "urn:resource3", configureClient: client =>
+            services.AddUserAccessTokenClient("user_client_resource3", new UserAccessTokenParameters { Resource = "urn:resource3" }, configureClient: client =>
             {
                 client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
             });

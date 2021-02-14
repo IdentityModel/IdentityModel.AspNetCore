@@ -7,14 +7,11 @@ namespace Tests.Infrastructure
 {
     static class Setup
     {
-        public static IServiceCollection Collection(Action<AccessTokenManagementOptions> options = null, HttpMessageHandler networkHandler = null)
+        public static IServiceCollection ClientCollection(Action<AccessTokenManagementOptions> options = null, HttpMessageHandler networkHandler = null)
         {
             var services = new ServiceCollection();
-
-            services.AddAuthentication();
-            services.AddDistributedMemoryCache();
             
-            var builder = services.AddAccessTokenManagement(options);
+            var builder = services.AddClientAccessTokenManagement(options);
 
             if (networkHandler != null)
             {
@@ -25,9 +22,9 @@ namespace Tests.Infrastructure
             return services;
         }
 
-        public static ServiceProvider Container(Action<AccessTokenManagementOptions> options = null)
+        public static ServiceProvider ClientContainer(Action<AccessTokenManagementOptions> options = null)
         {
-            return Collection(options).BuildServiceProvider();
+            return ClientCollection(options).BuildServiceProvider();
         }
     }
 }

@@ -28,15 +28,21 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         public AuthenticationSessionUserTokenStore(
             IHttpContextAccessor contextAccessor)
         {
-            _contextAccessor = contextAccessor;
+            _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
         }
 
         /// <inheritdoc/>
-        public async Task<UserAccessToken> GetTokenAsync(ClaimsPrincipal user, string resource)
+        public async Task<UserAccessToken> GetTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters = null)
         {
-            var result = await _contextAccessor.HttpContext.AuthenticateAsync();
+            parameters ??= new UserAccessTokenParameters();
+            var result = await _contextAccessor.HttpContext.AuthenticateAsync(parameters.SchemeName);
 
             if (!result.Succeeded)
+            {
+                return null;
+            }
+
+            if (result.Properties == null)
             {
                 return null;
             }
@@ -49,15 +55,15 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
 
             string tokenName = $"{TokenPrefix}{OpenIdConnectParameterNames.AccessToken}";
-            if (!string.IsNullOrEmpty(resource))
+            if (!string.IsNullOrEmpty(parameters.Resource))
             {
-                tokenName += $"::{resource}";
+                tokenName += $"::{parameters.Resource}";
             }
 
             string expiresName = $"{TokenPrefix}expires_at";
-            if (!string.IsNullOrEmpty(resource))
+            if (!string.IsNullOrEmpty(parameters.Resource))
             {
-                expiresName += $"::{resource}";
+                expiresName += $"::{parameters.Resource}";
             }
 
             var accessToken = tokens.SingleOrDefault(t => t.Key == tokenName);
@@ -80,9 +86,10 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
         /// <inheritdoc/>
         public async Task StoreTokenAsync(ClaimsPrincipal user, string accessToken, DateTimeOffset expiration,
-            string refreshToken = null, string resource = null)
+            string refreshToken = null, UserAccessTokenParameters parameters = null)
         {
-            var result = await _contextAccessor.HttpContext.AuthenticateAsync();
+            parameters ??= new UserAccessTokenParameters();
+            var result = await _contextAccessor.HttpContext.AuthenticateAsync(parameters.SchemeName);
 
             if (!result.Succeeded)
             {
@@ -90,18 +97,17 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
 
             string tokenName = OpenIdConnectParameterNames.AccessToken;
-            if (!string.IsNullOrEmpty(resource))
+            if (!string.IsNullOrEmpty(parameters.Resource))
             {
-                tokenName += $"::{resource}";
+                tokenName += $"::{parameters.Resource}";
             }
 
             string expiresName = "expires_at";
-            if (!string.IsNullOrEmpty(resource))
+            if (!string.IsNullOrEmpty(parameters.Resource))
             {
-                expiresName += $"::{resource}";
+                expiresName += $"::{parameters.Resource}";
             }
-
-
+            
             result.Properties.Items[$".Token.{tokenName}"] = accessToken;
             result.Properties.Items[$".Token.{expiresName}"] = expiration.ToString("o", CultureInfo.InvariantCulture);
 
@@ -110,7 +116,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 result.Properties.UpdateTokenValue(OpenIdConnectParameterNames.RefreshToken, refreshToken);
             }
 
-            await _contextAccessor.HttpContext.SignInAsync(result.Principal, result.Properties);
+            await _contextAccessor.HttpContext.SignInAsync(parameters.SchemeName, result.Principal, result.Properties);
         }
 
         /// <inheritdoc/>
