@@ -41,9 +41,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             var requestDetails = await _configService.GetClientCredentialsRequestAsync(clientName, parameters);
             
 #if NET5_0
-            requestDetails.Options.TryAdd(AccessTokenManagementOptions.AccessTokenParametersOptionsName, parameters);
+            requestDetails.Options.TryAdd(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
 #elif NETCOREAPP3_1
-            requestDetails.Properties.Add(AccessTokenManagementOptions.AccessTokenParametersOptionsName, parameters);
+            requestDetails.Properties.Add(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
 #endif
             
             if (!string.IsNullOrWhiteSpace(parameters.Resource))
@@ -66,9 +66,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             requestDetails.RefreshToken = refreshToken;
             
 #if NET5_0
-            requestDetails.Options.TryAdd(AccessTokenManagementOptions.AccessTokenParametersOptionsName, parameters);
+            requestDetails.Options.TryAdd(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
 #elif NETCOREAPP3_1
-            requestDetails.Properties.Add(AccessTokenManagementOptions.AccessTokenParametersOptionsName, parameters);
+            requestDetails.Properties.Add(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
 #endif
 
             if (!string.IsNullOrEmpty(parameters.Resource))
@@ -92,9 +92,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             requestDetails.TokenTypeHint = OidcConstants.TokenTypes.RefreshToken;
             
 #if NET5_0
-            requestDetails.Options.TryAdd(AccessTokenManagementOptions.AccessTokenParametersOptionsName, parameters);
+            requestDetails.Options.TryAdd(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
 #elif NETCOREAPP3_1
-            requestDetails.Properties.Add(AccessTokenManagementOptions.AccessTokenParametersOptionsName, parameters);
+            requestDetails.Properties.Add(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
 #endif
 
             return await _httpClient.RevokeTokenAsync(requestDetails, cancellationToken);

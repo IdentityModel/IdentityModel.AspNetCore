@@ -26,7 +26,7 @@ namespace Tests
                 });
             }
 
-            var service = Setup.Collection(options, handler)
+            var service = Setup.ClientCollection(options, handler)
                 .BuildServiceProvider()
                 .GetRequiredService<IClientTokenManagementService>();
 
@@ -55,7 +55,7 @@ namespace Tests
                 });
             }
 
-            var service = Setup.Collection(options, handler)
+            var service = Setup.ClientCollection(options, handler)
                 .BuildServiceProvider()
                 .GetRequiredService<IClientTokenManagementService>();
 
@@ -85,7 +85,7 @@ namespace Tests
                 });
             }
 
-            var service = Setup.Collection(options, handler)
+            var service = Setup.ClientCollection(options, handler)
                 .BuildServiceProvider()
                 .GetRequiredService<IClientTokenManagementService>();
 
@@ -116,7 +116,7 @@ namespace Tests
                 });
             }
 
-            var service = Setup.Collection(options, handler)
+            var service = Setup.ClientCollection(options, handler)
                 .BuildServiceProvider()
                 .GetRequiredService<IClientTokenManagementService>();
 
@@ -140,7 +140,7 @@ namespace Tests
                 });
             }
 
-            var service = Setup.Collection(options, handler)
+            var service = Setup.ClientCollection(options, handler)
                 .BuildServiceProvider()
                 .GetRequiredService<IClientTokenManagementService>();
             
@@ -159,13 +159,11 @@ namespace Tests
 
             var properties = handler.Properties;
             parameters =
-                properties[AccessTokenManagementOptions.AccessTokenParametersOptionsName] as
+                properties[AccessTokenManagementDefaults.AccessTokenParametersOptionsName] as
                     ClientAccessTokenParameters;
 
             parameters.Should().NotBeNull();
             parameters.Context["context_item"].First().Should().Be("context_value");
-
-
         }
     }
 }

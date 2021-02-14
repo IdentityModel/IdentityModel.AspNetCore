@@ -13,7 +13,7 @@ namespace Tests
         [Fact]
         public async Task Using_default_configuration_with_no_scheme_or_explicit_client_config_should_fail()
         {
-            var service = Setup.Collection()
+            var service = Setup.ClientCollection()
                 .AddTransient(p => p.GetRequiredService<ITokenClientConfigurationService>() as DefaultTokenClientConfigurationService)
                 .BuildServiceProvider()
                 .GetRequiredService<DefaultTokenClientConfigurationService>();
@@ -26,7 +26,7 @@ namespace Tests
         [Fact]
         public async Task Using_default_configuration_with_wrong_scheme_or_explicit_client_config_should_fail()
         {
-            var service = Setup.Collection()
+            var service = Setup.ClientCollection()
                 .AddTransient(p => p.GetRequiredService<ITokenClientConfigurationService>() as DefaultTokenClientConfigurationService)
                 .BuildServiceProvider()
                 .GetRequiredService<DefaultTokenClientConfigurationService>();

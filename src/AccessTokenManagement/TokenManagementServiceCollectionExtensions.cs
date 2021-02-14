@@ -4,6 +4,7 @@
 using IdentityModel.AspNetCore.AccessTokenManagement;
 using System;
 using System.Net.Http;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Logging;
@@ -28,28 +29,73 @@ namespace Microsoft.Extensions.DependencyInjection
             {
                 services.Configure(options);
             }
-
-            services.AddHttpContextAccessor();
-            services.AddAuthentication();
-            services.AddDistributedMemoryCache();
-
-            services.TryAddTransient<IUserTokenManagementService, UserTokenManagementService>();
-            services.TryAddTransient<IClientTokenManagementService, ClientTokenManagementService>();
             
-            services.TryAddTransient<ITokenClientConfigurationService, DefaultTokenClientConfigurationService>();
-            services.TryAddTransient<ITokenEndpointService, TokenEndpointService>();
-
-            services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
-
-            services.AddTransient<UserAccessTokenHandler>();
-            services.AddTransient<ClientAccessTokenHandler>();
-
-            services.TryAddTransient<IUserTokenStore, AuthenticationSessionUserTokenStore>();
-            services.TryAddTransient<IClientAccessTokenCache, ClientAccessTokenCache>();
-
+            services.AddUserAccessTokenManagement();
+            services.AddClientAccessTokenManagement();
+            
             return new TokenManagementBuilder(services);
         }
 
+        
+        /// <summary>
+        /// Adds the services required for client access token management
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static TokenManagementBuilder AddClientAccessTokenManagement(this IServiceCollection services,
+            Action<AccessTokenManagementOptions> options = null)
+        {
+            if (options != null)
+            {
+                services.Configure(options);
+            }
+
+            services.AddDistributedMemoryCache();
+            services.TryAddSingleton<ISystemClock, SystemClock>();
+            services.TryAddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
+            
+            services.TryAddTransient<IClientTokenManagementService, ClientTokenManagementService>();
+            services.TryAddTransient<ClientAccessTokenHandler>();
+            services.TryAddTransient<IClientAccessTokenCache, ClientAccessTokenCache>();
+            
+            services.TryAddTransient<ITokenClientConfigurationService, DefaultTokenClientConfigurationService>();
+            services.TryAddTransient<ITokenEndpointService, TokenEndpointService>();
+            
+            services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
+
+            return new TokenManagementBuilder(services);
+        }
+        
+        /// <summary>
+        /// Adds the services required for user access token management
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="options"></param>
+        /// <returns></returns>
+        public static TokenManagementBuilder AddUserAccessTokenManagement(this IServiceCollection services,
+            Action<AccessTokenManagementOptions> options = null)
+        {
+            if (options != null)
+            {
+                services.Configure(options);
+            }
+
+            services.AddHttpContextAccessor();
+            services.AddAuthentication();
+            
+            services.TryAddTransient<IUserTokenManagementService, UserTokenManagementService>();
+            services.TryAddTransient<UserAccessTokenHandler>();
+            services.TryAddTransient<IUserTokenStore, AuthenticationSessionUserTokenStore>();
+
+            services.TryAddTransient<ITokenClientConfigurationService, DefaultTokenClientConfigurationService>();
+            services.TryAddTransient<ITokenEndpointService, TokenEndpointService>();
+            
+            services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
+
+            return new TokenManagementBuilder(services);
+        }
+        
         /// <summary>
         /// Adds a named HTTP client for the factory that automatically sends the current user access token
         /// </summary>
