@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<ISystemClock, SystemClock>();
             services.TryAddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
             
-            services.TryAddTransient<IClientTokenManagementService, ClientAccessTokenManagementService>();
+            services.TryAddTransient<IClientAccessTokenManagementService, ClientAccessTokenManagementService>();
             services.TryAddTransient<ClientAccessTokenHandler>();
             services.TryAddTransient<IClientAccessTokenCache, ClientAccessTokenCache>();
             
@@ -84,7 +84,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddHttpContextAccessor();
             services.AddAuthentication();
             
-            services.TryAddTransient<IUserTokenManagementService, UserAccessTokenManagementService>();
+            services.TryAddTransient<IUserAccessTokenManagementService, UserAccessAccessTokenManagementService>();
             services.TryAddTransient<UserAccessTokenHandler>();
             services.TryAddTransient<IUserTokenStore, AuthenticationSessionUserTokenStore>();
 
@@ -152,7 +152,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             return httpClientBuilder.AddHttpMessageHandler(provider =>
             {
-                var accessTokenManagementService = provider.GetRequiredService<IClientTokenManagementService>();
+                var accessTokenManagementService = provider.GetRequiredService<IClientAccessTokenManagementService>();
 
                 return new ClientAccessTokenHandler(accessTokenManagementService, tokenClientName);
             });

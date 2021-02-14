@@ -14,7 +14,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// <summary>
     /// Implements basic token management logic
     /// </summary>
-    public class ClientAccessTokenManagementService : IClientTokenManagementService
+    public class ClientAccessTokenManagementService : IClientAccessTokenManagementService
     {
         static readonly ConcurrentDictionary<string, Lazy<Task<string>>> ClientTokenRequestDictionary =
             new ConcurrentDictionary<string, Lazy<Task<string>>>();
