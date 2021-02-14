@@ -13,7 +13,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// <summary>
     /// Implements basic token management logic
     /// </summary>
-    public class UserTokenManagementService : IUserTokenManagementService
+    public class UserAccessTokenManagementService : IUserTokenManagementService
     {
         static readonly ConcurrentDictionary<string, Lazy<Task<string>>> UserRefreshDictionary =
             new ConcurrentDictionary<string, Lazy<Task<string>>>();
@@ -22,7 +22,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         private readonly ISystemClock _clock;
         private readonly AccessTokenManagementOptions _options;
         private readonly ITokenEndpointService _tokenEndpointService;
-        private readonly ILogger<UserTokenManagementService> _logger;
+        private readonly ILogger<UserAccessTokenManagementService> _logger;
 
         /// <summary>
         /// ctor
@@ -32,12 +32,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="options"></param>
         /// <param name="tokenEndpointService"></param>
         /// <param name="logger"></param>
-        public UserTokenManagementService(
+        public UserAccessTokenManagementService(
             IUserTokenStore userTokenStore,
             ISystemClock clock,
             IOptions<AccessTokenManagementOptions> options,
             ITokenEndpointService tokenEndpointService,
-            ILogger<UserTokenManagementService> logger)
+            ILogger<UserAccessTokenManagementService> logger)
         {
             _userTokenStore = userTokenStore;
             _clock = clock;

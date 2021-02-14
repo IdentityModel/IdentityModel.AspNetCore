@@ -14,7 +14,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// <summary>
     /// Implements basic token management logic
     /// </summary>
-    public class ClientTokenManagementService : IClientTokenManagementService
+    public class ClientAccessTokenManagementService : IClientTokenManagementService
     {
         static readonly ConcurrentDictionary<string, Lazy<Task<string>>> ClientTokenRequestDictionary =
             new ConcurrentDictionary<string, Lazy<Task<string>>>();
@@ -23,7 +23,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         private readonly AccessTokenManagementOptions _options;
         private readonly ITokenEndpointService _tokenEndpointService;
         private readonly IClientAccessTokenCache _clientAccessTokenCache;
-        private readonly ILogger<ClientTokenManagementService> _logger;
+        private readonly ILogger<ClientAccessTokenManagementService> _logger;
 
         /// <summary>
         /// ctor
@@ -33,12 +33,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="tokenEndpointService"></param>
         /// <param name="clientAccessTokenCache"></param>
         /// <param name="logger"></param>
-        public ClientTokenManagementService(
+        public ClientAccessTokenManagementService(
             ISystemClock clock,
             IOptions<AccessTokenManagementOptions> options,
             ITokenEndpointService tokenEndpointService,
             IClientAccessTokenCache clientAccessTokenCache,
-            ILogger<ClientTokenManagementService> logger)
+            ILogger<ClientAccessTokenManagementService> logger)
         {
             _clock = clock;
             _options = options.Value;

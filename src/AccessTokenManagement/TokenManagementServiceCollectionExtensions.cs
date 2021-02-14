@@ -55,7 +55,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<ISystemClock, SystemClock>();
             services.TryAddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
             
-            services.TryAddTransient<IClientTokenManagementService, ClientTokenManagementService>();
+            services.TryAddTransient<IClientTokenManagementService, ClientAccessTokenManagementService>();
             services.TryAddTransient<ClientAccessTokenHandler>();
             services.TryAddTransient<IClientAccessTokenCache, ClientAccessTokenCache>();
             
@@ -84,7 +84,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddHttpContextAccessor();
             services.AddAuthentication();
             
-            services.TryAddTransient<IUserTokenManagementService, UserTokenManagementService>();
+            services.TryAddTransient<IUserTokenManagementService, UserAccessTokenManagementService>();
             services.TryAddTransient<UserAccessTokenHandler>();
             services.TryAddTransient<IUserTokenStore, AuthenticationSessionUserTokenStore>();
 
