@@ -20,6 +20,8 @@ namespace WorkerService
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
+            await Task.Delay(2000, stoppingToken);
+            
             while (!stoppingToken.IsCancellationRequested)
             {
                 Console.WriteLine("\n\n");

@@ -6,6 +6,7 @@ using IdentityModel.Client;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
@@ -15,19 +16,24 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     public class TokenEndpointService : ITokenEndpointService
     {
         private readonly ITokenClientConfigurationService _configService;
-        private readonly HttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
+        private readonly ILogger<TokenEndpointService> _logger;
+
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="configService"></param>
         /// <param name="httpClientFactory"></param>
+        /// <param name="logger"></param>
         public TokenEndpointService(
             ITokenClientConfigurationService configService,
-            IHttpClientFactory httpClientFactory)
+            IHttpClientFactory httpClientFactory,
+            ILogger<TokenEndpointService> logger)
         {
             _configService = configService;
-            _httpClient = httpClientFactory.CreateClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
+            _httpClientFactory = httpClientFactory;
+            _logger = logger;
         }
 
         /// <inheritdoc/>
@@ -36,6 +42,8 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             ClientAccessTokenParameters parameters = null,
             CancellationToken cancellationToken = default)
         {
+            _logger.LogDebug("Requesting client access token for client: {client}", clientName);
+            
             parameters ??= new ClientAccessTokenParameters();
             
             var requestDetails = await _configService.GetClientCredentialsRequestAsync(clientName, parameters);
@@ -43,15 +51,16 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 #if NET5_0
             requestDetails.Options.TryAdd(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
 #elif NETCOREAPP3_1
-            requestDetails.Properties.Add(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
+            requestDetails.Properties[AccessTokenManagementDefaults.AccessTokenParametersOptionsName] = parameters;
 #endif
             
             if (!string.IsNullOrWhiteSpace(parameters.Resource))
             {
                 requestDetails.Resource.Add(parameters.Resource);
             }
-            
-            return await _httpClient.RequestClientCredentialsTokenAsync(requestDetails, cancellationToken);
+
+            var httpClient = _httpClientFactory.CreateClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
+            return await httpClient.RequestClientCredentialsTokenAsync(requestDetails, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -60,6 +69,8 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             UserAccessTokenParameters parameters = null, 
             CancellationToken cancellationToken = default)
         {
+            _logger.LogDebug("Refreshing refresh token: {token}", refreshToken);
+            
             parameters ??= new UserAccessTokenParameters();
             
             var requestDetails = await _configService.GetRefreshTokenRequestAsync(parameters);
@@ -68,15 +79,16 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 #if NET5_0
             requestDetails.Options.TryAdd(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
 #elif NETCOREAPP3_1
-            requestDetails.Properties.Add(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
+            requestDetails.Properties[AccessTokenManagementDefaults.AccessTokenParametersOptionsName] = parameters;
 #endif
-
+            
             if (!string.IsNullOrEmpty(parameters.Resource))
             {
                 requestDetails.Resource.Add(parameters.Resource);
             }
 
-            return await _httpClient.RequestRefreshTokenAsync(requestDetails, cancellationToken);
+            var httpClient = _httpClientFactory.CreateClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
+            return await httpClient.RequestRefreshTokenAsync(requestDetails, cancellationToken);
         }
 
         /// <inheritdoc/>
@@ -85,6 +97,8 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             UserAccessTokenParameters parameters = null, 
             CancellationToken cancellationToken = default)
         {
+            _logger.LogDebug("Revoking refresh token: {token}", refreshToken);
+            
             parameters ??= new UserAccessTokenParameters();
             
             var requestDetails = await _configService.GetTokenRevocationRequestAsync(parameters);
@@ -94,10 +108,11 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 #if NET5_0
             requestDetails.Options.TryAdd(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
 #elif NETCOREAPP3_1
-            requestDetails.Properties.Add(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
+            requestDetails.Properties[AccessTokenManagementDefaults.AccessTokenParametersOptionsName] = parameters;
 #endif
 
-            return await _httpClient.RevokeTokenAsync(requestDetails, cancellationToken);
+            var httpClient = _httpClientFactory.CreateClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
+            return await httpClient.RevokeTokenAsync(requestDetails, cancellationToken);
         }
     }
 }

@@ -25,7 +25,7 @@ namespace WorkerService
                 .UseSerilog()
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddAccessTokenManagement(options =>
+                    services.AddClientAccessTokenManagement(options =>
                     {
                         options.Client.Clients.Add("identityserver", new ClientCredentialsTokenRequest
                         {
