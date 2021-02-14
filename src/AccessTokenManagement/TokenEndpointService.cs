@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System.Collections.Generic;
 using IdentityModel.Client;
 using System.Net.Http;
 using System.Threading;
@@ -35,8 +36,21 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             ClientAccessTokenParameters parameters = null,
             CancellationToken cancellationToken = default)
         {
+            parameters ??= new ClientAccessTokenParameters();
+            
             var requestDetails = await _configService.GetClientCredentialsRequestAsync(clientName, parameters);
-
+            
+#if NET5_0
+            requestDetails.Options.TryAdd(AccessTokenManagementOptions.AccessTokenParametersOptionsName, parameters);
+#elif NETCOREAPP3_1
+            requestDetails.Properties.Add(AccessTokenManagementOptions.AccessTokenParametersOptionsName, parameters);
+#endif
+            
+            if (!string.IsNullOrWhiteSpace(parameters.Resource))
+            {
+                requestDetails.Resource.Add(parameters.Resource);
+            }
+            
             return await _httpClient.RequestClientCredentialsTokenAsync(requestDetails, cancellationToken);
         }
 
@@ -46,10 +60,18 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             UserAccessTokenParameters parameters = null, 
             CancellationToken cancellationToken = default)
         {
+            parameters ??= new UserAccessTokenParameters();
+            
             var requestDetails = await _configService.GetRefreshTokenRequestAsync(parameters);
             requestDetails.RefreshToken = refreshToken;
+            
+#if NET5_0
+            requestDetails.Options.TryAdd(AccessTokenManagementOptions.AccessTokenParametersOptionsName, parameters);
+#elif NETCOREAPP3_1
+            requestDetails.Properties.Add(AccessTokenManagementOptions.AccessTokenParametersOptionsName, parameters);
+#endif
 
-            if (!string.IsNullOrEmpty(parameters?.Resource))
+            if (!string.IsNullOrEmpty(parameters.Resource))
             {
                 requestDetails.Resource.Add(parameters.Resource);
             }
@@ -63,9 +85,17 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             UserAccessTokenParameters parameters = null, 
             CancellationToken cancellationToken = default)
         {
+            parameters ??= new UserAccessTokenParameters();
+            
             var requestDetails = await _configService.GetTokenRevocationRequestAsync(parameters);
             requestDetails.Token = refreshToken;
             requestDetails.TokenTypeHint = OidcConstants.TokenTypes.RefreshToken;
+            
+#if NET5_0
+            requestDetails.Options.TryAdd(AccessTokenManagementOptions.AccessTokenParametersOptionsName, parameters);
+#elif NETCOREAPP3_1
+            requestDetails.Properties.Add(AccessTokenManagementOptions.AccessTokenParametersOptionsName, parameters);
+#endif
 
             return await _httpClient.RevokeTokenAsync(requestDetails, cancellationToken);
         }

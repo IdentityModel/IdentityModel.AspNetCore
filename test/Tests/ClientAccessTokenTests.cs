@@ -2,6 +2,7 @@ using FluentAssertions;
 using IdentityModel.AspNetCore.AccessTokenManagement;
 using Microsoft.Extensions.DependencyInjection;
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using IdentityModel.Client;
 using Tests.Infrastructure;
@@ -107,6 +108,7 @@ namespace Tests
                 {
                     Address = "https://test",
                     ClientId = "test",
+                    Resource = { "urn:resource" },
                     Parameters = 
                     {
                         { "audience", "test123" }
@@ -121,6 +123,49 @@ namespace Tests
             var result = await service.GetClientAccessTokenAsync();
             var requestContent = await handler.Content.ReadAsStringAsync();
             requestContent.Should().Contain("audience=test123");
+            requestContent.Should().Contain("resource=urn%3Aresource");
+        }
+        
+        [Fact]
+        public async Task ClientAccessTokenParameters_should_propagate()
+        {
+            var handler = new NetworkHandler();
+
+            void options(AccessTokenManagementOptions o)
+            {
+                o.Client.Clients.Add("test", new ClientCredentialsTokenRequest
+                {
+                    Address = "https://test",
+                    ClientId = "test"
+                });
+            }
+
+            var service = Setup.Collection(options, handler)
+                .BuildServiceProvider()
+                .GetRequiredService<IClientTokenManagementService>();
+            
+            var parameters = new ClientAccessTokenParameters
+            {
+                Resource = "urn:resource",
+                Context =
+                {
+                    { "context_item", "context_value" }
+                }
+            };
+            
+            var result = await service.GetClientAccessTokenAsync(parameters: parameters);
+            var requestContent = await handler.Content.ReadAsStringAsync();
+            requestContent.Should().Contain("resource=urn%3Aresource");
+
+            var properties = handler.Properties;
+            parameters =
+                properties[AccessTokenManagementOptions.AccessTokenParametersOptionsName] as
+                    ClientAccessTokenParameters;
+
+            parameters.Should().NotBeNull();
+            parameters.Context["context_item"].First().Should().Be("context_value");
+
+
         }
     }
 }

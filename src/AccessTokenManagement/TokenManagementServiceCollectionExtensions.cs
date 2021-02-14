@@ -55,11 +55,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </summary>
         /// <param name="services"></param>
         /// <param name="name">The name of the client.</param>
-        /// <param name="resource">The name of resource (optional)</param>
+        /// <param name="parameters"></param>
         /// <param name="configureClient">Additional configuration.</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddUserAccessTokenClient(this IServiceCollection services, string name,
-            UserAccessTokenParameters parameters = null, Action<HttpClient> configureClient = null)
+        public static IHttpClientBuilder AddUserAccessTokenClient(this IServiceCollection services, 
+            string name,
+            UserAccessTokenParameters parameters = null, 
+            Action<HttpClient> configureClient = null)
         {
             if (configureClient != null)
             {

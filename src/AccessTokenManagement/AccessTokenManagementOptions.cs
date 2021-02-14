@@ -13,6 +13,11 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     public class AccessTokenManagementOptions
     {
         /// <summary>
+        /// Name used to propagate access token parameters to HttpRequestMessage
+        /// </summary>
+        public const string AccessTokenParametersOptionsName = "IdentityModel.AspNetCore.AccessTokenParameters";
+        
+        /// <summary>
         /// Options for user access tokens
         /// </summary>
         public UserOptions User { get; set; } = new UserOptions();
