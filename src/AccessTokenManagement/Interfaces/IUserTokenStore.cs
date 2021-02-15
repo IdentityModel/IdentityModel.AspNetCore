@@ -35,7 +35,8 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// Clears the stored tokens for a given user
         /// </summary>
         /// <param name="user">User the tokens belong to</param>
+        /// <param name="parameters">Extra optional parameters</param>
         /// <returns></returns>
-        Task ClearTokenAsync(ClaimsPrincipal user);
+        Task ClearTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters = null);
     }
 }

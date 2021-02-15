@@ -28,7 +28,7 @@ namespace Tests
 
             var service = Setup.ClientCollection(options, handler)
                 .BuildServiceProvider()
-                .GetRequiredService<IClientTokenManagementService>();
+                .GetRequiredService<IClientAccessTokenManagementService>();
 
             var result = await service.GetClientAccessTokenAsync();
 
@@ -57,7 +57,7 @@ namespace Tests
 
             var service = Setup.ClientCollection(options, handler)
                 .BuildServiceProvider()
-                .GetRequiredService<IClientTokenManagementService>();
+                .GetRequiredService<IClientAccessTokenManagementService>();
 
             
             Func<Task> act = async () => { var result = await service.GetClientAccessTokenAsync(); };
@@ -87,7 +87,7 @@ namespace Tests
 
             var service = Setup.ClientCollection(options, handler)
                 .BuildServiceProvider()
-                .GetRequiredService<IClientTokenManagementService>();
+                .GetRequiredService<IClientAccessTokenManagementService>();
 
 
             var result = await service.GetClientAccessTokenAsync("test1");
@@ -118,7 +118,7 @@ namespace Tests
 
             var service = Setup.ClientCollection(options, handler)
                 .BuildServiceProvider()
-                .GetRequiredService<IClientTokenManagementService>();
+                .GetRequiredService<IClientAccessTokenManagementService>();
 
             var result = await service.GetClientAccessTokenAsync();
             var requestContent = await handler.Content.ReadAsStringAsync();
@@ -142,7 +142,7 @@ namespace Tests
 
             var service = Setup.ClientCollection(options, handler)
                 .BuildServiceProvider()
-                .GetRequiredService<IClientTokenManagementService>();
+                .GetRequiredService<IClientAccessTokenManagementService>();
             
             var parameters = new ClientAccessTokenParameters
             {
