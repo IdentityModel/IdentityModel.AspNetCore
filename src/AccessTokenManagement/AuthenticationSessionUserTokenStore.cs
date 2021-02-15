@@ -54,13 +54,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                     "No tokens found in cookie properties. SaveTokens must be enabled for automatic token refresh.");
             }
 
-            string tokenName = $"{TokenPrefix}{OpenIdConnectParameterNames.AccessToken}";
+            var tokenName = $"{TokenPrefix}{OpenIdConnectParameterNames.AccessToken}";
             if (!string.IsNullOrEmpty(parameters.Resource))
             {
                 tokenName += $"::{parameters.Resource}";
             }
 
-            string expiresName = $"{TokenPrefix}expires_at";
+            var expiresName = $"{TokenPrefix}expires_at";
             if (!string.IsNullOrEmpty(parameters.Resource))
             {
                 expiresName += $"::{parameters.Resource}";
@@ -96,13 +96,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 throw new Exception("Can't store tokens. User is anonymous");
             }
 
-            string tokenName = OpenIdConnectParameterNames.AccessToken;
+            var tokenName = OpenIdConnectParameterNames.AccessToken;
             if (!string.IsNullOrEmpty(parameters.Resource))
             {
                 tokenName += $"::{parameters.Resource}";
             }
 
-            string expiresName = "expires_at";
+            var expiresName = "expires_at";
             if (!string.IsNullOrEmpty(parameters.Resource))
             {
                 expiresName += $"::{parameters.Resource}";

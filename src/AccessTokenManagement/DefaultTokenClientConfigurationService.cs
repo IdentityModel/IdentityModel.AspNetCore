@@ -60,7 +60,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                     
                     var (options, configuration) = await GetOpenIdConnectSettingsAsync(_accessTokenManagementOptions.User.Scheme);
 
-                    requestDetails = new ClientCredentialsTokenRequest()
+                    requestDetails = new ClientCredentialsTokenRequest
                     {
                         Address = configuration.TokenEndpoint,
 

@@ -15,7 +15,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// </summary>
     public class UserAccessAccessTokenManagementService : IUserAccessTokenManagementService
     {
-        static readonly ConcurrentDictionary<string, Lazy<Task<string>>> UserRefreshDictionary =
+        private static readonly ConcurrentDictionary<string, Lazy<Task<string>>> UserRefreshDictionary =
             new ConcurrentDictionary<string, Lazy<Task<string>>>();
         
         private readonly IUserTokenStore _userTokenStore;
@@ -81,13 +81,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                     userName, parameters.Resource ?? "default");
             }
 
-            DateTimeOffset dtRefresh = DateTimeOffset.MinValue;
+            var dtRefresh = DateTimeOffset.MinValue;
             if (userToken.Expiration.HasValue)
             {
                 dtRefresh = userToken.Expiration.Value.Subtract(_options.User.RefreshBeforeExpiration);
             }
             
-            if (dtRefresh < _clock.UtcNow || parameters.ForceRenewal == true)
+            if (dtRefresh < _clock.UtcNow || parameters.ForceRenewal)
             {
                 _logger.LogDebug("Token for user {user} needs refreshing.", userName);
 
@@ -131,7 +131,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
         }
 
-        internal async Task<TokenResponse> RefreshUserAccessTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters, CancellationToken cancellationToken = default)
+        private async Task<TokenResponse> RefreshUserAccessTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters, CancellationToken cancellationToken = default)
         {
             var userToken = await _userTokenStore.GetTokenAsync(user);
             var response = await _tokenEndpointService.RefreshUserAccessTokenAsync(userToken.RefreshToken, parameters, cancellationToken);

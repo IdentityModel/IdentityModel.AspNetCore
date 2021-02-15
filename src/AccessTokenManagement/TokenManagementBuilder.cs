@@ -32,7 +32,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <returns></returns>
         public IHttpClientBuilder ConfigureBackchannelHttpClient(Action<HttpClient> configureClient = null)
         {
-            if (configureClient is null)
+            if (configureClient == null)
             {
                 return Services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
             }

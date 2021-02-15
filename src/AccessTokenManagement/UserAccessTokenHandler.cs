@@ -61,7 +61,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 ChallengeScheme = _parameters.ChallengeScheme,
                 Resource = _parameters.Resource,
                 ForceRenewal = forceRenewal,
-                Context =  _parameters.Context,
+                Context =  _parameters.Context
             };
               
             var token = await _httpContextAccessor.HttpContext.GetUserAccessTokenAsync(parameters);
