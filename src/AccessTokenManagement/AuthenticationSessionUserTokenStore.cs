@@ -120,8 +120,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public Task ClearTokenAsync(ClaimsPrincipal user)
+        public Task ClearTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters = null)
         {
+            // todo
             return Task.CompletedTask;
         }
     }
