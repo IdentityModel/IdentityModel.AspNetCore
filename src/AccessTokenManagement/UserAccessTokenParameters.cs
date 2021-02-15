@@ -11,9 +11,14 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     public class UserAccessTokenParameters
     {
         /// <summary>
-        /// Overrides the default scheme. This information may be used for state management or deriving token service configuration.
+        /// Overrides the default sign-in scheme. This information may be used for state management.
         /// </summary>
-        public string SchemeName { get; set; }
+        public string SignInScheme { get; set; }
+        
+        /// <summary>
+        /// Overrides the default challenge scheme. This information may be used for deriving token service configuration.
+        /// </summary>
+        public string ChallengeScheme { get; set; }
 
         /// <summary>
         /// Force renewal of token.

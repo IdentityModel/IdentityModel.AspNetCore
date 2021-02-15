@@ -57,7 +57,8 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         {
             var parameters = new UserAccessTokenParameters
             {
-                SchemeName = _parameters.SchemeName,
+                SignInScheme = _parameters.SignInScheme,
+                ChallengeScheme = _parameters.ChallengeScheme,
                 Resource = _parameters.Resource,
                 ForceRenewal = forceRenewal,
                 Context =  _parameters.Context,
