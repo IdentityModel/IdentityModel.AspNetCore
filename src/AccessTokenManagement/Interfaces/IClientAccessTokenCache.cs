@@ -17,24 +17,27 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="clientName"></param>
         /// <param name="accessToken"></param>
         /// <param name="expiresIn"></param>
+        /// <param name="parameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task SetAsync(string clientName, string accessToken, int expiresIn, CancellationToken cancellationToken = default);
+        Task SetAsync(string clientName, string accessToken, int expiresIn, ClientAccessTokenParameters parameters, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Retrieves a client access token from the cache
         /// </summary>
         /// <param name="clientName"></param>
+        /// <param name="parameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<ClientAccessToken> GetAsync(string clientName, CancellationToken cancellationToken = default);
+        Task<ClientAccessToken> GetAsync(string clientName, ClientAccessTokenParameters parameters, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Deletes a client access token from the cache
         /// </summary>
         /// <param name="clientName"></param>
+        /// <param name="parameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task DeleteAsync(string clientName, CancellationToken cancellationToken = default);
+        Task DeleteAsync(string clientName, ClientAccessTokenParameters parameters, CancellationToken cancellationToken = default);
     }
 }

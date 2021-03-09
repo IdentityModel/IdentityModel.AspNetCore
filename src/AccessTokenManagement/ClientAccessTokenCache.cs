@@ -33,11 +33,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<ClientAccessToken> GetAsync(string clientName, CancellationToken cancellationToken = default)
+        public async Task<ClientAccessToken> GetAsync(string clientName, ClientAccessTokenParameters parameters, CancellationToken cancellationToken = default)
         {
             if (clientName is null) throw new ArgumentNullException(nameof(clientName));
             
-            var entry = await _cache.GetStringAsync(_options.Client.CacheKeyPrefix + clientName, token: cancellationToken);
+            var cacheKey = GenerateCacheKey(_options, clientName, parameters);
+            var entry = await _cache.GetStringAsync(cacheKey, token: cancellationToken);
 
             if (entry != null)
             {
@@ -65,7 +66,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task SetAsync(string clientName, string accessToken, int expiresIn, CancellationToken cancellationToken = default)
+        public async Task SetAsync(string clientName, string accessToken, int expiresIn, ClientAccessTokenParameters parameters, CancellationToken cancellationToken = default)
         {
             if (clientName is null) throw new ArgumentNullException(nameof(clientName));
 
@@ -81,15 +82,31 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             };
 
             _logger.LogDebug("Caching access token for client: {clientName}. Expiration: {expiration}", clientName, cacheExpiration);
-            await _cache.SetStringAsync(_options.Client.CacheKeyPrefix + clientName, data, entryOptions, token: cancellationToken);
+            
+            var cacheKey = GenerateCacheKey(_options, clientName, parameters);
+            await _cache.SetStringAsync(cacheKey, data, entryOptions, token: cancellationToken);
         }
 
         /// <inheritdoc/>
-        public Task DeleteAsync(string clientName, CancellationToken cancellationToken = default)
+        public Task DeleteAsync(string clientName, ClientAccessTokenParameters parameters, CancellationToken cancellationToken = default)
         {
             if (clientName is null) throw new ArgumentNullException(nameof(clientName));
 
-            return _cache.RemoveAsync(_options.Client.CacheKeyPrefix + clientName, cancellationToken);
+            var cacheKey = GenerateCacheKey(_options, clientName, parameters);
+            return _cache.RemoveAsync(cacheKey, cancellationToken);
+        }
+
+        /// <summary>
+        /// Generates the cache key based on various inputs
+        /// </summary>
+        /// <param name="options"></param>
+        /// <param name="clientName"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        protected virtual string GenerateCacheKey(AccessTokenManagementOptions options, string clientName,
+            ClientAccessTokenParameters parameters)
+        {
+            return options.Client.CacheKeyPrefix + clientName + parameters?.Resource ?? "";
         }
     }
 }

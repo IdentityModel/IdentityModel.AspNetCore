@@ -49,7 +49,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             
             if (parameters.ForceRenewal == false)
             {
-                var item = await _clientAccessTokenCache.GetAsync(clientName, cancellationToken);
+                var item = await _clientAccessTokenCache.GetAsync(clientName, parameters, cancellationToken);
                 if (item != null)
                 {
                     return item.AccessToken;
@@ -70,7 +70,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                             return null;
                         }
 
-                        await _clientAccessTokenCache.SetAsync(clientName, response.AccessToken, response.ExpiresIn, cancellationToken);
+                        await _clientAccessTokenCache.SetAsync(clientName, response.AccessToken, response.ExpiresIn, parameters, cancellationToken);
                         return response.AccessToken;
                     });
                 }).Value;
@@ -87,7 +87,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             ClientAccessTokenParameters parameters = null, 
             CancellationToken cancellationToken = default)
         {
-            return _clientAccessTokenCache.DeleteAsync(clientName, cancellationToken);
+            return _clientAccessTokenCache.DeleteAsync(clientName, parameters, cancellationToken);
         }
     }
 }
