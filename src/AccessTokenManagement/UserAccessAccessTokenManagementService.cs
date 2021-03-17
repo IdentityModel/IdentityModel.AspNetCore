@@ -118,7 +118,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             CancellationToken cancellationToken = default)
         {
             parameters ??= new UserAccessTokenParameters();
-            var userToken = await _userTokenStore.GetTokenAsync(user);
+            var userToken = await _userTokenStore.GetTokenAsync(user, parameters);
 
             if (!string.IsNullOrEmpty(userToken?.RefreshToken))
             {
@@ -133,7 +133,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
         private async Task<TokenResponse> RefreshUserAccessTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters, CancellationToken cancellationToken = default)
         {
-            var userToken = await _userTokenStore.GetTokenAsync(user);
+            var userToken = await _userTokenStore.GetTokenAsync(user, parameters);
             var response = await _tokenEndpointService.RefreshUserAccessTokenAsync(userToken.RefreshToken, parameters, cancellationToken);
 
             if (!response.IsError)
