@@ -63,7 +63,7 @@ namespace Microsoft.AspNetCore.Authentication
             var store = httpContext.RequestServices.GetRequiredService<IUserTokenStore>();
 
             await service.RevokeRefreshTokenAsync(httpContext.User, parameters, cancellationToken);
-            await store.ClearTokenAsync(httpContext.User);
+            await store.ClearTokenAsync(httpContext.User, parameters);
         }
     }
 }
