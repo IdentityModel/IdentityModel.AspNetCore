@@ -26,7 +26,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         public UserAccessTokenHandler(IHttpContextAccessor httpContextAccessor, UserAccessTokenParameters parameters = null)
         {
             _httpContextAccessor = httpContextAccessor;
-            _parameters = parameters ?? new UserAccessTokenParameters();
+            _parameters ??= new UserAccessTokenParameters();
         }
 
         /// <inheritdoc/>

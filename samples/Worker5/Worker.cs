@@ -29,9 +29,10 @@ namespace WorkerService
 
                 var client = _clientFactory.CreateClient("client");
                 var response = await client.GetAsync("test", stoppingToken);
+                
                 if (response.IsSuccessStatusCode)
                 {
-                    var content = await response.Content.ReadAsStringAsync();
+                    var content = await response.Content.ReadAsStringAsync(stoppingToken);
                     _logger.LogInformation("API response: {response}", content);    
                 }
                 else

@@ -48,7 +48,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             
             var requestDetails = await _configService.GetClientCredentialsRequestAsync(clientName, parameters);
             
-#if NET5_0
+#if NET5_0_OR_GREATER
             requestDetails.Options.TryAdd(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
 #elif NETCOREAPP3_1
             requestDetails.Properties[AccessTokenManagementDefaults.AccessTokenParametersOptionsName] = parameters;
