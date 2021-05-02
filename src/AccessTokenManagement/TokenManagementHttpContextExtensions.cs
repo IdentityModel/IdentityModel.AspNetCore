@@ -60,7 +60,7 @@ namespace Microsoft.AspNetCore.Authentication
             CancellationToken cancellationToken = default)
         {
             var service = httpContext.RequestServices.GetRequiredService<IUserAccessTokenManagementService>();
-            var store = httpContext.RequestServices.GetRequiredService<IUserTokenStore>();
+            var store = httpContext.RequestServices.GetRequiredService<IUserAccessTokenStore>();
 
             await service.RevokeRefreshTokenAsync(httpContext.User, parameters, cancellationToken);
             await store.ClearTokenAsync(httpContext.User, parameters);

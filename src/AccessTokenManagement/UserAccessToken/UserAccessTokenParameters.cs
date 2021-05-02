@@ -33,6 +33,6 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// Additional context that might be relevant in the pipeline
         /// </summary>
-        public Parameters Context { get; set; } = new Parameters();
+        public Parameters Context { get; set; } = new();
     }
 }

@@ -18,8 +18,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         private readonly ITokenClientConfigurationService _configService;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<TokenEndpointService> _logger;
-
-
+        
         /// <summary>
         /// ctor
         /// </summary>
@@ -76,7 +75,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             var requestDetails = await _configService.GetRefreshTokenRequestAsync(parameters);
             requestDetails.RefreshToken = refreshToken;
             
-#if NET5_0
+#if NET5_0_OR_GREATER
             requestDetails.Options.TryAdd(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
 #elif NETCOREAPP3_1
             requestDetails.Properties[AccessTokenManagementDefaults.AccessTokenParametersOptionsName] = parameters;
@@ -105,7 +104,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             requestDetails.Token = refreshToken;
             requestDetails.TokenTypeHint = OidcConstants.TokenTypes.RefreshToken;
             
-#if NET5_0
+#if NET5_0_OR_GREATER
             requestDetails.Options.TryAdd(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
 #elif NETCOREAPP3_1
             requestDetails.Properties[AccessTokenManagementDefaults.AccessTokenParametersOptionsName] = parameters;

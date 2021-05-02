@@ -15,7 +15,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// <summary>
     /// Token store using the ASP.NET Core authentication session
     /// </summary>
-    public class AuthenticationSessionUserTokenStore : IUserTokenStore
+    public class AuthenticationSessionUserAccessTokenStore : IUserAccessTokenStore
     {
         private const string TokenPrefix = ".Token.";
             
@@ -25,7 +25,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// ctor
         /// </summary>
         /// <param name="contextAccessor"></param>
-        public AuthenticationSessionUserTokenStore(
+        public AuthenticationSessionUserAccessTokenStore(
             IHttpContextAccessor contextAccessor)
         {
             _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));

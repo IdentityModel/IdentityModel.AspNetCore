@@ -10,7 +10,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// <summary>
     /// Storage abstraction for access and refresh tokens
     /// </summary>
-    public interface IUserTokenStore
+    public interface IUserAccessTokenStore
     {
         /// <summary>
         /// Stores tokens

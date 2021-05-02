@@ -15,10 +15,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// </summary>
     public class UserAccessAccessTokenManagementService : IUserAccessTokenManagementService
     {
-        private static readonly ConcurrentDictionary<string, Lazy<Task<string>>> UserRefreshDictionary =
-            new ConcurrentDictionary<string, Lazy<Task<string>>>();
+        private static readonly ConcurrentDictionary<string, Lazy<Task<string>>> UserRefreshDictionary = new();
         
-        private readonly IUserTokenStore _userTokenStore;
+        private readonly IUserAccessTokenStore _userAccessTokenStore;
         private readonly ISystemClock _clock;
         private readonly AccessTokenManagementOptions _options;
         private readonly ITokenEndpointService _tokenEndpointService;
@@ -27,19 +26,19 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// ctor
         /// </summary>
-        /// <param name="userTokenStore"></param>
+        /// <param name="userAccessTokenStore"></param>
         /// <param name="clock"></param>
         /// <param name="options"></param>
         /// <param name="tokenEndpointService"></param>
         /// <param name="logger"></param>
         public UserAccessAccessTokenManagementService(
-            IUserTokenStore userTokenStore,
+            IUserAccessTokenStore userAccessTokenStore,
             ISystemClock clock,
             IOptions<AccessTokenManagementOptions> options,
             ITokenEndpointService tokenEndpointService,
             ILogger<UserAccessAccessTokenManagementService> logger)
         {
-            _userTokenStore = userTokenStore;
+            _userAccessTokenStore = userAccessTokenStore;
             _clock = clock;
             _options = options.Value;
             _tokenEndpointService = tokenEndpointService;
@@ -60,7 +59,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
 
             var userName = user.FindFirst(JwtClaimTypes.Name)?.Value ?? user.FindFirst(JwtClaimTypes.Subject)?.Value ?? "unknown";
-            var userToken = await _userTokenStore.GetTokenAsync(user, parameters);
+            var userToken = await _userAccessTokenStore.GetTokenAsync(user, parameters);
 
             if (userToken == null)
             {
@@ -118,7 +117,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             CancellationToken cancellationToken = default)
         {
             parameters ??= new UserAccessTokenParameters();
-            var userToken = await _userTokenStore.GetTokenAsync(user, parameters);
+            var userToken = await _userAccessTokenStore.GetTokenAsync(user, parameters);
 
             if (!string.IsNullOrEmpty(userToken?.RefreshToken))
             {
@@ -133,14 +132,14 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
         private async Task<TokenResponse> RefreshUserAccessTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters, CancellationToken cancellationToken = default)
         {
-            var userToken = await _userTokenStore.GetTokenAsync(user, parameters);
+            var userToken = await _userAccessTokenStore.GetTokenAsync(user, parameters);
             var response = await _tokenEndpointService.RefreshUserAccessTokenAsync(userToken.RefreshToken, parameters, cancellationToken);
 
             if (!response.IsError)
             {
                 var expiration = DateTime.UtcNow + TimeSpan.FromSeconds(response.ExpiresIn);
 
-                await _userTokenStore.StoreTokenAsync(user, response.AccessToken, expiration, response.RefreshToken, parameters);
+                await _userAccessTokenStore.StoreTokenAsync(user, response.AccessToken, expiration, response.RefreshToken, parameters);
             }
             else
             {

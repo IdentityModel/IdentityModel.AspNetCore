@@ -85,7 +85,7 @@ namespace Microsoft.Extensions.DependencyInjection
             
             services.TryAddTransient<IUserAccessTokenManagementService, UserAccessAccessTokenManagementService>();
             services.TryAddTransient<UserAccessTokenHandler>();
-            services.TryAddTransient<IUserTokenStore, AuthenticationSessionUserTokenStore>();
+            services.TryAddTransient<IUserAccessTokenStore, AuthenticationSessionUserAccessTokenStore>();
 
             services.TryAddTransient<ITokenClientConfigurationService, DefaultTokenClientConfigurationService>();
             services.TryAddTransient<ITokenEndpointService, TokenEndpointService>();
