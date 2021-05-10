@@ -9,6 +9,7 @@ using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Logging;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
@@ -20,15 +21,19 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         private const string TokenPrefix = ".Token.";
             
         private readonly IHttpContextAccessor _contextAccessor;
+        private readonly ILogger<AuthenticationSessionUserAccessTokenStore> _logger;
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="contextAccessor"></param>
+        /// <param name="logger"></param>
         public AuthenticationSessionUserAccessTokenStore(
-            IHttpContextAccessor contextAccessor)
+            IHttpContextAccessor contextAccessor,
+            ILogger<AuthenticationSessionUserAccessTokenStore> logger)
         {
             _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
+            _logger = logger;
         }
 
         /// <inheritdoc/>
@@ -50,8 +55,11 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             var tokens = result.Properties.Items.Where(i => i.Key.StartsWith(TokenPrefix)).ToList();
             if (tokens == null || !tokens.Any())
             {
-                throw new InvalidOperationException(
-                    "No tokens found in cookie properties. SaveTokens must be enabled for automatic token refresh.");
+                return null;
+                
+                // todo: logging
+                //throw new InvalidOperationException(
+                //    "No tokens found in cookie properties. SaveTokens must be enabled for automatic token refresh.");
             }
 
             var tokenName = $"{TokenPrefix}{OpenIdConnectParameterNames.AccessToken}";
