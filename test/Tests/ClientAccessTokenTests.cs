@@ -156,12 +156,18 @@ namespace Tests
             var result = await service.GetClientAccessTokenAsync(parameters: parameters);
             var requestContent = await handler.Content.ReadAsStringAsync();
             requestContent.Should().Contain("resource=urn%3Aresource");
-
+            
+            #if NET5_0_OR_GREATER
+            parameters = handler.Options.SingleOrDefault(o => o.Key == AccessTokenManagementDefaults.AccessTokenParametersOptionsName).Value 
+                as ClientAccessTokenParameters;
+            #else
+            
             var properties = handler.Properties;
             parameters =
                 properties[AccessTokenManagementDefaults.AccessTokenParametersOptionsName] as
                     ClientAccessTokenParameters;
-
+            #endif
+            
             parameters.Should().NotBeNull();
             parameters.Context["context_item"].First().Should().Be("context_value");
         }
