@@ -67,7 +67,7 @@ namespace MvcCode
                 {
                     // client config is inferred from OpenID Connect settings
                     // if you want to specify scopes explicitly, do it here, otherwise the scope parameter will not be sent
-                    options.Client.Scope = "api";
+                    options.Client.DefaultClient.Scope = "api";
                 })
                 .ConfigureBackchannelHttpClient()
                     .AddTransientHttpErrorPolicy(policy => policy.WaitAndRetryAsync(new[]

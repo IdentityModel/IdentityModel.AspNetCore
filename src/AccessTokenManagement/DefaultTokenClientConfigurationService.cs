@@ -73,14 +73,14 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                         ClientSecret = options.ClientSecret
                     };
 
-                    if (!string.IsNullOrWhiteSpace(_clientAccessTokenManagementOptions.Scope))
+                    if (!string.IsNullOrWhiteSpace(_clientAccessTokenManagementOptions.DefaultClient.Scope))
                     {
-                        requestDetails.Scope = _clientAccessTokenManagementOptions.Scope;
+                        requestDetails.Scope = _clientAccessTokenManagementOptions.DefaultClient.Scope;
                     }
 
-                    if (!string.IsNullOrWhiteSpace(_clientAccessTokenManagementOptions.Resource))
+                    if (!string.IsNullOrWhiteSpace(_clientAccessTokenManagementOptions.DefaultClient.Resource))
                     {
-                        requestDetails.Resource.Add(_clientAccessTokenManagementOptions.Resource);
+                        requestDetails.Resource.Add(_clientAccessTokenManagementOptions.DefaultClient.Resource);
                     }
 
                     var assertion = await CreateAssertionAsync(clientName);
