@@ -50,19 +50,15 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.Configure(options);
             }
 
+            // necessary ASP.NET plumbing
             services.AddDistributedMemoryCache();
             services.TryAddSingleton<ISystemClock, SystemClock>();
             services.TryAddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
             
+            services.AddSharedServices();
             services.TryAddTransient<IClientAccessTokenManagementService, ClientAccessTokenManagementService>();
-            services.TryAddTransient<ClientAccessTokenHandler>();
             services.TryAddTransient<IClientAccessTokenCache, ClientAccessTokenCache>();
             
-            services.TryAddTransient<ITokenClientConfigurationService, DefaultTokenClientConfigurationService>();
-            services.TryAddTransient<ITokenEndpointService, TokenEndpointService>();
-            
-            services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
-
             return new TokenManagementBuilder(services);
         }
         
@@ -80,19 +76,23 @@ namespace Microsoft.Extensions.DependencyInjection
                 services.Configure(options);
             }
 
+            // necessary ASP.NET plumbing
             services.AddHttpContextAccessor();
             services.AddAuthentication();
             
+            services.AddSharedServices();
             services.TryAddTransient<IUserAccessTokenManagementService, UserAccessAccessTokenManagementService>();
-            services.TryAddTransient<UserAccessTokenHandler>();
             services.TryAddTransient<IUserAccessTokenStore, AuthenticationSessionUserAccessTokenStore>();
+            
+            return new TokenManagementBuilder(services);
+        }
 
+        private static void AddSharedServices(this IServiceCollection services)
+        {
             services.TryAddTransient<ITokenClientConfigurationService, DefaultTokenClientConfigurationService>();
             services.TryAddTransient<ITokenEndpointService, TokenEndpointService>();
             
             services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
-
-            return new TokenManagementBuilder(services);
         }
         
         /// <summary>
