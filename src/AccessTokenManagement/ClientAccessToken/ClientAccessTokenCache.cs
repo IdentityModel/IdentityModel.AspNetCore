@@ -106,7 +106,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         protected virtual string GenerateCacheKey(ClientAccessTokenManagementOptions options, string clientName,
             ClientAccessTokenParameters parameters)
         {
-            return options.CacheKeyPrefix + clientName + parameters?.Resource ?? "";
+            return options.CacheKeyPrefix + "::" + clientName + "::" + parameters?.Resource ?? "";
         }
     }
 }
