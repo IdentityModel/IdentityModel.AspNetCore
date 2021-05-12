@@ -28,6 +28,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// </summary>
         public IDictionary<string, ClientCredentialsTokenRequest> Clients { get; set; } = new Dictionary<string, ClientCredentialsTokenRequest>();
 
+        /// <summary>
+        /// Options for the default client (where the client configuration is inferred from the OpenID Connect handler)
+        /// </summary>
         public class DefaultClientOptions
         {
             /// <summary>
