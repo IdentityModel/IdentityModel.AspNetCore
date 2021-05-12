@@ -19,15 +19,16 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds the token management services to DI
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="options"></param>
+        /// <param name="configureAction"></param>
         /// <returns></returns>
         public static TokenManagementBuilder AddAccessTokenManagement(this IServiceCollection services,
-            Action<AccessTokenManagementOptions> options = null)
+            Action<AccessTokenManagementOptions> configureAction = null)
         {
-            if (options != null)
-            {
-                services.Configure(options);
-            }
+            var options = new AccessTokenManagementOptions();
+            configureAction?.Invoke(options);
+            
+            services.AddSingleton(options.Client);
+            services.AddSingleton(options.User);
             
             services.AddUserAccessTokenManagement();
             services.AddClientAccessTokenManagement();
@@ -40,16 +41,22 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds the services required for client access token management
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="options"></param>
+        /// <param name="configureAction"></param>
         /// <returns></returns>
         public static TokenManagementBuilder AddClientAccessTokenManagement(this IServiceCollection services,
-            Action<AccessTokenManagementOptions> options = null)
+            Action<ClientAccessTokenManagementOptions> configureAction = null)
         {
-            if (options != null)
-            {
-                services.Configure(options);
-            }
+            var clientOptions = new ClientAccessTokenManagementOptions();
+            configureAction?.Invoke(clientOptions);
+            
+            services.AddSingleton(clientOptions);
+            services.AddSingleton(new UserAccessTokenManagementOptions());
 
+            return services.AddClientAccessTokenManagementInternal();
+        }
+        
+        private static TokenManagementBuilder AddClientAccessTokenManagementInternal(this IServiceCollection services)
+        {
             // necessary ASP.NET plumbing
             services.AddDistributedMemoryCache();
             services.TryAddSingleton<ISystemClock, SystemClock>();
@@ -66,16 +73,22 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds the services required for user access token management
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="options"></param>
+        /// <param name="configureAction"></param>
         /// <returns></returns>
         public static TokenManagementBuilder AddUserAccessTokenManagement(this IServiceCollection services,
-            Action<AccessTokenManagementOptions> options = null)
+            Action<UserAccessTokenManagementOptions> configureAction = null)
         {
-            if (options != null)
-            {
-                services.Configure(options);
-            }
+            var userOptions = new UserAccessTokenManagementOptions();
+            configureAction?.Invoke(userOptions);
+            
+            services.AddSingleton(userOptions);
+            services.AddSingleton(new ClientAccessTokenManagementOptions());
 
+            return services.AddUserAccessTokenManagementInternal();
+        }
+        
+        private static TokenManagementBuilder AddUserAccessTokenManagementInternal(this IServiceCollection services)
+        {
             // necessary ASP.NET plumbing
             services.AddHttpContextAccessor();
             services.AddAuthentication();

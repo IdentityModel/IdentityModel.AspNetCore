@@ -27,7 +27,7 @@ namespace WorkerService
                 {
                     services.AddClientAccessTokenManagement(options =>
                     {
-                        options.Client.Clients.Add("identityserver", new ClientCredentialsTokenRequest
+                        options.Clients.Add("identityserver", new ClientCredentialsTokenRequest
                         {
                             Address = "https://demo.duendesoftware.com/connect/token",
                             ClientId = "m2m.short",
