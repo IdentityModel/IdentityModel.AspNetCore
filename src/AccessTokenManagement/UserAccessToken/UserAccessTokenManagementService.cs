@@ -63,7 +63,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             if (userToken == null)
             {
-                _logger.LogDebug("No token data found in user token store.");
+                _logger.LogDebug("No token data found in user token store for user {user}.", userName);
                 return null;
             }
             
