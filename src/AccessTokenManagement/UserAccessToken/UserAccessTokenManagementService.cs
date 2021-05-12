@@ -15,8 +15,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// </summary>
     public class UserAccessAccessTokenManagementService : IUserAccessTokenManagementService
     {
-        private static readonly ConcurrentDictionary<string, Lazy<Task<string>>> UserRefreshDictionary = new();
-        
+        private readonly IUserAccessTokenRequestSynchronization _sync;
         private readonly IUserAccessTokenStore _userAccessTokenStore;
         private readonly ISystemClock _clock;
         private readonly UserAccessTokenManagementOptions _options;
@@ -26,18 +25,21 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// ctor
         /// </summary>
+        /// <param name="sync"></param>
         /// <param name="userAccessTokenStore"></param>
         /// <param name="clock"></param>
         /// <param name="options"></param>
         /// <param name="tokenEndpointService"></param>
         /// <param name="logger"></param>
         public UserAccessAccessTokenManagementService(
+            IUserAccessTokenRequestSynchronization sync,
             IUserAccessTokenStore userAccessTokenStore,
             ISystemClock clock,
             UserAccessTokenManagementOptions options,
             ITokenEndpointService tokenEndpointService,
             ILogger<UserAccessAccessTokenManagementService> logger)
         {
+            _sync = sync;
             _userAccessTokenStore = userAccessTokenStore;
             _clock = clock;
             _options = options;
@@ -92,7 +94,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
                 try
                 {
-                    return await UserRefreshDictionary.GetOrAdd(userToken.RefreshToken, _ =>
+                    return await _sync.Dictionary.GetOrAdd(userToken.RefreshToken, _ =>
                     {
                         return new Lazy<Task<string>>(async () =>
                         {
@@ -103,7 +105,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 }
                 finally
                 {
-                    UserRefreshDictionary.TryRemove(userToken.RefreshToken, out _);
+                    _sync.Dictionary.TryRemove(userToken.RefreshToken, out _);
                 }
             }
 
