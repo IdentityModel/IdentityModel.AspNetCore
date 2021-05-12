@@ -14,8 +14,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// </summary>
     public class ClientAccessTokenManagementService : IClientAccessTokenManagementService
     {
-        private static readonly ConcurrentDictionary<string, Lazy<Task<string>>> ClientTokenRequestDictionary = new();
-
+        private readonly IClientAccessTokenRequestSynchronization _sync;
         private readonly ITokenEndpointService _tokenEndpointService;
         private readonly IClientAccessTokenCache _clientAccessTokenCache;
         private readonly ILogger<ClientAccessTokenManagementService> _logger;
@@ -23,14 +22,17 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// ctor
         /// </summary>
+        /// <param name="sync"></param>
         /// <param name="tokenEndpointService"></param>
         /// <param name="clientAccessTokenCache"></param>
         /// <param name="logger"></param>
         public ClientAccessTokenManagementService(
+            IClientAccessTokenRequestSynchronization sync,
             ITokenEndpointService tokenEndpointService,
             IClientAccessTokenCache clientAccessTokenCache,
             ILogger<ClientAccessTokenManagementService> logger)
         {
+            _sync = sync;
             _tokenEndpointService = tokenEndpointService;
             _clientAccessTokenCache = clientAccessTokenCache;
             _logger = logger;
@@ -55,7 +57,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             try
             {
-                return await ClientTokenRequestDictionary.GetOrAdd(clientName, _ =>
+                return await _sync.Dictionary.GetOrAdd(clientName, _ =>
                 {
                     return new Lazy<Task<string>>(async () =>
                     {
@@ -74,7 +76,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
             finally
             {
-                ClientTokenRequestDictionary.TryRemove(clientName, out _);
+                _sync.Dictionary.TryRemove(clientName, out _);
             }
         }
 

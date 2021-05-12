@@ -4,6 +4,7 @@
 using IdentityModel.AspNetCore.AccessTokenManagement;
 using System;
 using System.Net.Http;
+using IdentityModel.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -63,8 +64,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.TryAddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
             
             services.AddSharedServices();
+            
             services.TryAddTransient<IClientAccessTokenManagementService, ClientAccessTokenManagementService>();
             services.TryAddTransient<IClientAccessTokenCache, ClientAccessTokenCache>();
+            services.TryAddSingleton<IClientAccessTokenRequestSynchronization, AccessTokenRequestSynchronization>();
             
             return new TokenManagementBuilder(services);
         }
@@ -94,8 +97,10 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddAuthentication();
             
             services.AddSharedServices();
+            
             services.TryAddTransient<IUserAccessTokenManagementService, UserAccessAccessTokenManagementService>();
             services.TryAddTransient<IUserAccessTokenStore, AuthenticationSessionUserAccessTokenStore>();
+            services.TryAddSingleton<IUserAccessTokenRequestSynchronization, AccessTokenRequestSynchronization>();
             
             return new TokenManagementBuilder(services);
         }
