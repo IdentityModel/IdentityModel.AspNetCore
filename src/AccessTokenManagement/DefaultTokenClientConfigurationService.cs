@@ -15,7 +15,8 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// </summary>
     public class DefaultTokenClientConfigurationService : ITokenClientConfigurationService
     {
-        private readonly AccessTokenManagementOptions _accessTokenManagementOptions;
+        private readonly UserAccessTokenManagementOptions _userAccessTokenManagementOptions;
+        private readonly ClientAccessTokenManagementOptions _clientAccessTokenManagementOptions;
         private readonly IOptionsMonitor<OpenIdConnectOptions> _oidcOptions;
         private readonly IAuthenticationSchemeProvider _schemeProvider;
         private readonly ILogger<DefaultTokenClientConfigurationService> _logger;
@@ -28,12 +29,15 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="schemeProvider"></param>
         /// <param name="logger"></param>
         public DefaultTokenClientConfigurationService(
-            IOptions<AccessTokenManagementOptions> accessTokenManagementOptions,
+            UserAccessTokenManagementOptions userAccessTokenManagementOptions,
+            ClientAccessTokenManagementOptions clientAccessTokenManagementOptions,
             IOptionsMonitor<OpenIdConnectOptions> oidcOptions,
             IAuthenticationSchemeProvider schemeProvider,
             ILogger<DefaultTokenClientConfigurationService> logger)
         {
-            _accessTokenManagementOptions = accessTokenManagementOptions.Value;
+            _userAccessTokenManagementOptions = userAccessTokenManagementOptions;
+            _clientAccessTokenManagementOptions = clientAccessTokenManagementOptions;
+            
             _oidcOptions = oidcOptions;
             _schemeProvider = schemeProvider;
             _logger = logger;
@@ -48,17 +52,17 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             if (string.Equals(clientName, AccessTokenManagementDefaults.DefaultTokenClientName))
             {
                 // if only one client configuration exists, load that
-                if (_accessTokenManagementOptions.Client.Clients.Count == 1)
+                if (_clientAccessTokenManagementOptions.Clients.Count == 1)
                 {
                     _logger.LogDebug("Reading token client configuration from single configuration entry.");
-                    requestDetails = _accessTokenManagementOptions.Client.Clients.First().Value;
+                    requestDetails = _clientAccessTokenManagementOptions.Clients.First().Value;
                 }
                 // otherwise fall back to the scheme configuration
                 else
                 {
                     _logger.LogDebug("Constructing token client configuration from OpenID Connect handler.");
                     
-                    var (options, configuration) = await GetOpenIdConnectSettingsAsync(_accessTokenManagementOptions.User.Scheme);
+                    var (options, configuration) = await GetOpenIdConnectSettingsAsync(_userAccessTokenManagementOptions.Scheme);
 
                     requestDetails = new ClientCredentialsTokenRequest
                     {
@@ -68,14 +72,14 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                         ClientSecret = options.ClientSecret
                     };
 
-                    if (!string.IsNullOrWhiteSpace(_accessTokenManagementOptions.Client.Scope))
+                    if (!string.IsNullOrWhiteSpace(_clientAccessTokenManagementOptions.Scope))
                     {
-                        requestDetails.Scope = _accessTokenManagementOptions.Client.Scope;
+                        requestDetails.Scope = _clientAccessTokenManagementOptions.Scope;
                     }
 
-                    if (!string.IsNullOrWhiteSpace(_accessTokenManagementOptions.Client.Resource))
+                    if (!string.IsNullOrWhiteSpace(_clientAccessTokenManagementOptions.Resource))
                     {
-                        requestDetails.Resource.Add(_accessTokenManagementOptions.Client.Resource);
+                        requestDetails.Resource.Add(_clientAccessTokenManagementOptions.Resource);
                     }
 
                     var assertion = await CreateAssertionAsync(clientName);
@@ -87,7 +91,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
             else
             {
-                if (!_accessTokenManagementOptions.Client.Clients.TryGetValue(clientName, out requestDetails))
+                if (!_clientAccessTokenManagementOptions.Clients.TryGetValue(clientName, out requestDetails))
                 {
                     throw new InvalidOperationException($"No access token client configuration found for client: {clientName}");
                 }
@@ -100,7 +104,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc />
         public virtual async Task<RefreshTokenRequest> GetRefreshTokenRequestAsync(UserAccessTokenParameters parameters = null)
         {
-            var (options, configuration) = await GetOpenIdConnectSettingsAsync(parameters?.ChallengeScheme ?? _accessTokenManagementOptions.User.Scheme);
+            var (options, configuration) = await GetOpenIdConnectSettingsAsync(parameters?.ChallengeScheme ?? _userAccessTokenManagementOptions.Scheme);
 
             var requestDetails = new RefreshTokenRequest
             {
@@ -122,7 +126,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc />
         public virtual async Task<TokenRevocationRequest> GetTokenRevocationRequestAsync(UserAccessTokenParameters parameters = null)
         {
-            var (options, configuration) = await GetOpenIdConnectSettingsAsync(parameters?.ChallengeScheme ?? _accessTokenManagementOptions.User.Scheme);
+            var (options, configuration) = await GetOpenIdConnectSettingsAsync(parameters?.ChallengeScheme ?? _userAccessTokenManagementOptions.Scheme);
             
             var requestDetails = new TokenRevocationRequest
             {

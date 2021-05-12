@@ -17,7 +17,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     {
         private readonly IDistributedCache _cache;
         private readonly ILogger<ClientAccessTokenCache> _logger;
-        private readonly AccessTokenManagementOptions _options;
+        private readonly ClientAccessTokenManagementOptions _options;
 
         /// <summary>
         /// ctor
@@ -25,11 +25,11 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="cache"></param>
         /// <param name="options"></param>
         /// <param name="logger"></param>
-        public ClientAccessTokenCache(IDistributedCache cache, IOptions<AccessTokenManagementOptions> options, ILogger<ClientAccessTokenCache> logger)
+        public ClientAccessTokenCache(IDistributedCache cache, ClientAccessTokenManagementOptions options, ILogger<ClientAccessTokenCache> logger)
         {
             _cache = cache;
             _logger = logger;
-            _options = options.Value;
+            _options = options;
         }
 
         /// <inheritdoc/>
@@ -72,7 +72,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             var expiration = DateTimeOffset.UtcNow.AddSeconds(expiresIn);
             var expirationEpoch = expiration.ToUnixTimeSeconds();
-            var cacheExpiration = expiration.AddSeconds(-_options.Client.CacheLifetimeBuffer);
+            var cacheExpiration = expiration.AddSeconds(-_options.CacheLifetimeBuffer);
 
             var data = $"{accessToken}___{expirationEpoch.ToString()}";
 
@@ -103,10 +103,10 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="clientName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual string GenerateCacheKey(AccessTokenManagementOptions options, string clientName,
+        protected virtual string GenerateCacheKey(ClientAccessTokenManagementOptions options, string clientName,
             ClientAccessTokenParameters parameters)
         {
-            return options.Client.CacheKeyPrefix + clientName + parameters?.Resource ?? "";
+            return options.CacheKeyPrefix + clientName + parameters?.Resource ?? "";
         }
     }
 }

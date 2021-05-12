@@ -17,9 +17,9 @@ namespace Tests
         {
             var handler = new NetworkHandler();
 
-            void options(AccessTokenManagementOptions o)
+            void options(ClientAccessTokenManagementOptions o)
             {
-                o.Client.Clients.Add("test", new ClientCredentialsTokenRequest
+                o.Clients.Add("test", new ClientCredentialsTokenRequest
                 {
                     Address = "https://test",
                     ClientId = "test"
@@ -40,15 +40,15 @@ namespace Tests
         {
             var handler = new NetworkHandler();
 
-            void options(AccessTokenManagementOptions o)
+            void options(ClientAccessTokenManagementOptions o)
             {
-                o.Client.Clients.Add("test1", new ClientCredentialsTokenRequest
+                o.Clients.Add("test1", new ClientCredentialsTokenRequest
                 {
                     Address = "https://test1",
                     ClientId = "test1"
                 });
 
-                o.Client.Clients.Add("test2", new ClientCredentialsTokenRequest
+                o.Clients.Add("test2", new ClientCredentialsTokenRequest
                 {
                     Address = "https://test2",
                     ClientId = "test2"
@@ -70,15 +70,15 @@ namespace Tests
         {
             var handler = new NetworkHandler();
 
-            void options(AccessTokenManagementOptions o)
+            void options(ClientAccessTokenManagementOptions o)
             {
-                o.Client.Clients.Add("test1", new ClientCredentialsTokenRequest
+                o.Clients.Add("test1", new ClientCredentialsTokenRequest
                 {
                     Address = "https://test1",
                     ClientId = "test1"
                 });
 
-                o.Client.Clients.Add("test2", new ClientCredentialsTokenRequest
+                o.Clients.Add("test2", new ClientCredentialsTokenRequest
                 {
                     Address = "https://test2",
                     ClientId = "test2"
@@ -102,9 +102,9 @@ namespace Tests
         {
             var handler = new NetworkHandler();
 
-            void options(AccessTokenManagementOptions o)
+            void options(ClientAccessTokenManagementOptions o)
             {
-                o.Client.Clients.Add("test", new ClientCredentialsTokenRequest
+                o.Clients.Add("test", new ClientCredentialsTokenRequest
                 {
                     Address = "https://test",
                     ClientId = "test",
@@ -131,9 +131,9 @@ namespace Tests
         {
             var handler = new NetworkHandler();
 
-            void options(AccessTokenManagementOptions o)
+            void options(ClientAccessTokenManagementOptions o)
             {
-                o.Client.Clients.Add("test", new ClientCredentialsTokenRequest
+                o.Clients.Add("test", new ClientCredentialsTokenRequest
                 {
                     Address = "https://test",
                     ClientId = "test"

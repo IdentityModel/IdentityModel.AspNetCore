@@ -7,7 +7,7 @@ namespace Tests.Infrastructure
 {
     static class Setup
     {
-        public static IServiceCollection ClientCollection(Action<AccessTokenManagementOptions> options = null, HttpMessageHandler networkHandler = null)
+        public static IServiceCollection ClientCollection(Action<ClientAccessTokenManagementOptions> options = null, HttpMessageHandler networkHandler = null)
         {
             var services = new ServiceCollection();
             
@@ -22,7 +22,7 @@ namespace Tests.Infrastructure
             return services;
         }
 
-        public static ServiceProvider ClientContainer(Action<AccessTokenManagementOptions> options = null)
+        public static ServiceProvider ClientContainer(Action<ClientAccessTokenManagementOptions> options = null)
         {
             return ClientCollection(options).BuildServiceProvider();
         }

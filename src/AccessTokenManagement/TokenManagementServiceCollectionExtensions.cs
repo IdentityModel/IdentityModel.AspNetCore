@@ -22,12 +22,13 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="options"></param>
         /// <returns></returns>
         public static TokenManagementBuilder AddAccessTokenManagement(this IServiceCollection services,
-            Action<AccessTokenManagementOptions> options = null)
+            Action<AccessTokenManagementOptions> configureAction = null)
         {
-            if (options != null)
-            {
-                services.Configure(options);
-            }
+            var options = new AccessTokenManagementOptions();
+            configureAction?.Invoke(options);
+            
+            services.AddSingleton(options.Client);
+            services.AddSingleton(options.User);
             
             services.AddUserAccessTokenManagement();
             services.AddClientAccessTokenManagement();
@@ -43,13 +44,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="options"></param>
         /// <returns></returns>
         public static TokenManagementBuilder AddClientAccessTokenManagement(this IServiceCollection services,
-            Action<AccessTokenManagementOptions> options = null)
+            Action<ClientAccessTokenManagementOptions> configureAction = null)
         {
-            if (options != null)
-            {
-                services.Configure(options);
-            }
+            var clientOptions = new ClientAccessTokenManagementOptions();
+            configureAction?.Invoke(clientOptions);
+            
+            var options = new AccessTokenManagementOptions { Client = clientOptions };
+            services.AddSingleton(options.Client);
+            services.AddSingleton(options.User);
 
+            return services.AddClientAccessTokenManagementInternal();
+        }
+        
+        private static TokenManagementBuilder AddClientAccessTokenManagementInternal(this IServiceCollection services)
+        {
             // necessary ASP.NET plumbing
             services.AddDistributedMemoryCache();
             services.TryAddSingleton<ISystemClock, SystemClock>();
@@ -69,13 +77,20 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="options"></param>
         /// <returns></returns>
         public static TokenManagementBuilder AddUserAccessTokenManagement(this IServiceCollection services,
-            Action<AccessTokenManagementOptions> options = null)
+            Action<UserAccessTokenManagementOptions> configureAction = null)
         {
-            if (options != null)
-            {
-                services.Configure(options);
-            }
+            var userOptions = new UserAccessTokenManagementOptions();
+            configureAction?.Invoke(userOptions);
+            
+            var options = new AccessTokenManagementOptions { User = userOptions };
+            services.AddSingleton(options.Client);
+            services.AddSingleton(options.User);
 
+            return services.AddUserAccessTokenManagementInternal();
+        }
+        
+        private static TokenManagementBuilder AddUserAccessTokenManagementInternal(this IServiceCollection services)
+        {
             // necessary ASP.NET plumbing
             services.AddHttpContextAccessor();
             services.AddAuthentication();

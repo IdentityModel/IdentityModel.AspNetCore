@@ -19,7 +19,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         
         private readonly IUserAccessTokenStore _userAccessTokenStore;
         private readonly ISystemClock _clock;
-        private readonly AccessTokenManagementOptions _options;
+        private readonly UserAccessTokenManagementOptions _options;
         private readonly ITokenEndpointService _tokenEndpointService;
         private readonly ILogger<UserAccessAccessTokenManagementService> _logger;
 
@@ -34,13 +34,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         public UserAccessAccessTokenManagementService(
             IUserAccessTokenStore userAccessTokenStore,
             ISystemClock clock,
-            IOptions<AccessTokenManagementOptions> options,
+            UserAccessTokenManagementOptions options,
             ITokenEndpointService tokenEndpointService,
             ILogger<UserAccessAccessTokenManagementService> logger)
         {
             _userAccessTokenStore = userAccessTokenStore;
             _clock = clock;
-            _options = options.Value;
+            _options = options;
             _tokenEndpointService = tokenEndpointService;
             _logger = logger;
         }
@@ -83,7 +83,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             var dtRefresh = DateTimeOffset.MinValue;
             if (userToken.Expiration.HasValue)
             {
-                dtRefresh = userToken.Expiration.Value.Subtract(_options.User.RefreshBeforeExpiration);
+                dtRefresh = userToken.Expiration.Value.Subtract(_options.RefreshBeforeExpiration);
             }
             
             if (dtRefresh < _clock.UtcNow || parameters.ForceRenewal)
