@@ -15,17 +15,17 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// Options for user access tokens
         /// </summary>
-        public UserOptions User { get; set; } = new UserOptions();
+        public UserAccessTokenManagementOptions User { get; set; } = new UserAccessTokenManagementOptions();
         
         /// <summary>
         /// Options for client acccess tokens
         /// </summary>
-        public ClientOptions Client { get; set; } = new ClientOptions();
+        public ClientAccessTokenManagementOptions Client { get; set; } = new ClientAccessTokenManagementOptions();
 
         /// <summary>
         /// User access token options
         /// </summary>
-        public class UserOptions
+        public class UserAccessTokenManagementOptions
         {
             /// <summary>
             /// Name of the authentication scheme to use for the token operations
@@ -41,7 +41,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// Client access token options
         /// </summary>
-        public class ClientOptions
+        public class ClientAccessTokenManagementOptions
         {
             /// <summary>
             /// Sets the scheme name of an OpenID Connect handler, if the client configuration should be derived from it.
