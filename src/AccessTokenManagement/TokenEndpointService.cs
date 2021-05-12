@@ -49,7 +49,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             
 #if NET5_0_OR_GREATER
             requestDetails.Options.TryAdd(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
-#elif NETCOREAPP3_1
+#else
             requestDetails.Properties[AccessTokenManagementDefaults.AccessTokenParametersOptionsName] = parameters;
 #endif
             
@@ -77,7 +77,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             
 #if NET5_0_OR_GREATER
             requestDetails.Options.TryAdd(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
-#elif NETCOREAPP3_1
+#else
             requestDetails.Properties[AccessTokenManagementDefaults.AccessTokenParametersOptionsName] = parameters;
 #endif
             
@@ -106,7 +106,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             
 #if NET5_0_OR_GREATER
             requestDetails.Options.TryAdd(AccessTokenManagementDefaults.AccessTokenParametersOptionsName, parameters);
-#elif NETCOREAPP3_1
+#else
             requestDetails.Properties[AccessTokenManagementDefaults.AccessTokenParametersOptionsName] = parameters;
 #endif
 
