@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds the token management services to DI
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="options"></param>
+        /// <param name="configureAction"></param>
         /// <returns></returns>
         public static TokenManagementBuilder AddAccessTokenManagement(this IServiceCollection services,
             Action<AccessTokenManagementOptions> configureAction = null)
@@ -41,7 +41,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds the services required for client access token management
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="options"></param>
+        /// <param name="configureAction"></param>
         /// <returns></returns>
         public static TokenManagementBuilder AddClientAccessTokenManagement(this IServiceCollection services,
             Action<ClientAccessTokenManagementOptions> configureAction = null)
@@ -49,9 +49,8 @@ namespace Microsoft.Extensions.DependencyInjection
             var clientOptions = new ClientAccessTokenManagementOptions();
             configureAction?.Invoke(clientOptions);
             
-            var options = new AccessTokenManagementOptions { Client = clientOptions };
-            services.AddSingleton(options.Client);
-            services.AddSingleton(options.User);
+            services.AddSingleton(clientOptions);
+            services.AddSingleton(new UserAccessTokenManagementOptions());
 
             return services.AddClientAccessTokenManagementInternal();
         }
@@ -74,7 +73,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// Adds the services required for user access token management
         /// </summary>
         /// <param name="services"></param>
-        /// <param name="options"></param>
+        /// <param name="configureAction"></param>
         /// <returns></returns>
         public static TokenManagementBuilder AddUserAccessTokenManagement(this IServiceCollection services,
             Action<UserAccessTokenManagementOptions> configureAction = null)
@@ -82,9 +81,8 @@ namespace Microsoft.Extensions.DependencyInjection
             var userOptions = new UserAccessTokenManagementOptions();
             configureAction?.Invoke(userOptions);
             
-            var options = new AccessTokenManagementOptions { User = userOptions };
-            services.AddSingleton(options.Client);
-            services.AddSingleton(options.User);
+            services.AddSingleton(userOptions);
+            services.AddSingleton(new ClientAccessTokenManagementOptions());
 
             return services.AddUserAccessTokenManagementInternal();
         }

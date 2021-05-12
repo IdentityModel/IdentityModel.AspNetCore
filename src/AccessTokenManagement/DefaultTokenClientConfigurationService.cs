@@ -24,7 +24,8 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// ctor
         /// </summary>
-        /// <param name="accessTokenManagementOptions"></param>
+        /// <param name="userAccessTokenManagementOptions"></param>
+        /// <param name="clientAccessTokenManagementOptions"></param>
         /// <param name="oidcOptions"></param>
         /// <param name="schemeProvider"></param>
         /// <param name="logger"></param>
@@ -62,7 +63,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 {
                     _logger.LogDebug("Constructing token client configuration from OpenID Connect handler.");
                     
-                    var (options, configuration) = await GetOpenIdConnectSettingsAsync(_userAccessTokenManagementOptions.Scheme);
+                    var (options, configuration) = await GetOpenIdConnectSettingsAsync(_userAccessTokenManagementOptions.SchemeName);
 
                     requestDetails = new ClientCredentialsTokenRequest
                     {
@@ -104,7 +105,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc />
         public virtual async Task<RefreshTokenRequest> GetRefreshTokenRequestAsync(UserAccessTokenParameters parameters = null)
         {
-            var (options, configuration) = await GetOpenIdConnectSettingsAsync(parameters?.ChallengeScheme ?? _userAccessTokenManagementOptions.Scheme);
+            var (options, configuration) = await GetOpenIdConnectSettingsAsync(parameters?.ChallengeScheme ?? _userAccessTokenManagementOptions.SchemeName);
 
             var requestDetails = new RefreshTokenRequest
             {
@@ -126,7 +127,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc />
         public virtual async Task<TokenRevocationRequest> GetTokenRevocationRequestAsync(UserAccessTokenParameters parameters = null)
         {
-            var (options, configuration) = await GetOpenIdConnectSettingsAsync(parameters?.ChallengeScheme ?? _userAccessTokenManagementOptions.Scheme);
+            var (options, configuration) = await GetOpenIdConnectSettingsAsync(parameters?.ChallengeScheme ?? _userAccessTokenManagementOptions.SchemeName);
             
             var requestDetails = new TokenRevocationRequest
             {
