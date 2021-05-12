@@ -32,7 +32,7 @@ namespace MvcCode
                 })
                 .AddOpenIdConnect("oidc", options =>
                 {
-                    options.Authority = "https://demo.identityserver.io";
+                    options.Authority = "https://demo.duendesoftware.com";
 
                     options.ClientId = "interactive.confidential.short";
                     options.ClientSecret = "secret";
@@ -80,25 +80,25 @@ namespace MvcCode
             // registers HTTP client that uses the managed user access token
             services.AddUserAccessTokenClient("user_client", configureClient: client =>
             {
-                client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
+                client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
             });
 
             // registers HTTP client that uses the managed client access token
             services.AddClientAccessTokenClient("client", configureClient: client =>
             {
-                client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
+                client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
             });
 
             // registers a typed HTTP client with token management support
             services.AddHttpClient<TypedUserClient>(client =>
             {
-                client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
+                client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
             })
                 .AddUserAccessTokenHandler();
 
             services.AddHttpClient<TypedClientClient>(client =>
             {
-                client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
+                client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
             })
                 .AddClientAccessTokenHandler();
         }

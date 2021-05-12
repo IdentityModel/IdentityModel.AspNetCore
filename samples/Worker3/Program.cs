@@ -29,7 +29,7 @@ namespace WorkerService
                     {
                         options.Client.Clients.Add("identityserver", new ClientCredentialsTokenRequest
                         {
-                            Address = "https://demo.identityserver.io/connect/token",
+                            Address = "https://demo.duendesoftware.com/connect/token",
                             ClientId = "m2m.short",
                             ClientSecret = "secret",
                             Scope = "api"
@@ -38,7 +38,7 @@ namespace WorkerService
 
                     services.AddClientAccessTokenClient("client", configureClient: client =>
                     {
-                        client.BaseAddress = new Uri("https://demo.identityserver.io/api/");
+                        client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
                     });
 
                     services.AddHostedService<Worker>();
