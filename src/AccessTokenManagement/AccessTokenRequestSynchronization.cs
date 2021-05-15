@@ -24,7 +24,9 @@ namespace IdentityModel.AspNetCore
     public interface IUserAccessTokenRequestSynchronization : IAccessTokenRequestSynchronization
     { }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Default implementation for token request synchronization primitive
+    /// </summary>
     public class AccessTokenRequestSynchronization : IClientAccessTokenRequestSynchronization, IUserAccessTokenRequestSynchronization
     {
         /// <inheritdoc />

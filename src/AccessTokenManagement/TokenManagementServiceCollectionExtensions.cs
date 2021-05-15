@@ -5,7 +5,6 @@ using IdentityModel.AspNetCore.AccessTokenManagement;
 using System;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection.Metadata.Ecma335;
 using IdentityModel.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;

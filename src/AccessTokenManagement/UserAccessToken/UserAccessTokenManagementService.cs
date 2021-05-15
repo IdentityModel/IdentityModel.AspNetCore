@@ -1,12 +1,10 @@
 using System;
-using System.Collections.Concurrent;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
