@@ -36,7 +36,7 @@ namespace WorkerService
                         });
                     });
 
-                    services.AddClientAccessTokenClient("client", configureClient: client =>
+                    services.AddClientAccessTokenHttpClient("client", configureClient: client =>
                     {
                         client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
                     });

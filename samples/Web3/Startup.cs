@@ -78,13 +78,13 @@ namespace MvcCode
                     }));
 
             // registers HTTP client that uses the managed user access token
-            services.AddUserAccessTokenClient("user_client", configureClient: client =>
+            services.AddUserAccessTokenHttpClient("user_client", configureClient: client =>
             {
                 client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
             });
 
             // registers HTTP client that uses the managed client access token
-            services.AddClientAccessTokenClient("client", configureClient: client =>
+            services.AddClientAccessTokenHttpClient("client", configureClient: client =>
             {
                 client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
             });
