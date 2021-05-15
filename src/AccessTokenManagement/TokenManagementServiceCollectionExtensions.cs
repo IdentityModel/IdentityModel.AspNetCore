@@ -3,7 +3,9 @@
 
 using IdentityModel.AspNetCore.AccessTokenManagement;
 using System;
+using System.Linq;
 using System.Net.Http;
+using System.Reflection.Metadata.Ecma335;
 using IdentityModel.AspNetCore;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
@@ -25,16 +27,31 @@ namespace Microsoft.Extensions.DependencyInjection
         public static TokenManagementBuilder AddAccessTokenManagement(this IServiceCollection services,
             Action<AccessTokenManagementOptions> configureAction = null)
         {
+            CheckConfigMarker(services);
+            
             var options = new AccessTokenManagementOptions();
             configureAction?.Invoke(options);
             
             services.AddSingleton(options.Client);
             services.AddSingleton(options.User);
-            
-            services.AddUserAccessTokenManagement();
-            services.AddClientAccessTokenManagement();
+
+            services.AddUserAccessTokenManagementInternal();
+            services.AddClientAccessTokenManagementInternal();
             
             return new TokenManagementBuilder(services);
+        }
+
+        private static void CheckConfigMarker(IServiceCollection services)
+        {
+            var marker = services.FirstOrDefault(s => s.ServiceType == typeof(ConfigMarker));
+            if (marker == null)
+            {
+                services.AddSingleton(new ConfigMarker());
+                return;
+            }
+
+            throw new InvalidOperationException(
+                "Call 'AddAccessTokenManagement' to add support for both client and user access tokens. Or call 'AddUserAccessTokenManagement' or 'AddClientAccessTokenManagement' respectively. You cannot mix them. Nor can you call them multiple times.");
         }
 
         
@@ -47,6 +64,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public static TokenManagementBuilder AddClientAccessTokenManagement(this IServiceCollection services,
             Action<ClientAccessTokenManagementOptions> configureAction = null)
         {
+            CheckConfigMarker(services);
+            
             var clientOptions = new ClientAccessTokenManagementOptions();
             configureAction?.Invoke(clientOptions);
             
@@ -81,6 +100,8 @@ namespace Microsoft.Extensions.DependencyInjection
         public static TokenManagementBuilder AddUserAccessTokenManagement(this IServiceCollection services,
             Action<UserAccessTokenManagementOptions> configureAction = null)
         {
+            CheckConfigMarker(services);
+            
             var userOptions = new UserAccessTokenManagementOptions();
             configureAction?.Invoke(userOptions);
             
@@ -121,7 +142,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="parameters"></param>
         /// <param name="configureClient">Additional configuration.</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddUserAccessTokenClient(this IServiceCollection services, 
+        public static IHttpClientBuilder AddUserAccessTokenHttpClient(this IServiceCollection services, 
             string name,
             UserAccessTokenParameters parameters = null, 
             Action<HttpClient> configureClient = null)
@@ -144,7 +165,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="tokenClientName">The name of the token client.</param>
         /// <param name="configureClient">Additional configuration.</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddClientAccessTokenClient(this IServiceCollection services, string clientName,
+        public static IHttpClientBuilder AddClientAccessTokenHttpClient(this IServiceCollection services, string clientName,
             string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName,
             Action<HttpClient> configureClient = null)
         {
