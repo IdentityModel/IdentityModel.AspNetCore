@@ -44,22 +44,25 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             if (!result.Succeeded)
             {
+                _logger.LogInformation("Cannot authenticate scheme: {scheme}", parameters.SignInScheme ?? "default signin scheme");
+                
                 return null;
             }
 
             if (result.Properties == null)
             {
+                _logger.LogInformation("Authentication result properties are null for scheme: {scheme}",
+                    parameters.SignInScheme ?? "default signin scheme");
+                
                 return null;
             }
 
             var tokens = result.Properties.Items.Where(i => i.Key.StartsWith(TokenPrefix)).ToList();
             if (tokens == null || !tokens.Any())
             {
-                return null;
+                _logger.LogInformation("No tokens found in cookie properties. SaveTokens must be enabled for automatic token refresh.");
                 
-                // todo: logging
-                //throw new InvalidOperationException(
-                //    "No tokens found in cookie properties. SaveTokens must be enabled for automatic token refresh.");
+                return null;
             }
 
             var tokenName = $"{TokenPrefix}{OpenIdConnectParameterNames.AccessToken}";
