@@ -107,6 +107,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 throw new Exception("Can't store tokens. User is anonymous");
             }
 
+            // in case you want to filter certain claims before re-issuing the authentication session
+            var transformedPrincipal = await TransformPrincipal(result.Principal);
+
             var tokenName = OpenIdConnectParameterNames.AccessToken;
             if (!string.IsNullOrEmpty(parameters.Resource))
             {
@@ -127,7 +130,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 result.Properties.UpdateTokenValue(OpenIdConnectParameterNames.RefreshToken, refreshToken);
             }
 
-            await _contextAccessor.HttpContext.SignInAsync(parameters.SignInScheme, result.Principal, result.Properties);
+            await _contextAccessor.HttpContext.SignInAsync(parameters.SignInScheme, transformedPrincipal, result.Properties);
         }
 
         /// <inheritdoc/>
@@ -135,6 +138,16 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         {
             // todo
             return Task.CompletedTask;
+        }
+
+        /// <summary>
+        /// Allows transforming the principal before re-issuing the authentication session
+        /// </summary>
+        /// <param name="principal"></param>
+        /// <returns></returns>
+        protected virtual Task<ClaimsPrincipal> TransformPrincipal(ClaimsPrincipal principal)
+        {
+            return Task.FromResult(principal);
         }
     }
 }
