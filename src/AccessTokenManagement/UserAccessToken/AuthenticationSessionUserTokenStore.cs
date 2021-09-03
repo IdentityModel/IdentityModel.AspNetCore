@@ -108,7 +108,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
 
             // in case you want to filter certain claims before re-issuing the authentication session
-            var transformedPrincipal = await TransformPrincipal(result.Principal);
+            var transformedPrincipal = await FilterPrincipalAsync(result.Principal);
 
             var tokenName = OpenIdConnectParameterNames.AccessToken;
             if (!string.IsNullOrEmpty(parameters.Resource))
@@ -145,7 +145,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// </summary>
         /// <param name="principal"></param>
         /// <returns></returns>
-        protected virtual Task<ClaimsPrincipal> TransformPrincipal(ClaimsPrincipal principal)
+        protected virtual Task<ClaimsPrincipal> FilterPrincipalAsync(ClaimsPrincipal principal)
         {
             return Task.FromResult(principal);
         }
