@@ -40,7 +40,9 @@ namespace AspNetCoreSecurity
 
                 options.Filters.Add(new AuthorizeFilter(global));
 
-            }).SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_2_1);
+            }).SetCompatibilityVersion(Microsoft.AspNetCore.Mvc.CompatibilityVersion.Version_3_0);
+
+            services.AddRouting();
 
             services.AddAuthentication(options =>
             {
@@ -85,7 +87,9 @@ namespace AspNetCoreSecurity
             app.UseStaticFiles();
 
             app.UseAuthentication();
-            app.UseMvcWithDefaultRoute();
+
+            app.UseRouting();
+            app.UseEndpoints(endpoints => endpoints.MapDefaultControllerRoute());
         }
     }
 }
