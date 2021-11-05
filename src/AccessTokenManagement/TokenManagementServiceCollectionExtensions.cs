@@ -157,6 +157,29 @@ namespace Microsoft.Extensions.DependencyInjection
         }
 
         /// <summary>
+        /// Adds a named HTTP client for the factory that automatically sends the current user access token
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="name">The name of the client.</param>
+        /// <param name="parameters"></param>
+        /// <param name="configureClient">Additional configuration with service provider instance.</param>
+        /// <returns></returns>
+        public static IHttpClientBuilder AddUserAccessTokenHttpClient(this IServiceCollection services,
+            string name,
+            UserAccessTokenParameters parameters = null,
+            Action<IServiceProvider, HttpClient> configureClient = null)
+        {
+            if (configureClient != null)
+            {
+                return services.AddHttpClient(name, configureClient)
+                    .AddUserAccessTokenHandler(parameters);
+            }
+
+            return services.AddHttpClient(name)
+                .AddUserAccessTokenHandler(parameters);
+        }
+
+        /// <summary>
         /// Adds a named HTTP client for the factory that automatically sends the a client access token
         /// </summary>
         /// <param name="services"></param>
@@ -167,6 +190,28 @@ namespace Microsoft.Extensions.DependencyInjection
         public static IHttpClientBuilder AddClientAccessTokenHttpClient(this IServiceCollection services, string clientName,
             string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName,
             Action<HttpClient> configureClient = null)
+        {
+            if (configureClient != null)
+            {
+                return services.AddHttpClient(clientName, configureClient)
+                    .AddClientAccessTokenHandler(tokenClientName);
+            }
+
+            return services.AddHttpClient(clientName)
+                .AddClientAccessTokenHandler(tokenClientName);
+        }
+
+        /// <summary>
+        /// Adds a named HTTP client for the factory that automatically sends the a client access token
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="clientName">The name of the client.</param>
+        /// <param name="tokenClientName">The name of the token client.</param>
+        /// <param name="configureClient">Additional configuration with service provider instance.</param>
+        /// <returns></returns>
+        public static IHttpClientBuilder AddClientAccessTokenHttpClient(this IServiceCollection services, string clientName,
+            string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName,
+            Action<IServiceProvider, HttpClient> configureClient = null)
         {
             if (configureClient != null)
             {
