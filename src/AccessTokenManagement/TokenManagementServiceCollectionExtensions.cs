@@ -20,8 +20,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds the token management services to DI
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configureAction"></param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="configureAction">A delegate that is used to configure an <see cref="AccessTokenManagementOptions"/>.</param>
         /// <returns></returns>
         public static TokenManagementBuilder AddAccessTokenManagement(this IServiceCollection services,
             Action<AccessTokenManagementOptions> configureAction = null)
@@ -40,6 +40,38 @@ namespace Microsoft.Extensions.DependencyInjection
             return new TokenManagementBuilder(services);
         }
 
+        /// <summary>
+        /// Adds the token management services to DI
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="configureAction">A delegate that is used to configure an <see cref="AccessTokenManagementOptions"/>.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// The <see cref="IServiceProvider"/> provided to <paramref name="configureAction"/> will be the
+        /// same application's root service provider instance.
+        /// </remarks>
+        public static TokenManagementBuilder AddAccessTokenManagement(
+            this IServiceCollection services,
+            Action<IServiceProvider, AccessTokenManagementOptions> configureAction = null)
+
+        {
+            CheckConfigMarker(services);
+
+            var options = new AccessTokenManagementOptions();
+
+            services.AddSingleton(provider =>
+            {
+                configureAction?.Invoke(provider, options);
+                return options.Client;
+            });
+
+            services.AddSingleton(options.User);
+
+            services.AddUserAccessTokenManagementInternal();
+            services.AddClientAccessTokenManagementInternal();
+
+            return new TokenManagementBuilder(services);
+        }
         private static void CheckConfigMarker(IServiceCollection services)
         {
             var marker = services.FirstOrDefault(s => s.ServiceType == typeof(ConfigMarker));
@@ -53,12 +85,11 @@ namespace Microsoft.Extensions.DependencyInjection
                 "Call 'AddAccessTokenManagement' to add support for both client and user access tokens. Or call 'AddUserAccessTokenManagement' or 'AddClientAccessTokenManagement' respectively. You cannot mix them. Nor can you call them multiple times.");
         }
 
-        
         /// <summary>
         /// Adds the services required for client access token management
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configureAction"></param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="configureAction">A delegate that is used to configure a <see cref="ClientAccessTokenManagementOptions"/>.</param>
         /// <returns></returns>
         public static TokenManagementBuilder AddClientAccessTokenManagement(this IServiceCollection services,
             Action<ClientAccessTokenManagementOptions> configureAction = null)
@@ -73,7 +104,35 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services.AddClientAccessTokenManagementInternal();
         }
-        
+
+        /// <summary>
+        /// Adds the services required for client access token management
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="configureAction">A delegate that is used to configure a <see cref="ClientAccessTokenManagementOptions"/>.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// The <see cref="IServiceProvider"/> provided to <paramref name="configureAction"/> will be the
+        /// same application's root service provider instance.
+        /// </remarks>
+        public static TokenManagementBuilder AddClientAccessTokenManagement(this IServiceCollection services,
+            Action<IServiceProvider, ClientAccessTokenManagementOptions> configureAction = null)
+        {
+            CheckConfigMarker(services);
+
+            services.AddSingleton(provider =>
+            {
+                var clientOptions = new ClientAccessTokenManagementOptions();
+                configureAction?.Invoke(provider, clientOptions);
+
+                return clientOptions;
+            });
+
+            services.AddSingleton(new UserAccessTokenManagementOptions());
+
+            return services.AddClientAccessTokenManagementInternal();
+        }
+
         private static TokenManagementBuilder AddClientAccessTokenManagementInternal(this IServiceCollection services)
         {
             // necessary ASP.NET plumbing
@@ -89,12 +148,12 @@ namespace Microsoft.Extensions.DependencyInjection
             
             return new TokenManagementBuilder(services);
         }
-        
+
         /// <summary>
         /// Adds the services required for user access token management
         /// </summary>
-        /// <param name="services"></param>
-        /// <param name="configureAction"></param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="configureAction">A delegate that is used to configure an <see cref="UserAccessTokenManagementOptions"/>.</param>
         /// <returns></returns>
         public static TokenManagementBuilder AddUserAccessTokenManagement(this IServiceCollection services,
             Action<UserAccessTokenManagementOptions> configureAction = null)
@@ -105,6 +164,34 @@ namespace Microsoft.Extensions.DependencyInjection
             configureAction?.Invoke(userOptions);
             
             services.AddSingleton(userOptions);
+            services.AddSingleton(new ClientAccessTokenManagementOptions());
+
+            return services.AddUserAccessTokenManagementInternal();
+        }
+
+        /// <summary>
+        /// Adds the services required for user access token management
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <param name="configureAction">A delegate that is used to configure an <see cref="UserAccessTokenManagementOptions"/>.</param>
+        /// <returns></returns>
+        /// <remarks>
+        /// The <see cref="IServiceProvider"/> provided to <paramref name="configureAction"/> will be the
+        /// same application's root service provider instance.
+        /// </remarks>
+        public static TokenManagementBuilder AddUserAccessTokenManagement(this IServiceCollection services,
+            Action<IServiceProvider, UserAccessTokenManagementOptions> configureAction = null)
+        {
+            CheckConfigMarker(services);
+
+            services.AddSingleton(provider =>
+            {
+                var userOptions = new UserAccessTokenManagementOptions();
+                configureAction?.Invoke(provider, userOptions);
+                return userOptions;
+            });
+
+            
             services.AddSingleton(new ClientAccessTokenManagementOptions());
 
             return services.AddUserAccessTokenManagementInternal();
@@ -132,14 +219,14 @@ namespace Microsoft.Extensions.DependencyInjection
             
             services.AddHttpClient(AccessTokenManagementDefaults.BackChannelHttpClientName);
         }
-        
+
         /// <summary>
         /// Adds a named HTTP client for the factory that automatically sends the current user access token
         /// </summary>
-        /// <param name="services"></param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="name">The name of the client.</param>
         /// <param name="parameters"></param>
-        /// <param name="configureClient">Additional configuration.</param>
+        /// <param name="configureClient">A delegate that is used to configure a <see cref="HttpClient"/>.</param>
         /// <returns></returns>
         public static IHttpClientBuilder AddUserAccessTokenHttpClient(this IServiceCollection services, 
             string name,
@@ -159,7 +246,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds a named HTTP client for the factory that automatically sends the current user access token
         /// </summary>
-        /// <param name="services"></param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="name">The name of the client.</param>
         /// <param name="parameters"></param>
         /// <param name="configureClient">Additional configuration with service provider instance.</param>
@@ -182,10 +269,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds a named HTTP client for the factory that automatically sends the a client access token
         /// </summary>
-        /// <param name="services"></param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="clientName">The name of the client.</param>
         /// <param name="tokenClientName">The name of the token client.</param>
-        /// <param name="configureClient">Additional configuration.</param>
+        /// <param name="configureClient">A delegate that is used to configure a <see cref="HttpClient"/>.</param>
         /// <returns></returns>
         public static IHttpClientBuilder AddClientAccessTokenHttpClient(this IServiceCollection services, string clientName,
             string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName,
@@ -204,7 +291,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <summary>
         /// Adds a named HTTP client for the factory that automatically sends the a client access token
         /// </summary>
-        /// <param name="services"></param>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="clientName">The name of the client.</param>
         /// <param name="tokenClientName">The name of the token client.</param>
         /// <param name="configureClient">Additional configuration with service provider instance.</param>
