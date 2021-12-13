@@ -10,6 +10,9 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
@@ -128,6 +131,19 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             if (refreshToken != null)
             {
                 result.Properties.UpdateTokenValue(OpenIdConnectParameterNames.RefreshToken, refreshToken);
+            }
+
+            var options = _contextAccessor.HttpContext.RequestServices.GetRequiredService<IOptionsMonitor<CookieAuthenticationOptions>>();
+            var schemeProvider = _contextAccessor.HttpContext.RequestServices.GetRequiredService<IAuthenticationSchemeProvider>();
+            var scheme = parameters.SignInScheme ?? (await schemeProvider.GetDefaultSignInSchemeAsync()).Name;
+            var cookieOptions = options.Get(scheme);
+            if (result.Properties.AllowRefresh == true ||
+                (result.Properties.AllowRefresh == null && cookieOptions.SlidingExpiration)
+                )
+            {
+                // this will allow the cookie to be issued with a new issued (and thus a new expiration)
+                result.Properties.IssuedUtc = null;
+                result.Properties.ExpiresUtc = null;
             }
 
             await _contextAccessor.HttpContext.SignInAsync(parameters.SignInScheme, transformedPrincipal, result.Properties);
