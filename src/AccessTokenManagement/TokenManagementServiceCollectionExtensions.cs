@@ -18,13 +18,34 @@ namespace Microsoft.Extensions.DependencyInjection
     public static class TokenManagementServiceCollectionExtensions
     {
         /// <summary>
+        /// Adds the token management services to DI using all default values
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <returns></returns>
+        public static TokenManagementBuilder AddAccessTokenManagement(this IServiceCollection services)
+        {
+            CheckConfigMarker(services);
+            
+            var options = new AccessTokenManagementOptions();
+            
+            services.AddSingleton(options.Client);
+            services.AddSingleton(options.User);
+
+            services.AddUserAccessTokenManagementInternal();
+            services.AddClientAccessTokenManagementInternal();
+            
+            return new TokenManagementBuilder(services);
+        }
+        
+        /// <summary>
         /// Adds the token management services to DI
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configureAction">A delegate that is used to configure an <see cref="AccessTokenManagementOptions"/>.</param>
         /// <returns></returns>
-        public static TokenManagementBuilder AddAccessTokenManagement(this IServiceCollection services,
-            Action<AccessTokenManagementOptions> configureAction = null)
+        public static TokenManagementBuilder AddAccessTokenManagement(
+            this IServiceCollection services,
+            Action<AccessTokenManagementOptions> configureAction)
         {
             CheckConfigMarker(services);
             
@@ -52,8 +73,7 @@ namespace Microsoft.Extensions.DependencyInjection
         /// </remarks>
         public static TokenManagementBuilder AddAccessTokenManagement(
             this IServiceCollection services,
-            Action<IServiceProvider, AccessTokenManagementOptions> configureAction = null)
-
+            Action<IServiceProvider, AccessTokenManagementOptions> configureAction)
         {
             CheckConfigMarker(services);
 
@@ -72,27 +92,33 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return new TokenManagementBuilder(services);
         }
-        private static void CheckConfigMarker(IServiceCollection services)
+        
+        /// <summary>
+        /// Adds the services required for client access token management using all default values
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <returns></returns>
+        public static TokenManagementBuilder AddClientAccessTokenManagement(this IServiceCollection services)
         {
-            var marker = services.FirstOrDefault(s => s.ServiceType == typeof(ConfigMarker));
-            if (marker == null)
-            {
-                services.AddSingleton(new ConfigMarker());
-                return;
-            }
+            CheckConfigMarker(services);
+            
+            var clientOptions = new ClientAccessTokenManagementOptions();
+            
+            services.AddSingleton(clientOptions);
+            services.AddSingleton(new UserAccessTokenManagementOptions());
 
-            throw new InvalidOperationException(
-                "Call 'AddAccessTokenManagement' to add support for both client and user access tokens. Or call 'AddUserAccessTokenManagement' or 'AddClientAccessTokenManagement' respectively. You cannot mix them. Nor can you call them multiple times.");
+            return services.AddClientAccessTokenManagementInternal();
         }
-
+        
         /// <summary>
         /// Adds the services required for client access token management
         /// </summary>
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configureAction">A delegate that is used to configure a <see cref="ClientAccessTokenManagementOptions"/>.</param>
         /// <returns></returns>
-        public static TokenManagementBuilder AddClientAccessTokenManagement(this IServiceCollection services,
-            Action<ClientAccessTokenManagementOptions> configureAction = null)
+        public static TokenManagementBuilder AddClientAccessTokenManagement(
+            this IServiceCollection services,
+            Action<ClientAccessTokenManagementOptions> configureAction)
         {
             CheckConfigMarker(services);
             
@@ -115,8 +141,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// The <see cref="IServiceProvider"/> provided to <paramref name="configureAction"/> will be the
         /// same application's root service provider instance.
         /// </remarks>
-        public static TokenManagementBuilder AddClientAccessTokenManagement(this IServiceCollection services,
-            Action<IServiceProvider, ClientAccessTokenManagementOptions> configureAction = null)
+        public static TokenManagementBuilder AddClientAccessTokenManagement(
+            this IServiceCollection services,
+            Action<IServiceProvider, ClientAccessTokenManagementOptions> configureAction)
         {
             CheckConfigMarker(services);
 
@@ -132,21 +159,22 @@ namespace Microsoft.Extensions.DependencyInjection
 
             return services.AddClientAccessTokenManagementInternal();
         }
-
-        private static TokenManagementBuilder AddClientAccessTokenManagementInternal(this IServiceCollection services)
+        
+        /// <summary>
+        /// Adds the services required for user access token management using all default values
+        /// </summary>
+        /// <param name="services">The <see cref="IServiceCollection"/>.</param>
+        /// <returns></returns>
+        public static TokenManagementBuilder AddUserAccessTokenManagement(this IServiceCollection services)
         {
-            // necessary ASP.NET plumbing
-            services.AddDistributedMemoryCache();
-            services.TryAddSingleton<ISystemClock, SystemClock>();
-            services.TryAddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
+            CheckConfigMarker(services);
             
-            services.AddSharedServices();
+            var userOptions = new UserAccessTokenManagementOptions();
             
-            services.TryAddTransient<IClientAccessTokenManagementService, ClientAccessTokenManagementService>();
-            services.TryAddTransient<IClientAccessTokenCache, ClientAccessTokenCache>();
-            services.TryAddSingleton<IClientAccessTokenRequestSynchronization, AccessTokenRequestSynchronization>();
-            
-            return new TokenManagementBuilder(services);
+            services.AddSingleton(userOptions);
+            services.AddSingleton(new ClientAccessTokenManagementOptions());
+
+            return services.AddUserAccessTokenManagementInternal();
         }
 
         /// <summary>
@@ -155,8 +183,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="services">The <see cref="IServiceCollection"/>.</param>
         /// <param name="configureAction">A delegate that is used to configure an <see cref="UserAccessTokenManagementOptions"/>.</param>
         /// <returns></returns>
-        public static TokenManagementBuilder AddUserAccessTokenManagement(this IServiceCollection services,
-            Action<UserAccessTokenManagementOptions> configureAction = null)
+        public static TokenManagementBuilder AddUserAccessTokenManagement(
+            this IServiceCollection services,
+            Action<UserAccessTokenManagementOptions> configureAction)
         {
             CheckConfigMarker(services);
             
@@ -179,8 +208,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// The <see cref="IServiceProvider"/> provided to <paramref name="configureAction"/> will be the
         /// same application's root service provider instance.
         /// </remarks>
-        public static TokenManagementBuilder AddUserAccessTokenManagement(this IServiceCollection services,
-            Action<IServiceProvider, UserAccessTokenManagementOptions> configureAction = null)
+        public static TokenManagementBuilder AddUserAccessTokenManagement(
+            this IServiceCollection services,
+            Action<IServiceProvider, UserAccessTokenManagementOptions> configureAction)
         {
             CheckConfigMarker(services);
 
@@ -342,6 +372,35 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 return new UserAccessTokenHandler(contextAccessor, parameters);
             });
+        }
+        
+        private static TokenManagementBuilder AddClientAccessTokenManagementInternal(this IServiceCollection services)
+        {
+            // necessary ASP.NET plumbing
+            services.AddDistributedMemoryCache();
+            services.TryAddSingleton<ISystemClock, SystemClock>();
+            services.TryAddSingleton<IAuthenticationSchemeProvider, AuthenticationSchemeProvider>();
+            
+            services.AddSharedServices();
+            
+            services.TryAddTransient<IClientAccessTokenManagementService, ClientAccessTokenManagementService>();
+            services.TryAddTransient<IClientAccessTokenCache, ClientAccessTokenCache>();
+            services.TryAddSingleton<IClientAccessTokenRequestSynchronization, AccessTokenRequestSynchronization>();
+            
+            return new TokenManagementBuilder(services);
+        }
+        
+        private static void CheckConfigMarker(IServiceCollection services)
+        {
+            var marker = services.FirstOrDefault(s => s.ServiceType == typeof(ConfigMarker));
+            if (marker == null)
+            {
+                services.AddSingleton(new ConfigMarker());
+                return;
+            }
+
+            throw new InvalidOperationException(
+                "Call 'AddAccessTokenManagement' to add support for both client and user access tokens. Or call 'AddUserAccessTokenManagement' or 'AddClientAccessTokenManagement' respectively. You cannot mix them. Nor can you call them multiple times.");
         }
     }
 }
