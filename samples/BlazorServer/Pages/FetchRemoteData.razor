@@ -1,0 +1,32 @@
+﻿@page "/fetchremotedata"
+
+<PageTitle>Remote API</PageTitle>
+
+@using BlazorServer.Services
+@inject RemoteApiService Service
+
+<h1>Remote API</h1>
+
+<p>This component demonstrates fetching data from a remote API.</p>
+
+@if (data == null)
+{
+    <p>
+        <em>Loading...</em>
+    </p>
+}
+else
+{
+    <pre>
+        @data
+    </pre>
+}
+
+@code {
+    private string? data = null;
+
+    protected override async Task OnInitializedAsync()
+    {
+        data = await Service.GetData();
+    }
+}
