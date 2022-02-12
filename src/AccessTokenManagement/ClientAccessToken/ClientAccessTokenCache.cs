@@ -17,6 +17,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         private readonly IDistributedCache _cache;
         private readonly ILogger<ClientAccessTokenCache> _logger;
         private readonly ClientAccessTokenManagementOptions _options;
+        private const string EntrySeparator = "___";
 
         /// <summary>
         /// ctor
@@ -45,12 +46,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 {
                     _logger.LogDebug("Cache hit for access token for client: {clientName}", clientName);
 
-                    var values = entry.Split(new[] { "___" }, StringSplitOptions.RemoveEmptyEntries);
+                    var index = entry.LastIndexOf(EntrySeparator);
 
                     return new ClientAccessToken
                     {
-                        AccessToken = values[0],
-                        Expiration = DateTimeOffset.FromUnixTimeSeconds(long.Parse(values[1]))
+                        AccessToken = entry.Substring(0, index),
+                        Expiration = DateTimeOffset.FromUnixTimeSeconds(long.Parse(entry.AsSpan(index + EntrySeparator.Length)))
                     };
                 }
                 catch (Exception ex)
@@ -73,7 +74,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             var expirationEpoch = expiration.ToUnixTimeSeconds();
             var cacheExpiration = expiration.AddSeconds(-_options.CacheLifetimeBuffer);
 
-            var data = $"{accessToken}___{expirationEpoch.ToString()}";
+            var data = $"{accessToken}{EntrySeparator}{expirationEpoch}";
 
             var entryOptions = new DistributedCacheEntryOptions
             {
