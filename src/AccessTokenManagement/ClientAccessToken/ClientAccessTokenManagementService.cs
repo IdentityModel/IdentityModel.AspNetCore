@@ -64,7 +64,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
                         if (response.IsError)
                         {
-                            _logger.LogError("Error requesting access token for client {clientName}. Error = {error}", clientName, response.Error);
+                            _logger.LogError("Error requesting access token for client {clientName}. Error = {error}. Error description = {errorDescription}", clientName, response.Error, response.ErrorDescription);
                             return null;
                         }
 
