@@ -18,7 +18,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// Specifies the resource parameter.
         /// </summary>
-        public string Resource { get; set; }
+        public string? Resource { get; set; }
 
         /// <summary>
         /// Additional context that might be relevant in the pipeline

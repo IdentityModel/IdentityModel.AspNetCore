@@ -13,7 +13,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// The access token
         /// </summary>
-        public string AccessToken { get; set; }
+        public string? AccessToken { get; set; }
         
         /// <summary>
         /// The access token expiration
@@ -23,6 +23,6 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// The refresh token
         /// </summary>
-        public string RefreshToken { get; set; }
+        public string? RefreshToken { get; set; }
     }
 }

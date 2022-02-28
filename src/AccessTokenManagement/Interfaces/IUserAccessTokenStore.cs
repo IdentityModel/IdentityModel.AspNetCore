@@ -21,7 +21,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="refreshToken">The refresh token (optional)</param>
         /// <param name="parameters">Extra optional parameters</param>
         /// <returns></returns>
-        Task StoreTokenAsync(ClaimsPrincipal user, string accessToken, DateTimeOffset expiration, string refreshToken = null, UserAccessTokenParameters parameters = null);
+        Task StoreTokenAsync(
+            ClaimsPrincipal user,
+            string accessToken,
+            DateTimeOffset expiration,
+            string? refreshToken = null,
+            UserAccessTokenParameters? parameters = null);
 
         /// <summary>
         /// Retrieves tokens from store
@@ -29,7 +34,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="user">User the tokens belong to</param>
         /// <param name="parameters">Extra optional parameters</param>
         /// <returns>access and refresh token and access token expiration</returns>
-        Task<UserAccessToken> GetTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters = null);
+        Task<UserAccessToken?> GetTokenAsync(
+            ClaimsPrincipal user, 
+            UserAccessTokenParameters? parameters = null);
 
         /// <summary>
         /// Clears the stored tokens for a given user
@@ -37,6 +44,8 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="user">User the tokens belong to</param>
         /// <param name="parameters">Extra optional parameters</param>
         /// <returns></returns>
-        Task ClearTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters = null);
+        Task ClearTokenAsync(
+            ClaimsPrincipal user, 
+            UserAccessTokenParameters? parameters = null);
     }
 }

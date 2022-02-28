@@ -49,7 +49,9 @@ public static class HostingExtensions
                     var svc = n.HttpContext.RequestServices.GetRequiredService<IUserAccessTokenStore>();
                     var exp = DateTimeOffset.UtcNow.AddSeconds(Double.Parse(n.TokenEndpointResponse!.ExpiresIn));
 
-                    await svc.StoreTokenAsync(n.Principal, n.TokenEndpointResponse.AccessToken, exp,
+                    await svc.StoreTokenAsync(
+                        n.Principal!, n.TokenEndpointResponse.AccessToken, 
+                        exp,
                         n.TokenEndpointResponse.RefreshToken);
                 };
             });

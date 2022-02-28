@@ -45,7 +45,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
         
         /// <inheritdoc />
-        public virtual async Task<ClientCredentialsTokenRequest> GetClientCredentialsRequestAsync(string clientName, ClientAccessTokenParameters parameters)
+        public virtual async Task<ClientCredentialsTokenRequest> GetClientCredentialsRequestAsync(
+            string clientName, 
+            ClientAccessTokenParameters parameters)
         {
             ClientCredentialsTokenRequest requestDetails;
             
@@ -92,7 +94,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
             else
             {
-                if (!_clientAccessTokenManagementOptions.Clients.TryGetValue(clientName, out requestDetails))
+                if (!_clientAccessTokenManagementOptions.Clients.TryGetValue(clientName, out requestDetails!))
                 {
                     throw new InvalidOperationException($"No access token client configuration found for client: {clientName}");
                 }
@@ -103,7 +105,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc />
-        public virtual async Task<RefreshTokenRequest> GetRefreshTokenRequestAsync(UserAccessTokenParameters parameters = null)
+        public virtual async Task<RefreshTokenRequest> GetRefreshTokenRequestAsync(UserAccessTokenParameters? parameters = null)
         {
             var (options, configuration) = await GetOpenIdConnectSettingsAsync(parameters?.ChallengeScheme ?? _userAccessTokenManagementOptions.SchemeName);
 
@@ -125,7 +127,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc />
-        public virtual async Task<TokenRevocationRequest> GetTokenRevocationRequestAsync(UserAccessTokenParameters parameters = null)
+        public virtual async Task<TokenRevocationRequest> GetTokenRevocationRequestAsync(UserAccessTokenParameters? parameters = null)
         {
             var (options, configuration) = await GetOpenIdConnectSettingsAsync(parameters?.ChallengeScheme ?? _userAccessTokenManagementOptions.SchemeName);
             
@@ -152,7 +154,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="schemeName"></param>
         /// <returns></returns>
         /// <exception cref="InvalidOperationException"></exception>
-        public virtual async Task<(OpenIdConnectOptions options, OpenIdConnectConfiguration configuration)> GetOpenIdConnectSettingsAsync(string schemeName)
+        public virtual async Task<(OpenIdConnectOptions options, OpenIdConnectConfiguration configuration)> GetOpenIdConnectSettingsAsync(string? schemeName)
         {
             OpenIdConnectOptions options;
 
@@ -175,7 +177,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             OpenIdConnectConfiguration configuration;
             try
             {
-                configuration = await options.ConfigurationManager.GetConfigurationAsync(default);
+                configuration = await options.ConfigurationManager!.GetConfigurationAsync(default);
             }
             catch (Exception e)
             {
@@ -190,9 +192,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// </summary>
         /// <param name="clientName">Name of client (if present)</param>
         /// <returns></returns>
-        protected virtual Task<ClientAssertion> CreateAssertionAsync(string clientName = default)
+        protected virtual Task<ClientAssertion?> CreateAssertionAsync(string? clientName = null)
         {
-            return Task.FromResult<ClientAssertion>(null);
+            return Task.FromResult<ClientAssertion?>(null);
         }
     }
 }

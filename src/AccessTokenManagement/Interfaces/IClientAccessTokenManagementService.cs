@@ -18,9 +18,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="parameters">Optional parameters.</param>
         /// <param name="cancellationToken">A cancellation token to cancel the operation</param>
         /// <returns>The access token or null if the no token can be requested.</returns>
-        Task<string> GetClientAccessTokenAsync(
+        Task<string?> GetClientAccessTokenAsync(
             string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, 
-            ClientAccessTokenParameters parameters = null, 
+            ClientAccessTokenParameters? parameters = null, 
             CancellationToken cancellationToken = default);
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <returns>The access token or null if the no token can be requested.</returns>
         Task DeleteClientAccessTokenAsync(
             string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, 
-            ClientAccessTokenParameters parameters = null, 
+            ClientAccessTokenParameters? parameters = null, 
             CancellationToken cancellationToken = default);
     }
 }

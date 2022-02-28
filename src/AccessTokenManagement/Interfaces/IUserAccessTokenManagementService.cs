@@ -16,12 +16,18 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="parameters"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        Task<string> GetUserAccessTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default);
+        Task<string?> GetUserAccessTokenAsync(
+            ClaimsPrincipal user, 
+            UserAccessTokenParameters? parameters = null, 
+            CancellationToken cancellationToken = default);
         
         /// <summary>
         /// Revokes the current refresh token
         /// </summary>
         /// <returns></returns>
-        Task RevokeRefreshTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default);
+        Task RevokeRefreshTokenAsync(
+            ClaimsPrincipal user, 
+            UserAccessTokenParameters? parameters = null, 
+            CancellationToken cancellationToken = default);
     }
 }

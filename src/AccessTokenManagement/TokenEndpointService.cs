@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Brock Allen & Dominick Baier. All rights reserved.
 // Licensed under the Apache License, Version 2.0. See LICENSE in the project root for license information.
 
+using System;
 using System.Collections.Generic;
 using IdentityModel.Client;
 using System.Net.Http;
@@ -37,10 +38,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
         /// <inheritdoc/>
         public async Task<TokenResponse> RequestClientAccessToken(
-            string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, 
-            ClientAccessTokenParameters parameters = null,
+            string? clientName = AccessTokenManagementDefaults.DefaultTokenClientName, 
+            ClientAccessTokenParameters? parameters = null,
             CancellationToken cancellationToken = default)
         {
+            if (clientName == null) throw new ArgumentNullException(nameof(clientName));
+            if (clientName == null) throw new ArgumentNullException(nameof(clientName));
             _logger.LogDebug("Requesting client access token for client: {client}", clientName);
             
             parameters ??= new ClientAccessTokenParameters();
@@ -65,7 +68,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc/>
         public async Task<TokenResponse> RefreshUserAccessTokenAsync(
             string refreshToken, 
-            UserAccessTokenParameters parameters = null, 
+            UserAccessTokenParameters? parameters = null, 
             CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Refreshing refresh token: {token}", refreshToken);
@@ -93,7 +96,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc/>
         public async Task<TokenRevocationResponse> RevokeRefreshTokenAsync(
             string refreshToken, 
-            UserAccessTokenParameters parameters = null, 
+            UserAccessTokenParameters? parameters = null, 
             CancellationToken cancellationToken = default)
         {
             _logger.LogDebug("Revoking refresh token: {token}", refreshToken);

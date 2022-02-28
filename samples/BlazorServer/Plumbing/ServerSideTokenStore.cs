@@ -20,13 +20,13 @@ public class ServerSideTokenStore : IUserAccessTokenStore
         return Task.CompletedTask;
     }
 
-    public Task<UserAccessToken> GetTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters? parameters = null)
+    public Task<UserAccessToken?> GetTokenAsync(ClaimsPrincipal user, UserAccessTokenParameters? parameters = null)
     {
         var sub = user.FindFirst("sub")?.Value ?? throw new InvalidOperationException("no sub claim");
         
         _tokens.TryGetValue(sub, out var value);
         
-        return Task.FromResult(value!);
+        return Task.FromResult(value);
     }
 
     public Task StoreTokenAsync(ClaimsPrincipal user, string accessToken, DateTimeOffset expiration, string? refreshToken = null, UserAccessTokenParameters? parameters = null)
