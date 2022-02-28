@@ -53,7 +53,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         {
             parameters ??= new UserAccessTokenParameters();
             
-            if (user == null || !user.Identity.IsAuthenticated)
+            if (!user.Identity!.IsAuthenticated)
             {
                 return null;
             }
@@ -92,7 +92,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
                 try
                 {
-                    return await _sync.Dictionary.GetOrAdd(userToken.RefreshToken, _ =>
+                    return await _sync.Dictionary.GetOrAdd(userToken.RefreshToken!, _ =>
                     {
                         return new Lazy<Task<string?>>(async () =>
                         {
@@ -103,7 +103,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 }
                 finally
                 {
-                    _sync.Dictionary.TryRemove(userToken.RefreshToken, out _);
+                    _sync.Dictionary.TryRemove(userToken.RefreshToken!, out _);
                 }
             }
 
@@ -136,7 +136,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             CancellationToken cancellationToken = default)
         {
             var userToken = await _userAccessTokenStore.GetTokenAsync(user, parameters);
-            var response = await _tokenEndpointService.RefreshUserAccessTokenAsync(userToken.RefreshToken, parameters, cancellationToken);
+            var response = await _tokenEndpointService.RefreshUserAccessTokenAsync(userToken?.RefreshToken ?? "", parameters, cancellationToken);
 
             if (!response.IsError)
             {

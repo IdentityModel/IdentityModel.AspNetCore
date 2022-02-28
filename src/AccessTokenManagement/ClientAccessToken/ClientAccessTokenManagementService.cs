@@ -85,6 +85,8 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             ClientAccessTokenParameters? parameters = null, 
             CancellationToken cancellationToken = default)
         {
+            parameters ??= new();
+            
             return _clientAccessTokenCache.DeleteAsync(clientName, parameters, cancellationToken);
         }
     }

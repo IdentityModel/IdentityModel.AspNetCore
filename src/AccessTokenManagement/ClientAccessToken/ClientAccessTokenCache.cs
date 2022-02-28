@@ -33,7 +33,10 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<ClientAccessToken?> GetAsync(string clientName, ClientAccessTokenParameters parameters, CancellationToken cancellationToken = default)
+        public async Task<ClientAccessToken?> GetAsync(
+            string clientName, 
+            ClientAccessTokenParameters parameters,
+            CancellationToken cancellationToken = default)
         {
             if (clientName is null) throw new ArgumentNullException(nameof(clientName));
             
@@ -46,7 +49,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 {
                     _logger.LogDebug("Cache hit for access token for client: {clientName}", clientName);
 
-                    var index = entry.LastIndexOf(EntrySeparator);
+                    var index = entry.LastIndexOf(EntrySeparator, StringComparison.Ordinal);
 
                     return new ClientAccessToken
                     {
@@ -66,7 +69,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task SetAsync(string clientName, string accessToken, int expiresIn, ClientAccessTokenParameters parameters, CancellationToken cancellationToken = default)
+        public async Task SetAsync(
+            string clientName,
+            string accessToken,
+            int expiresIn,
+            ClientAccessTokenParameters parameters,
+            CancellationToken cancellationToken = default)
         {
             if (clientName is null) throw new ArgumentNullException(nameof(clientName));
 
@@ -88,7 +96,10 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public Task DeleteAsync(string clientName, ClientAccessTokenParameters parameters, CancellationToken cancellationToken = default)
+        public Task DeleteAsync(
+            string clientName,
+            ClientAccessTokenParameters parameters,
+            CancellationToken cancellationToken = default)
         {
             if (clientName is null) throw new ArgumentNullException(nameof(clientName));
 
@@ -103,8 +114,10 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="clientName"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual string GenerateCacheKey(ClientAccessTokenManagementOptions options, string clientName,
-            ClientAccessTokenParameters parameters)
+        protected virtual string GenerateCacheKey(
+            ClientAccessTokenManagementOptions options, 
+            string clientName,
+            ClientAccessTokenParameters? parameters = null)
         {
             return options.CacheKeyPrefix + "::" + clientName + "::" + parameters?.Resource ?? "";
         }

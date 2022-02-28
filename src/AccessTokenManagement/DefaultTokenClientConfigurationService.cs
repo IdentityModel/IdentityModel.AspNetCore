@@ -94,7 +94,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
             else
             {
-                if (!_clientAccessTokenManagementOptions.Clients.TryGetValue(clientName, out requestDetails))
+                if (!_clientAccessTokenManagementOptions.Clients.TryGetValue(clientName, out requestDetails!))
                 {
                     throw new InvalidOperationException($"No access token client configuration found for client: {clientName}");
                 }
@@ -177,7 +177,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             OpenIdConnectConfiguration configuration;
             try
             {
-                configuration = await options.ConfigurationManager.GetConfigurationAsync(default);
+                configuration = await options.ConfigurationManager!.GetConfigurationAsync(default);
             }
             catch (Exception e)
             {

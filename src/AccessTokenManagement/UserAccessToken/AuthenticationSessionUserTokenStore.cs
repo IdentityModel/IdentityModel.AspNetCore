@@ -63,7 +63,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
 
             var tokens = result.Properties.Items.Where(i => i.Key.StartsWith(TokenPrefix)).ToList();
-            if (tokens == null || !tokens.Any())
+            if (!tokens.Any())
             {
                 _logger.LogInformation("No tokens found in cookie properties. SaveTokens must be enabled for automatic token refresh.");
                 
@@ -109,15 +109,15 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             UserAccessTokenParameters? parameters = null)
         {
             parameters ??= new UserAccessTokenParameters();
-            var result = await _contextAccessor!.HttpContext!.AuthenticateAsync(parameters.SignInScheme);
+            var result = await _contextAccessor!.HttpContext!.AuthenticateAsync(parameters.SignInScheme)!;
 
-            if (!result.Succeeded)
+            if (result is not { Succeeded: true })
             {
                 throw new Exception("Can't store tokens. User is anonymous");
             }
 
             // in case you want to filter certain claims before re-issuing the authentication session
-            var transformedPrincipal = await FilterPrincipalAsync(result.Principal);
+            var transformedPrincipal = await FilterPrincipalAsync(result.Principal!);
 
             var tokenName = OpenIdConnectParameterNames.AccessToken;
             if (!string.IsNullOrEmpty(parameters.Resource))
@@ -131,8 +131,8 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 expiresName += $"::{parameters.Resource}";
             }
             
-            result.Properties.Items[$".Token.{tokenName}"] = accessToken;
-            result.Properties.Items[$".Token.{expiresName}"] = expiration.ToString("o", CultureInfo.InvariantCulture);
+            result.Properties!.Items[$".Token.{tokenName}"] = accessToken;
+            result.Properties!.Items[$".Token.{expiresName}"] = expiration.ToString("o", CultureInfo.InvariantCulture);
 
             if (refreshToken != null)
             {
@@ -141,7 +141,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             var options = _contextAccessor!.HttpContext!.RequestServices.GetRequiredService<IOptionsMonitor<CookieAuthenticationOptions>>();
             var schemeProvider = _contextAccessor.HttpContext.RequestServices.GetRequiredService<IAuthenticationSchemeProvider>();
-            var scheme = parameters.SignInScheme ?? (await schemeProvider.GetDefaultSignInSchemeAsync()).Name;
+            var scheme = parameters.SignInScheme ?? (await schemeProvider.GetDefaultSignInSchemeAsync())?.Name;
             var cookieOptions = options.Get(scheme);
             
             if (result.Properties.AllowRefresh == true ||
