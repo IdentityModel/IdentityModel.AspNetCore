@@ -12,7 +12,7 @@ namespace IdentityModel.AspNetCore
         /// <summary>
         /// Concurrent dictionary as synchronization primitive
         /// </summary>
-        public ConcurrentDictionary<string, Lazy<Task<string>>> Dictionary { get; }
+        public ConcurrentDictionary<string, Lazy<Task<string?>>> Dictionary { get; }
     }
 
 
@@ -30,6 +30,6 @@ namespace IdentityModel.AspNetCore
     public class AccessTokenRequestSynchronization : IClientAccessTokenRequestSynchronization, IUserAccessTokenRequestSynchronization
     {
         /// <inheritdoc />
-        public ConcurrentDictionary<string, Lazy<Task<string>>> Dictionary { get; } = new();
+        public ConcurrentDictionary<string, Lazy<Task<string?>>> Dictionary { get; } = new();
     }
 }

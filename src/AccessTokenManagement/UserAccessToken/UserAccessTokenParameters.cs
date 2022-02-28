@@ -13,12 +13,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// Overrides the default sign-in scheme. This information may be used for state management.
         /// </summary>
-        public string SignInScheme { get; set; }
+        public string? SignInScheme { get; set; }
         
         /// <summary>
         /// Overrides the default challenge scheme. This information may be used for deriving token service configuration.
         /// </summary>
-        public string ChallengeScheme { get; set; }
+        public string? ChallengeScheme { get; set; }
 
         /// <summary>
         /// Force renewal of token.
@@ -28,7 +28,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// Specifies the resource parameter.
         /// </summary>
-        public string Resource { get; set; }
+        public string? Resource { get; set; }
 
         /// <summary>
         /// Additional context that might be relevant in the pipeline

@@ -23,7 +23,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// </summary>
         /// <param name="httpContextAccessor"></param>
         /// <param name="parameters"></param>
-        public UserAccessTokenHandler(IHttpContextAccessor httpContextAccessor, UserAccessTokenParameters parameters = null)
+        public UserAccessTokenHandler(IHttpContextAccessor httpContextAccessor, UserAccessTokenParameters? parameters = null)
         {
             _httpContextAccessor = httpContextAccessor;
             _parameters = parameters ?? new UserAccessTokenParameters();
@@ -64,7 +64,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 Context =  _parameters.Context
             };
               
-            var token = await _httpContextAccessor.HttpContext.GetUserAccessTokenAsync(parameters);
+            var token = await _httpContextAccessor!.HttpContext!.GetUserAccessTokenAsync(parameters);
 
             if (!string.IsNullOrWhiteSpace(token))
             {

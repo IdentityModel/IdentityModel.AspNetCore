@@ -21,7 +21,10 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="parameters">Extra optional parameters</param>
         /// <param name="cancellationToken">A cancellation token to cancel operation.</param>
         /// <returns></returns>
-        public static async Task<string> GetUserAccessTokenAsync(this HttpContext httpContext, UserAccessTokenParameters parameters = null, CancellationToken cancellationToken = default)
+        public static async Task<string?> GetUserAccessTokenAsync(
+            this HttpContext httpContext, 
+            UserAccessTokenParameters? parameters = null, 
+            CancellationToken cancellationToken = default)
         {
             var service = httpContext.RequestServices.GetRequiredService<IUserAccessTokenManagementService>();
 
@@ -36,10 +39,10 @@ namespace Microsoft.AspNetCore.Authentication
         /// <param name="parameters"></param>
         /// <param name="cancellationToken">A cancellation token to cancel operation.</param>
         /// <returns></returns>
-        public static async Task<string> GetClientAccessTokenAsync(
+        public static async Task<string?> GetClientAccessTokenAsync(
             this HttpContext httpContext, 
             string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, 
-            ClientAccessTokenParameters parameters = null,
+            ClientAccessTokenParameters? parameters = null,
             CancellationToken cancellationToken = default)
         {
             var service = httpContext.RequestServices.GetRequiredService<IClientAccessTokenManagementService>();
@@ -56,7 +59,7 @@ namespace Microsoft.AspNetCore.Authentication
         /// <returns></returns>
         public static async Task RevokeUserRefreshTokenAsync(
             this HttpContext httpContext, 
-            UserAccessTokenParameters parameters = null, 
+            UserAccessTokenParameters? parameters = null, 
             CancellationToken cancellationToken = default)
         {
             var service = httpContext.RequestServices.GetRequiredService<IUserAccessTokenManagementService>();

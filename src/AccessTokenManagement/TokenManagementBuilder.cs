@@ -30,7 +30,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// Configures the back-channel client
         /// </summary>
         /// <returns></returns>
-        public IHttpClientBuilder ConfigureBackchannelHttpClient(Action<HttpClient> configureClient = null)
+        public IHttpClientBuilder ConfigureBackchannelHttpClient(Action<HttpClient>? configureClient = null)
         {
             if (configureClient == null)
             {

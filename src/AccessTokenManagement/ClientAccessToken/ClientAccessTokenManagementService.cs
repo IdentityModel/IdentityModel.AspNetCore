@@ -38,9 +38,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<string> GetClientAccessTokenAsync(
+        public async Task<string?> GetClientAccessTokenAsync(
             string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, 
-            ClientAccessTokenParameters parameters = null,
+            ClientAccessTokenParameters? parameters = null,
             CancellationToken cancellationToken = default)
         {
             parameters ??= new ClientAccessTokenParameters();
@@ -58,7 +58,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             {
                 return await _sync.Dictionary.GetOrAdd(clientName, _ =>
                 {
-                    return new Lazy<Task<string>>(async () =>
+                    return new Lazy<Task<string?>>(async () =>
                     {
                         var response = await _tokenEndpointService.RequestClientAccessToken(clientName, parameters, cancellationToken);
 
@@ -82,7 +82,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <inheritdoc/>
         public Task DeleteClientAccessTokenAsync(
             string clientName = AccessTokenManagementDefaults.DefaultTokenClientName, 
-            ClientAccessTokenParameters parameters = null, 
+            ClientAccessTokenParameters? parameters = null, 
             CancellationToken cancellationToken = default)
         {
             return _clientAccessTokenCache.DeleteAsync(clientName, parameters, cancellationToken);

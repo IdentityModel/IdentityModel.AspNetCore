@@ -11,7 +11,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// Options for the default client
         /// </summary>
-        public DefaultClientOptions DefaultClient { get; set; } = new DefaultClientOptions();
+        public DefaultClientOptions DefaultClient { get; set; } = new();
         
         /// <summary>
         /// Used to prefix the cache key
@@ -37,19 +37,19 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             /// Sets the scheme name of an OpenID Connect handler, if the client configuration should be derived from it.
             /// This will be used as a default if no explicit clients are configured (and will fallback to the default challenge scheme if left empty).
             /// </summary>
-            public string Scheme { get; set; }
+            public string? Scheme { get; set; }
 
             /// <summary>
             /// Scope values as space separated list to use when client configuration is inferred from OpenID Connect scheme.
             /// If not set, token request will omit scope parameter.
             /// </summary>
-            public string Scope { get; set; }
+            public string? Scope { get; set; }
             
             /// <summary>
             /// Resource value when client configuration is inferred from OpenID Connect scheme.
             /// If not set, token request will omit resource parameter.
             /// </summary>
-            public string Resource { get; set; }
+            public string? Resource { get; set; }
         }
     }
 }

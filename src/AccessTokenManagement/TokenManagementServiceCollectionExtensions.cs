@@ -260,8 +260,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IHttpClientBuilder AddUserAccessTokenHttpClient(this IServiceCollection services, 
             string name,
-            UserAccessTokenParameters parameters = null, 
-            Action<HttpClient> configureClient = null)
+            UserAccessTokenParameters? parameters = null, 
+            Action<HttpClient>? configureClient = null)
         {
             if (configureClient != null)
             {
@@ -283,8 +283,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns></returns>
         public static IHttpClientBuilder AddUserAccessTokenHttpClient(this IServiceCollection services,
             string name,
-            UserAccessTokenParameters parameters = null,
-            Action<IServiceProvider, HttpClient> configureClient = null)
+            UserAccessTokenParameters? parameters = null,
+            Action<IServiceProvider, HttpClient>? configureClient = null)
         {
             if (configureClient != null)
             {
@@ -304,9 +304,10 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="tokenClientName">The name of the token client.</param>
         /// <param name="configureClient">A delegate that is used to configure a <see cref="HttpClient"/>.</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddClientAccessTokenHttpClient(this IServiceCollection services, string clientName,
+        public static IHttpClientBuilder AddClientAccessTokenHttpClient(
+            this IServiceCollection services, string clientName,
             string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName,
-            Action<HttpClient> configureClient = null)
+            Action<HttpClient>? configureClient = null)
         {
             if (configureClient != null)
             {
@@ -326,9 +327,11 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="tokenClientName">The name of the token client.</param>
         /// <param name="configureClient">Additional configuration with service provider instance.</param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddClientAccessTokenHttpClient(this IServiceCollection services, string clientName,
+        public static IHttpClientBuilder AddClientAccessTokenHttpClient(
+            this IServiceCollection services, 
+            string clientName,
             string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName,
-            Action<IServiceProvider, HttpClient> configureClient = null)
+            Action<IServiceProvider, HttpClient>? configureClient = null)
         {
             if (configureClient != null)
             {
@@ -346,7 +349,8 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="httpClientBuilder"></param>
         /// <param name="tokenClientName"></param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddClientAccessTokenHandler(this IHttpClientBuilder httpClientBuilder,
+        public static IHttpClientBuilder AddClientAccessTokenHandler(
+            this IHttpClientBuilder httpClientBuilder,
             string tokenClientName = AccessTokenManagementDefaults.DefaultTokenClientName)
         {
             return httpClientBuilder.AddHttpMessageHandler(provider =>
@@ -363,8 +367,9 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <param name="httpClientBuilder"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public static IHttpClientBuilder AddUserAccessTokenHandler(this IHttpClientBuilder httpClientBuilder,
-            UserAccessTokenParameters parameters = null)
+        public static IHttpClientBuilder AddUserAccessTokenHandler(
+            this IHttpClientBuilder httpClientBuilder,
+            UserAccessTokenParameters? parameters = null)
         {
             return httpClientBuilder.AddHttpMessageHandler(provider =>
             {

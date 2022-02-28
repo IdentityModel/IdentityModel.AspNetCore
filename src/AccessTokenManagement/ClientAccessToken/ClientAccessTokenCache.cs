@@ -33,7 +33,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <inheritdoc/>
-        public async Task<ClientAccessToken> GetAsync(string clientName, ClientAccessTokenParameters parameters, CancellationToken cancellationToken = default)
+        public async Task<ClientAccessToken?> GetAsync(string clientName, ClientAccessTokenParameters parameters, CancellationToken cancellationToken = default)
         {
             if (clientName is null) throw new ArgumentNullException(nameof(clientName));
             
