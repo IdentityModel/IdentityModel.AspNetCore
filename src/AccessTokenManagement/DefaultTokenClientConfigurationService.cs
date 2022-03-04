@@ -142,6 +142,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             var assertion = await CreateAssertionAsync();
             if (assertion != null)
             {
+                requestDetails.ClientCredentialStyle = ClientCredentialStyle.PostBody;
                 requestDetails.ClientAssertion = assertion;
             }
 
