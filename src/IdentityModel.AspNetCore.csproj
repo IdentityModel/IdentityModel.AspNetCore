@@ -26,7 +26,7 @@
     
     <PackageReference Include="IdentityModel" Version="6.0.0" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-    <PackageReference Include="minver" Version="3.0.0-rc.1" PrivateAssets="All" />
+    <PackageReference Include="minver" Version="3.0.0-rc.2" PrivateAssets="All" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'netcoreapp3.1' ">
