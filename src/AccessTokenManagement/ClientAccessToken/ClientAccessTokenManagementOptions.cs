@@ -22,7 +22,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// Value to subtract from token lifetime for the cache entry lifetime (defaults to 60 seconds)
         /// </summary>
         public int CacheLifetimeBuffer { get; set; } = 60;
-
+        
+        /// <summary>
+        /// Default client credential style to use when requesting tokens
+        /// </summary>
+        public ClientCredentialStyle ClientCredentialStyle { get; set; } = ClientCredentialStyle.AuthorizationHeader;
+        
         /// <summary>
         /// Configures named client configurations for requesting client tokens.
         /// </summary>

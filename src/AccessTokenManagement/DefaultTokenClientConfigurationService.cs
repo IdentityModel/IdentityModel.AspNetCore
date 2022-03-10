@@ -70,6 +70,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                     requestDetails = new ClientCredentialsTokenRequest
                     {
                         Address = configuration.TokenEndpoint,
+                        ClientCredentialStyle = _clientAccessTokenManagementOptions.ClientCredentialStyle,
 
                         ClientId = options.ClientId,
                         ClientSecret = options.ClientSecret
@@ -113,6 +114,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             var requestDetails = new RefreshTokenRequest
             {
                 Address = configuration.TokenEndpoint,
+                ClientCredentialStyle = _userAccessTokenManagementOptions.ClientCredentialStyle,
 
                 ClientId = options.ClientId,
                 ClientSecret = options.ClientSecret
@@ -136,6 +138,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             var requestDetails = new TokenRevocationRequest
             {
                 Address = configuration.AdditionalData[OidcConstants.Discovery.RevocationEndpoint].ToString(),
+                ClientCredentialStyle = _userAccessTokenManagementOptions.ClientCredentialStyle,
 
                 ClientId = options.ClientId,
                 ClientSecret = options.ClientSecret

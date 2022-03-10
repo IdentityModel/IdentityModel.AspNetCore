@@ -1,4 +1,5 @@
 using System;
+using IdentityModel.Client;
 
 namespace IdentityModel.AspNetCore.AccessTokenManagement
 {
@@ -7,6 +8,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// </summary>
     public class UserAccessTokenManagementOptions
     {
+        /// <summary>
+        /// Default client credential style to use when requesting tokens
+        /// </summary>
+        public ClientCredentialStyle ClientCredentialStyle { get; set; } =
+            ClientCredentialStyle.AuthorizationHeader;
+        
         /// <summary>
         /// Name of the authentication scheme to use for deriving token service configuration
         /// (will fall back to configured default challenge scheme if not set)
