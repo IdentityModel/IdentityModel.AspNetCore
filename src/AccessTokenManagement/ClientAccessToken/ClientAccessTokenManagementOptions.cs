@@ -26,7 +26,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <summary>
         /// Default client credential style to use when requesting tokens
         /// </summary>
-        public ClientCredentialStyle ClientCredentialStyle { get; set; } = ClientCredentialStyle.AuthorizationHeader;
+        public ClientCredentialStyle ClientCredentialStyle { get; set; } = ClientCredentialStyle.PostBody;
         
         /// <summary>
         /// Configures named client configurations for requesting client tokens.
