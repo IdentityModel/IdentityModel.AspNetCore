@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.28803.452
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IdentityModel.AspNetCore", "src\IdentityModel.AspNetCore.csproj", "{C7C805C1-6D28-4179-8447-16CE0A3ECF41}"
 EndProject
@@ -13,13 +13,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{A7311E40-E
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Tests", "test\Tests\Tests.csproj", "{A891D28E-52E0-4B93-BE47-92DE2B9CB655}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Worker", "samples\Worker\Worker.csproj", "{2F0D8378-1ADA-4F0B-B8E6-7E1D97F1CBCC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Worker", "samples\Worker\Worker.csproj", "{2F0D8378-1ADA-4F0B-B8E6-7E1D97F1CBCC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Web", "samples\Web\Web.csproj", "{0F751A6E-EFB1-483E-BDF5-008644C07C07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Web", "samples\Web\Web.csproj", "{0F751A6E-EFB1-483E-BDF5-008644C07C07}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebMultiResource", "samples\WebMultiResource\WebMultiResource.csproj", "{A91C34AD-34D7-44C9-B643-1257F2162969}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WebMultiResource", "samples\WebMultiResource\WebMultiResource.csproj", "{A91C34AD-34D7-44C9-B643-1257F2162969}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BlazorServer", "samples\BlazorServer\BlazorServer.csproj", "{4B08A8E3-8C9D-4F03-AD72-F461F13C7CA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BlazorServer", "samples\BlazorServer\BlazorServer.csproj", "{4B08A8E3-8C9D-4F03-AD72-F461F13C7CA9}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Clients.Bff.InMemoryTests", "test\Clients.Bff.InMemoryTests\Clients.Bff.InMemoryTests.csproj", "{B838B133-80CA-4185-AD02-1972FA9321B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -103,6 +105,18 @@ Global
 		{4B08A8E3-8C9D-4F03-AD72-F461F13C7CA9}.Release|x64.Build.0 = Release|Any CPU
 		{4B08A8E3-8C9D-4F03-AD72-F461F13C7CA9}.Release|x86.ActiveCfg = Release|Any CPU
 		{4B08A8E3-8C9D-4F03-AD72-F461F13C7CA9}.Release|x86.Build.0 = Release|Any CPU
+		{B838B133-80CA-4185-AD02-1972FA9321B3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B838B133-80CA-4185-AD02-1972FA9321B3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B838B133-80CA-4185-AD02-1972FA9321B3}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{B838B133-80CA-4185-AD02-1972FA9321B3}.Debug|x64.Build.0 = Debug|Any CPU
+		{B838B133-80CA-4185-AD02-1972FA9321B3}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{B838B133-80CA-4185-AD02-1972FA9321B3}.Debug|x86.Build.0 = Debug|Any CPU
+		{B838B133-80CA-4185-AD02-1972FA9321B3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B838B133-80CA-4185-AD02-1972FA9321B3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B838B133-80CA-4185-AD02-1972FA9321B3}.Release|x64.ActiveCfg = Release|Any CPU
+		{B838B133-80CA-4185-AD02-1972FA9321B3}.Release|x64.Build.0 = Release|Any CPU
+		{B838B133-80CA-4185-AD02-1972FA9321B3}.Release|x86.ActiveCfg = Release|Any CPU
+		{B838B133-80CA-4185-AD02-1972FA9321B3}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -114,6 +128,7 @@ Global
 		{0F751A6E-EFB1-483E-BDF5-008644C07C07} = {B8F1A24B-007A-4735-B33E-9528662EDCAD}
 		{A91C34AD-34D7-44C9-B643-1257F2162969} = {B8F1A24B-007A-4735-B33E-9528662EDCAD}
 		{4B08A8E3-8C9D-4F03-AD72-F461F13C7CA9} = {B8F1A24B-007A-4735-B33E-9528662EDCAD}
+		{B838B133-80CA-4185-AD02-1972FA9321B3} = {A7311E40-E3DC-4FE8-906C-FC943B7E7444}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {7A4E29A0-CAE8-45E9-817B-AF126F85EE15}

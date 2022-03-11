@@ -1,0 +1,79 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup Condition=" '$(NETCoreSdkPortableRuntimeIdentifier)' != 'osx-arm64' ">
+    <TargetFrameworks>net5.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Endpoints\Management\**" />
+    <Compile Remove="Headers\**" />
+    <Compile Remove="SessionManagement\**" />
+    <EmbeddedResource Remove="Endpoints\Management\**" />
+    <EmbeddedResource Remove="Headers\**" />
+    <EmbeddedResource Remove="SessionManagement\**" />
+    <None Remove="Endpoints\Management\**" />
+    <None Remove="Headers\**" />
+    <None Remove="SessionManagement\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="Endpoints\ClientsRemoteEndpointTests.cs" />
+    <Compile Remove="Endpoints\LocalEndpointTests.cs" />
+    <Compile Remove="Endpoints\RemoteEndpointTests.cs" />
+    <Compile Remove="FakeBffUserAccessAccessTokenManagementServiceTemp.cs" />
+    <Compile Remove="FakeDefaultTokenClientConfigurationService.cs" />
+    <Compile Remove="GenericHostTests.cs" />
+    <Compile Remove="TestHosts\BffHost.cs" />
+    <Compile Remove="TestHosts\BffIntegrationTestBase.cs" />
+    <Compile Remove="TestHosts\MyTokenEndpointService.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="appsettings.Development.json" />
+    <None Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="appsettings.Development.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <PackageReference Include="Duende.BFF" Version="1.1.3" />
+    <PackageReference Include="Duende.BFF.Yarp" Version="1.1.3" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.0.0" />
+    <PackageReference Include="xunit" Version="2.4.1" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.4.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="FluentAssertions" Version="5.10.3" />
+    <PackageReference Include="coverlet.collector" Version="3.0.3">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="CsQuery.NETStandard" Version="1.3.6.1" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net5.0'">
+    <PackageReference Include="Duende.IdentityServer" Version="5.2.3" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'net6.0'">
+    <PackageReference Include="Duende.IdentityServer" Version="6.0.0-preview.2" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="6.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.TestHost" Version="6.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\IdentityModel.AspNetCore.csproj" />
+  </ItemGroup>
+
+</Project>
