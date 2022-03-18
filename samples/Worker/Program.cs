@@ -4,6 +4,8 @@ using Serilog;
 using System;
 using IdentityModel.Client;
 using Serilog.Sinks.SystemConsole.Themes;
+using IdentityModel.AspNetCore.AccessTokenManagement.Azure;
+using Azure.Identity;
 
 namespace WorkerService
 {
@@ -21,6 +23,8 @@ namespace WorkerService
 
         public static IHostBuilder CreateHostBuilder(string[] args)
         {
+            const string vaultPrefix = "AzureKeyVault";
+
             var host = Host.CreateDefaultBuilder(args)
                 .UseSerilog()
                 .ConfigureServices((hostContext, services) =>
@@ -34,6 +38,15 @@ namespace WorkerService
                             ClientSecret = "secret",
                             Scope = "api"
                         });
+                    })
+                    .WithAzureKeyVault(opts =>
+                    {
+                        opts.Url = new Uri(hostContext.Configuration[$"{vaultPrefix}:Url"]);
+
+                        opts.Credential = new ClientSecretCredential(
+                            hostContext.Configuration[$"{vaultPrefix}:TenantId"],
+                            hostContext.Configuration[$"{vaultPrefix}:ClientId"],
+                            hostContext.Configuration[$"{vaultPrefix}:ClientSecret"]);          
                     });
 
                     services.AddClientAccessTokenHttpClient("client", configureClient: client =>
