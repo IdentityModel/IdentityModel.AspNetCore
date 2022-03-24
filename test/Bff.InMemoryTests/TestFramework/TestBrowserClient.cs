@@ -9,14 +9,11 @@ using System.Net;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-
 using CsQuery;
-
 using FluentAssertions;
-
 using Xunit.Abstractions;
 
-namespace Clients.Bff.InMemoryTests.TestFramework
+namespace Bff.InMemoryTests.TestFramework
 {
     public class TestBrowserClient : HttpClient
     {

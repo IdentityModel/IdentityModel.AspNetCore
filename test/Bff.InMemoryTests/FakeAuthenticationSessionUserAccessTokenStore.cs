@@ -9,7 +9,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-namespace Clients.Bff.InMemoryTests
+namespace Bff.InMemoryTests
 {
     /// <summary>
     /// Token store using the ASP.NET Core authentication session

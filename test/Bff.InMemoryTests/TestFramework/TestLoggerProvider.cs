@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Logging;
 
-namespace Clients.Bff.InMemoryTests.TestFramework
+namespace Bff.InMemoryTests.TestFramework
 {
     public class TestLoggerProvider : ILoggerProvider
     {

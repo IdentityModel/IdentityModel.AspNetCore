@@ -4,12 +4,12 @@ using System.Net.Http;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Clients.Bff.InMemoryTests.TestFramework;
-using Clients.Bff.InMemoryTests.TestHosts;
+using Bff.InMemoryTests.TestFramework;
+using Bff.InMemoryTests.TestHosts;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Clients.Bff.InMemoryTests.Endpoints
+namespace Bff.InMemoryTests.Endpoints
 {
     public class RefreshTokenManagementWithUpdatedAuthenticationSessionUserAccessTokenStoreTests : ClientsBffIntegrationTestBase
     {
@@ -26,7 +26,7 @@ namespace Clients.Bff.InMemoryTests.Endpoints
             anotherreq.Headers.Add("x-csrf", "1");
             var anotherreqresponse = BffHost.BrowserClient.SendAsync(anotherreq);
 
-            var req = new HttpRequestMessage(HttpMethod.Post, BffHost.Url("/cdpapitest"));
+            var req = new HttpRequestMessage(HttpMethod.Post, BffHost.Url("/anapitest"));
             req.Headers.Add("x-csrf", "1");
             req.Content = new StringContent(JsonSerializer.Serialize(new TestPayload("hello test api")), Encoding.UTF8,
                 "application/json");

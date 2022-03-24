@@ -7,7 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using Clients.Bff.InMemoryTests.TestFramework;
+using Bff.InMemoryTests.TestFramework;
 using Duende.IdentityServer.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +15,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.Extensions.DependencyInjection;
 using Xunit.Abstractions;
 
-namespace Clients.Bff.InMemoryTests.TestHosts
+namespace Bff.InMemoryTests.TestHosts
 {
     public class ApiHost : GenericHost
     {
@@ -76,15 +76,13 @@ namespace Clients.Bff.InMemoryTests.TestHosts
                 endpoints.Map("/{**catch-all}", async context =>
                 {
                     var path = context.Request.Path;
-                    if (path.ToString().Contains("cdpapitest"))
+                    if (path.ToString().Contains("anapitest"))
                     {
                         var claim = context.User.Claims.SingleOrDefault(c => c.Type.Equals("amr") && c.Value.Equals("urn:ietf:params:oauth:grant-type:token-exchange"));
                         
                         if (claim == null)
                         {
                             ApiStatusCodeToReturn = 401;
-                            //context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                            //await context.Response.WriteAsync("401");
                         }
                     }
                     if (path.ToString().Contains("api/user"))
@@ -94,8 +92,6 @@ namespace Clients.Bff.InMemoryTests.TestHosts
                         if (claim == null)
                         {
                             ApiStatusCodeToReturn = 401;
-                            //context.Response.StatusCode = (int)HttpStatusCode.Unauthorized;
-                            //await context.Response.WriteAsync("401");
                         }
                     }
 

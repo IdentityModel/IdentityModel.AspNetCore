@@ -5,21 +5,16 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-//using Flagstone.Clients.BFF;
-//using Flagstone.Clients.BFF.Client;
-//using Flagstone.Clients.BFF.Settings;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 
-namespace Clients.Bff.InMemoryTests.TestHosts
+namespace Bff.InMemoryTests.TestHosts
 {
     public static class FakeTenantedTokenExchange
     {
         private const string IdentityServerApiTokenName = "urn:IdentityServerApi";
-        private const string CdpApiTokenName = "urn:cdp.api";
+        private const string AnApiTokenName = "urn:an.api";
         private const string TokenNamesKey = ".TokenNames";
-        private const string TenantSubdomainKey = "tenant_subdomain";
-        private const string AuthSchemeKey = ".AuthScheme";
         private const string ExpiresAtKey = "expires_at";
 
         /// <summary>
@@ -75,18 +70,18 @@ namespace Clients.Bff.InMemoryTests.TestHosts
                         var expiresAt = DateTime.UtcNow + TimeSpan.FromSeconds(value);
                         tokens.Add(new AuthenticationToken { Name = ExpiresAtKey, Value = expiresAt.ToString("o", CultureInfo.InvariantCulture) });
                         tokens.Add(new AuthenticationToken { Name = $"{ExpiresAtKey}::{IdentityServerApiTokenName}", Value = expiresAt.ToString("o", CultureInfo.InvariantCulture) });
-                        tokens.Add(new AuthenticationToken { Name = $"{ExpiresAtKey}::{CdpApiTokenName}", Value = expiresAt.ToString("o", CultureInfo.InvariantCulture) });
+                        tokens.Add(new AuthenticationToken { Name = $"{ExpiresAtKey}::{AnApiTokenName}", Value = expiresAt.ToString("o", CultureInfo.InvariantCulture) });
                     }
                 }
 
                 if (!string.IsNullOrEmpty(exchangedAccessToken))
                 {
-                    tokens.Add(new AuthenticationToken { Name = $"{OpenIdConnectParameterNames.AccessToken}::{CdpApiTokenName}", Value = exchangedAccessToken });
+                    tokens.Add(new AuthenticationToken { Name = $"{OpenIdConnectParameterNames.AccessToken}::{AnApiTokenName}", Value = exchangedAccessToken });
                 }
 
                 if (!string.IsNullOrEmpty(refreshToken))
                 {
-                    tokens.Add(new AuthenticationToken { Name = $"{OpenIdConnectParameterNames.RefreshToken}::flagstone", Value = response.RefreshToken });
+                    tokens.Add(new AuthenticationToken { Name = $"{OpenIdConnectParameterNames.RefreshToken}::achallengescheme", Value = response.RefreshToken });
                 }
 
                 if (!string.IsNullOrEmpty(tokenType))

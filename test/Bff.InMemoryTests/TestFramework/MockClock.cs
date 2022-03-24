@@ -4,7 +4,7 @@
 using System;
 using Microsoft.AspNetCore.Authentication;
 
-namespace Clients.Bff.InMemoryTests.TestFramework
+namespace Bff.InMemoryTests.TestFramework
 {
     public class MockClock : ISystemClock
     {

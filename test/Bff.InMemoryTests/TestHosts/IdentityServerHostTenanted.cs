@@ -5,7 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Clients.Bff.InMemoryTests.TestFramework;
+using Bff.InMemoryTests.TestFramework;
 using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using Microsoft.AspNetCore.Authentication;
@@ -15,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace Clients.Bff.InMemoryTests.TestHosts
+namespace Bff.InMemoryTests.TestHosts
 {
     public class IdentityServerHostTenanted : GenericHost
     {
@@ -37,14 +37,14 @@ namespace Clients.Bff.InMemoryTests.TestHosts
         public List<ApiScope> ApiScopes { get; set; } = new List<ApiScope>(){
             // local API
             new ApiScope("IdentityServerApi"),
-            new ApiScope("cdp.api"),
+            new ApiScope("an.api"),
         };
         public static IEnumerable<ApiResource> ApiResources =>
             new ApiResource[]
             {
-                new ApiResource($"{"urn:cdp.api"}")
+                new ApiResource($"{"urn:an.api"}")
                 {
-                    Scopes = { "cdp.api" },
+                    Scopes = { "an.api" },
                     ApiSecrets =
                     {
                         new Secret("secret".Sha256())

@@ -1,4 +1,4 @@
-namespace Clients.Bff.InMemoryTests
+namespace Bff.InMemoryTests
 {
     public interface IValidatable
     {

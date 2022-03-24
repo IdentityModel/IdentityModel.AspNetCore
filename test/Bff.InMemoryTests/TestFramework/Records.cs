@@ -3,7 +3,7 @@
 
 using System.Text.Json;
 
-namespace Clients.Bff.InMemoryTests.TestFramework
+namespace Bff.InMemoryTests.TestFramework
 {
     public record JsonRecord(string type, JsonElement value);
     

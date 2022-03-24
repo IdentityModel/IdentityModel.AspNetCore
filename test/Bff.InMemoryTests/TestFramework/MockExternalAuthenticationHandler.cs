@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Clients.Bff.InMemoryTests.TestFramework
+namespace Bff.InMemoryTests.TestFramework
 {
     public class MockExternalAuthenticationHandler : RemoteAuthenticationHandler<MockExternalAuthenticationOptions>, IAuthenticationSignOutHandler
     {

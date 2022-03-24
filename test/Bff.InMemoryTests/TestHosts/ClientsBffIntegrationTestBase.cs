@@ -11,7 +11,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Xunit.Abstractions;
 
-namespace Clients.Bff.InMemoryTests.TestHosts
+namespace Bff.InMemoryTests.TestHosts
 {
     public class ClientsBffIntegrationTestBase
     {
@@ -35,7 +35,7 @@ namespace Clients.Bff.InMemoryTests.TestHosts
                 PostLogoutRedirectUris = { "https://app/signout-callback-oidc" },
                 BackChannelLogoutUri = "https://app/bff/backchannel",
                 AllowOfflineAccess = true,
-                AllowedScopes = { $"openid", "profile", "scope1", { "cdp.api" }, { "IdentityServerApi" } }
+                AllowedScopes = { $"openid", "profile", "scope1", { "an.api" }, { "IdentityServerApi" } }
             });
             
             #if NET6_0_OR_GREATER

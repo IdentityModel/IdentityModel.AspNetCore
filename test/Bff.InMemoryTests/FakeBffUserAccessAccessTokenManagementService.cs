@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Logging;
 
-namespace Clients.Bff.InMemoryTests
+namespace Bff.InMemoryTests
 {
     /// <summary>
     /// Implements basic token management logic
@@ -25,7 +25,7 @@ namespace Clients.Bff.InMemoryTests
         private readonly ISystemClock _clock;
         private readonly UserAccessTokenManagementOptions _options;
         private readonly ITokenEndpointService _tokenEndpointService;
-        private readonly ILogger<UserAccessAccessTokenManagementService> _logger;
+        private readonly ILogger<FakeBffUserAccessAccessTokenManagementService> _logger;
 
         /// <summary>
         /// ctor
@@ -43,7 +43,7 @@ namespace Clients.Bff.InMemoryTests
             ISystemClock clock,
             UserAccessTokenManagementOptions options,
             ITokenEndpointService tokenEndpointService,
-            ILogger<UserAccessAccessTokenManagementService> logger, 
+            ILogger<FakeBffUserAccessAccessTokenManagementService> logger, 
             IHttpContextAccessor httpContextAccessor)
         {
             _sync = sync;

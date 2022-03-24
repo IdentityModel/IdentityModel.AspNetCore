@@ -6,7 +6,7 @@ using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Validation;
 using IdentityModel;
 
-namespace Clients.Bff.InMemoryTests.TestHosts
+namespace Bff.InMemoryTests.TestHosts
 {
     public class TokenExchangeGrantValidator : IExtensionGrantValidator
     {
@@ -61,7 +61,7 @@ namespace Clients.Bff.InMemoryTests.TestHosts
             var clientId = validationResult.Claims.First(c => c.Type == JwtClaimTypes.ClientId).Value;
 
             // add any custom logic here (if needed)
-            var cdpApiClaim = new Claim(JwtClaimTypes.Scope, "cdp.api");
+            var cdpApiClaim = new Claim(JwtClaimTypes.Scope, "an.api");
             // create response
             context.Result = new GrantValidationResult(
                 subject: sub,

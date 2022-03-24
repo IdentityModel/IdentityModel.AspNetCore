@@ -235,7 +235,7 @@ namespace Microsoft.Extensions.DependencyInjection
             
             services.AddSharedServices();
             
-            services.TryAddTransient<IUserAccessTokenManagementService, UserAccessAccessTokenManagementService>();
+            services.TryAddTransient<IUserAccessTokenManagementService, UserAccessTokenManagementService>();
             services.TryAddTransient<IUserAccessTokenStore, AuthenticationSessionUserAccessTokenStore>();
             services.TryAddSingleton<IUserAccessTokenRequestSynchronization, AccessTokenRequestSynchronization>();
             

@@ -20,23 +20,21 @@
     <Compile Remove="Endpoints\ClientsRemoteEndpointTests.cs" />
     <Compile Remove="Endpoints\LocalEndpointTests.cs" />
     <Compile Remove="Endpoints\RemoteEndpointTests.cs" />
+    <Compile Remove="FakeAuthenticationSessionUserAccessTokenStore.cs" />
     <Compile Remove="FakeBffUserAccessAccessTokenManagementServiceTemp.cs" />
     <Compile Remove="FakeDefaultTokenClientConfigurationService.cs" />
     <Compile Remove="GenericHostTests.cs" />
+    <Compile Remove="TestFramework\MyAuthenticationTokenExtensions.cs" />
     <Compile Remove="TestHosts\BffHost.cs" />
     <Compile Remove="TestHosts\BffIntegrationTestBase.cs" />
     <Compile Remove="TestHosts\MyTokenEndpointService.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <None Remove="appsettings.Development.json" />
     <None Remove="appsettings.json" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="appsettings.Development.json">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="appsettings.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

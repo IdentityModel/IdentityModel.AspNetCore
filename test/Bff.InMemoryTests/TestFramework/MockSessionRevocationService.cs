@@ -5,7 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Duende.Bff;
 
-namespace Clients.Bff.InMemoryTests.TestFramework
+namespace Bff.InMemoryTests.TestFramework
 {
     public class MockSessionRevocationService : ISessionRevocationService
     {

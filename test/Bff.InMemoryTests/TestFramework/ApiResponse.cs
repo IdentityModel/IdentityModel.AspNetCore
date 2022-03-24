@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace Clients.Bff.InMemoryTests.TestFramework
+namespace Bff.InMemoryTests.TestFramework
 {
     public record ApiResponse(string Method, string Path, string Sub, string ClientId, IEnumerable<ClaimRecord> Claims)
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Duende.IdentityServer.Extensions;
 
-namespace Clients.Bff.InMemoryTests
+namespace Bff.InMemoryTests
 {
     internal static class StringExtensions
     {

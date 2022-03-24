@@ -5,7 +5,7 @@ using Duende.IdentityServer.Models;
 using Duende.IdentityServer.Services;
 using IdentityModel;
 
-namespace Clients.Bff.InMemoryTests.TestHosts
+namespace Bff.InMemoryTests.TestHosts
 {
     public class ProfileService : IProfileService
     {
@@ -14,8 +14,8 @@ namespace Clients.Bff.InMemoryTests.TestHosts
             // add actor claim if needed
             if (context.Subject.GetAuthenticationMethod() == OidcConstants.GrantTypes.TokenExchange)
             {
-                context.IssuedClaims.Add(new Claim(JwtClaimTypes.Scope, "cdp.api"));
-                context.IssuedClaims.Add(new Claim(JwtClaimTypes.Audience, "urn:cdp.api"));
+                context.IssuedClaims.Add(new Claim(JwtClaimTypes.Scope, "an.api"));
+                context.IssuedClaims.Add(new Claim(JwtClaimTypes.Audience, "urn:an.api"));
             }
 
             return Task.CompletedTask;

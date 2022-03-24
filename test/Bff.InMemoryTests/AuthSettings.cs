@@ -1,6 +1,6 @@
 using System;
 
-namespace Clients.Bff.InMemoryTests
+namespace Bff.InMemoryTests
 {
     public class AuthSettings : IValidatable
     {

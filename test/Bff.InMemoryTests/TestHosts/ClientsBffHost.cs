@@ -1,8 +1,14 @@
 ﻿// Copyright (c) Duende Software. All rights reserved.
 // See LICENSE in the project root for license information.
 
-using Clients.Bff.InMemoryTests.TestFramework;
-
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Http;
+using System.Text.Json;
+using System.Threading.Tasks;
+using Bff.InMemoryTests.TestFramework;
 using Duende.Bff;
 using Duende.Bff.Yarp;
 using FluentAssertions;
@@ -16,16 +22,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Text.Json;
-using System.Threading.Tasks;
 using Xunit.Abstractions;
 
-namespace Clients.Bff.InMemoryTests.TestHosts
+namespace Bff.InMemoryTests.TestHosts
 {
     public class ClientsBffHost : GenericHost
     {
@@ -68,7 +67,7 @@ namespace Clients.Bff.InMemoryTests.TestHosts
 
             var bff = services.AddBff();
             services.AddSingleton(BffOptions);
-            
+
             var descriptorIUserAccessTokenManagementService = services.FirstOrDefault(descriptor => descriptor.ServiceType == typeof(IUserAccessTokenManagementService));
             services.Remove(descriptorIUserAccessTokenManagementService);
             services.TryAddTransient<IUserAccessTokenManagementService, FakeBffUserAccessAccessTokenManagementService>();
@@ -163,16 +162,6 @@ namespace Clients.Bff.InMemoryTests.TestHosts
 
                     };
 
-                    options.Events.OnTokenValidated = context =>
-                    {
-                        if (context.Request.Cookies.TryGetValue(".correlation.failures", out var value))
-                        {
-                            context.Response.Cookies.Delete(".correlation.failures", new CookieOptions());
-                        }
-
-                        return Task.CompletedTask;
-                    };
-
                     options.Authority = _identityServerHostTenanted.Url();
 
                     options.ClientId = _clientId;
@@ -197,7 +186,7 @@ namespace Clients.Bff.InMemoryTests.TestHosts
 
                     options.BackchannelHttpHandler = _identityServerHostTenanted.Server.CreateHandler();
                 })
-                .AddOpenIdConnect("flagstone", options =>
+                .AddOpenIdConnect("achallengescheme", options =>
                 {
                     options.Events.OnMessageReceived = (context) =>
                     {
@@ -296,10 +285,10 @@ namespace Clients.Bff.InMemoryTests.TestHosts
             {
                 endpoints.MapBffManagementEndpoints();
 
-                var cdpapitestUrl = _apiHost.Url("/cdpapitest");
+                var anapitestUrl = _apiHost.Url("/anapitest");
                 endpoints.MapRemoteBffApiEndpoint(
-                        "/cdpapitest", cdpapitestUrl)
-                    .WithUserAccessTokenParameter(new BffUserAccessTokenParameters("cookies", "flagstone", true, "urn:cdp.api"))
+                        "/anapitest", anapitestUrl)
+                    .WithUserAccessTokenParameter(new BffUserAccessTokenParameters("cookies", "achallengescheme", true, "urn:an.api"))
                     .RequireAccessToken();
 
                 var apiuserUrl = _apiHost.Url("/api/user");

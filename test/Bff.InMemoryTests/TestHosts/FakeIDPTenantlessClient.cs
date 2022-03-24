@@ -1,11 +1,8 @@
 ﻿using System.Threading.Tasks;
-using Clients.Bff.InMemoryTests.TestFramework;
-//using Flagstone.Clients.BFF;
-//using Flagstone.Clients.BFF.Client;
-//using Flagstone.Clients.BFF.Settings;
+using Bff.InMemoryTests.TestFramework;
 using IdentityModel.Client;
 
-namespace Clients.Bff.InMemoryTests.TestHosts
+namespace Bff.InMemoryTests.TestHosts
 {
     public class FakeIDPTenantlessClient
     {
@@ -45,7 +42,7 @@ namespace Clients.Bff.InMemoryTests.TestHosts
                     
                     Parameters =
                     {
-                        {ProtocolRequestParameters.Scope, $"scope1 { "offline_access"}  {"cdp.api"}"},
+                        {ProtocolRequestParameters.Scope, $"scope1 { "offline_access"}  {"an.api"}"},
                         {ProtocolRequestParameters.SubjectToken, userToken},
                         {ProtocolRequestParameters.SubjectTokenType, TokenTypes.AccessTokenFullUrn}
                     }
