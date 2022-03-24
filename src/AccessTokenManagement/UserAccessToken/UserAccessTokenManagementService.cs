@@ -11,14 +11,14 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     /// <summary>
     /// Implements basic token management logic
     /// </summary>
-    public class UserAccessTokenManagementService : IUserAccessTokenManagementService
+    public class UserAccessAccessTokenManagementService : IUserAccessTokenManagementService
     {
         private readonly IUserAccessTokenRequestSynchronization _sync;
         private readonly IUserAccessTokenStore _userAccessTokenStore;
         private readonly ISystemClock _clock;
         private readonly UserAccessTokenManagementOptions _options;
         private readonly ITokenEndpointService _tokenEndpointService;
-        private readonly ILogger<UserAccessTokenManagementService> _logger;
+        private readonly ILogger<UserAccessAccessTokenManagementService> _logger;
 
         /// <summary>
         /// ctor
@@ -29,13 +29,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         /// <param name="options"></param>
         /// <param name="tokenEndpointService"></param>
         /// <param name="logger"></param>
-        public UserAccessTokenManagementService(
+        public UserAccessAccessTokenManagementService(
             IUserAccessTokenRequestSynchronization sync,
             IUserAccessTokenStore userAccessTokenStore,
             ISystemClock clock,
             UserAccessTokenManagementOptions options,
             ITokenEndpointService tokenEndpointService,
-            ILogger<UserAccessTokenManagementService> logger)
+            ILogger<UserAccessAccessTokenManagementService> logger)
         {
             _sync = sync;
             _userAccessTokenStore = userAccessTokenStore;
