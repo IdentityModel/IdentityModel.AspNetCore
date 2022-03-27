@@ -76,20 +76,25 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 tokenName += $"::{parameters.Resource}";
             }
 
-            var refreshTokenName = $"{TokenPrefix}{OpenIdConnectParameterNames.RefreshToken}";
+            string? refreshToken = null;
+            const string refreshTokenName = $"{TokenPrefix}{OpenIdConnectParameterNames.RefreshToken}";
+
             if (!string.IsNullOrEmpty(parameters.ChallengeScheme))
             {
-                refreshTokenName += $"::{parameters.ChallengeScheme}";
+                refreshToken = tokens.SingleOrDefault(t => t.Key == $"{refreshTokenName}::{parameters.ChallengeScheme}").Value;
             }
+
+            refreshToken ??= tokens.SingleOrDefault(t => t.Key == refreshTokenName).Value;
+
 
             var expiresName = $"{TokenPrefix}expires_at";
             if (!string.IsNullOrEmpty(parameters.Resource))
-            {
+            { 
                 expiresName += $"::{parameters.Resource}";
             }
 
-            var accessToken = tokens.SingleOrDefault(t => t.Key == tokenName);
-            var refreshToken = tokens.SingleOrDefault(t => t.Key == refreshTokenName);
+            var accessToken = tokens.SingleOrDefault(t => t.Key == tokenName).Value;
+
             var expiresAt = tokens.SingleOrDefault(t => t.Key == expiresName);
 
             DateTimeOffset? dtExpires = null;
@@ -100,8 +105,8 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             return new UserAccessToken
             {
-                AccessToken = accessToken.Value,
-                RefreshToken = refreshToken.Value,
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
                 Expiration = dtExpires
             };
         }
