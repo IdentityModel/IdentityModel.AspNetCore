@@ -81,7 +81,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             if (!string.IsNullOrEmpty(parameters.ChallengeScheme))
             {
-                refreshToken = tokens.SingleOrDefault(t => t.Key == $"{refreshTokenName}::{parameters.ChallengeScheme}").Value;
+                refreshToken = tokens.SingleOrDefault(t => t.Key == $"{refreshTokenName}||{parameters.ChallengeScheme}").Value;
             }
 
             refreshToken ??= tokens.SingleOrDefault(t => t.Key == refreshTokenName).Value;
@@ -139,7 +139,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             var refreshTokenName = $"{OpenIdConnectParameterNames.RefreshToken}";
             if (!string.IsNullOrEmpty(parameters.ChallengeScheme))
             {
-                refreshTokenName += $"::{parameters.ChallengeScheme}";
+                refreshTokenName += $"||{parameters.ChallengeScheme}";
             }
 
             var expiresName = "expires_at";
