@@ -76,31 +76,33 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 tokenName += $"::{parameters.Resource}";
             }
 
-            string? refreshToken = null;
+            var expiresName = $"{TokenPrefix}expires_at";
+            if (!string.IsNullOrEmpty(parameters.Resource))
+            {
+                expiresName += $"::{parameters.Resource}";
+            }
+
             const string refreshTokenName = $"{TokenPrefix}{OpenIdConnectParameterNames.RefreshToken}";
+
+            string? refreshToken = null;
+            string? accessToken = null;
+            string? expiresAt = null;
 
             if (!string.IsNullOrEmpty(parameters.ChallengeScheme))
             {
                 refreshToken = tokens.SingleOrDefault(t => t.Key == $"{refreshTokenName}||{parameters.ChallengeScheme}").Value;
+                accessToken = tokens.SingleOrDefault(t => t.Key == $"{tokenName}||{parameters.ChallengeScheme}").Value;
+                expiresAt = tokens.SingleOrDefault(t => t.Key == $"{expiresName}||{parameters.ChallengeScheme}").Value;
             }
 
-            refreshToken ??= tokens.SingleOrDefault(t => t.Key == refreshTokenName).Value;
-
-
-            var expiresName = $"{TokenPrefix}expires_at";
-            if (!string.IsNullOrEmpty(parameters.Resource))
-            { 
-                expiresName += $"::{parameters.Resource}";
-            }
-
-            var accessToken = tokens.SingleOrDefault(t => t.Key == tokenName).Value;
-
-            var expiresAt = tokens.SingleOrDefault(t => t.Key == expiresName);
+            refreshToken ??= tokens.SingleOrDefault(t => t.Key == $"{refreshTokenName}").Value;
+            accessToken ??= tokens.SingleOrDefault(t => t.Key == $"{tokenName}").Value;
+            expiresAt ??= tokens.SingleOrDefault(t => t.Key == $"{expiresName}").Value;
 
             DateTimeOffset? dtExpires = null;
-            if (expiresAt.Value != null)
+            if (expiresAt != null)
             {
-                dtExpires = DateTimeOffset.Parse(expiresAt.Value, CultureInfo.InvariantCulture);
+                dtExpires = DateTimeOffset.Parse(expiresAt, CultureInfo.InvariantCulture);
             }
 
             return new UserAccessToken
@@ -129,6 +131,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             // in case you want to filter certain claims before re-issuing the authentication session
             var transformedPrincipal = await FilterPrincipalAsync(result.Principal!);
+            
+            var expiresName = "expires_at";
+            if (!string.IsNullOrEmpty(parameters.Resource))
+            {
+                expiresName += $"::{parameters.Resource}";
+            }
 
             var tokenName = OpenIdConnectParameterNames.AccessToken;
             if (!string.IsNullOrEmpty(parameters.Resource))
@@ -140,16 +148,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             if (!string.IsNullOrEmpty(parameters.ChallengeScheme))
             {
                 refreshTokenName += $"||{parameters.ChallengeScheme}";
+                tokenName += $"||{parameters.ChallengeScheme}";
+                expiresName += $"||{parameters.ChallengeScheme}";
             }
 
-            var expiresName = "expires_at";
-            if (!string.IsNullOrEmpty(parameters.Resource))
-            {
-                expiresName += $"::{parameters.Resource}";
-            }
 
-            result.Properties!.Items[$".Token.{tokenName}"] = accessToken;
-            result.Properties!.Items[$".Token.{expiresName}"] = expiration.ToString("o", CultureInfo.InvariantCulture);
+            result.Properties!.Items[$"{TokenPrefix}{tokenName}"] = accessToken;
+            result.Properties!.Items[$"{TokenPrefix}{expiresName}"] = expiration.ToString("o", CultureInfo.InvariantCulture);
 
             if (refreshToken != null)
             {
