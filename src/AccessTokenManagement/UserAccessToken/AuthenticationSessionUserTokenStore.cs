@@ -22,7 +22,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     public class AuthenticationSessionUserAccessTokenStore : IUserAccessTokenStore
     {
         private const string TokenPrefix = ".Token.";
-            
+
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly ILogger<AuthenticationSessionUserAccessTokenStore> _logger;
 
@@ -50,7 +50,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             if (!result.Succeeded)
             {
                 _logger.LogInformation("Cannot authenticate scheme: {scheme}", parameters.SignInScheme ?? "default signin scheme");
-                
+
                 return null;
             }
 
@@ -58,7 +58,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             {
                 _logger.LogInformation("Authentication result properties are null for scheme: {scheme}",
                     parameters.SignInScheme ?? "default signin scheme");
-                
+
                 return null;
             }
 
@@ -66,7 +66,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             if (!tokens.Any())
             {
                 _logger.LogInformation("No tokens found in cookie properties. SaveTokens must be enabled for automatic token refresh.");
-                
+
                 return null;
             }
 
@@ -82,28 +82,41 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 expiresName += $"::{parameters.Resource}";
             }
 
-            var accessToken = tokens.SingleOrDefault(t => t.Key == tokenName);
-            var refreshToken = tokens.SingleOrDefault(t => t.Key == $"{TokenPrefix}{OpenIdConnectParameterNames.RefreshToken}");
-            var expiresAt = tokens.SingleOrDefault(t => t.Key == expiresName);
+            const string refreshTokenName = $"{TokenPrefix}{OpenIdConnectParameterNames.RefreshToken}";
+
+            string? refreshToken = null;
+            string? accessToken = null;
+            string? expiresAt = null;
+
+            if (!string.IsNullOrEmpty(parameters.ChallengeScheme))
+            {
+                refreshToken = tokens.SingleOrDefault(t => t.Key == $"{refreshTokenName}||{parameters.ChallengeScheme}").Value;
+                accessToken = tokens.SingleOrDefault(t => t.Key == $"{tokenName}||{parameters.ChallengeScheme}").Value;
+                expiresAt = tokens.SingleOrDefault(t => t.Key == $"{expiresName}||{parameters.ChallengeScheme}").Value;
+            }
+
+            refreshToken ??= tokens.SingleOrDefault(t => t.Key == $"{refreshTokenName}").Value;
+            accessToken ??= tokens.SingleOrDefault(t => t.Key == $"{tokenName}").Value;
+            expiresAt ??= tokens.SingleOrDefault(t => t.Key == $"{expiresName}").Value;
 
             DateTimeOffset? dtExpires = null;
-            if (expiresAt.Value != null)
+            if (expiresAt != null)
             {
-                dtExpires = DateTimeOffset.Parse(expiresAt.Value, CultureInfo.InvariantCulture);
+                dtExpires = DateTimeOffset.Parse(expiresAt, CultureInfo.InvariantCulture);
             }
 
             return new UserAccessToken
             {
-                AccessToken = accessToken.Value,
-                RefreshToken = refreshToken.Value,
+                AccessToken = accessToken,
+                RefreshToken = refreshToken,
                 Expiration = dtExpires
             };
         }
 
         /// <inheritdoc/>
         public async Task StoreTokenAsync(
-            ClaimsPrincipal user, 
-            string accessToken, 
+            ClaimsPrincipal user,
+            string accessToken,
             DateTimeOffset expiration,
             string? refreshToken = null,
             UserAccessTokenParameters? parameters = null)
@@ -118,6 +131,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             // in case you want to filter certain claims before re-issuing the authentication session
             var transformedPrincipal = await FilterPrincipalAsync(result.Principal!);
+            
+            var expiresName = "expires_at";
+            if (!string.IsNullOrEmpty(parameters.Resource))
+            {
+                expiresName += $"::{parameters.Resource}";
+            }
 
             var tokenName = OpenIdConnectParameterNames.AccessToken;
             if (!string.IsNullOrEmpty(parameters.Resource))
@@ -125,25 +144,31 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 tokenName += $"::{parameters.Resource}";
             }
 
-            var expiresName = "expires_at";
-            if (!string.IsNullOrEmpty(parameters.Resource))
+            var refreshTokenName = $"{OpenIdConnectParameterNames.RefreshToken}";
+            if (!string.IsNullOrEmpty(parameters.ChallengeScheme))
             {
-                expiresName += $"::{parameters.Resource}";
+                refreshTokenName += $"||{parameters.ChallengeScheme}";
+                tokenName += $"||{parameters.ChallengeScheme}";
+                expiresName += $"||{parameters.ChallengeScheme}";
             }
-            
-            result.Properties!.Items[$".Token.{tokenName}"] = accessToken;
-            result.Properties!.Items[$".Token.{expiresName}"] = expiration.ToString("o", CultureInfo.InvariantCulture);
+
+
+            result.Properties!.Items[$"{TokenPrefix}{tokenName}"] = accessToken;
+            result.Properties!.Items[$"{TokenPrefix}{expiresName}"] = expiration.ToString("o", CultureInfo.InvariantCulture);
 
             if (refreshToken != null)
             {
-                result.Properties.UpdateTokenValue(OpenIdConnectParameterNames.RefreshToken, refreshToken);
+                if (!result.Properties.UpdateTokenValue(refreshTokenName, refreshToken))
+                {
+                    result.Properties.Items[$"{TokenPrefix}{refreshTokenName}"] = refreshToken;
+                }
             }
 
             var options = _contextAccessor!.HttpContext!.RequestServices.GetRequiredService<IOptionsMonitor<CookieAuthenticationOptions>>();
             var schemeProvider = _contextAccessor.HttpContext.RequestServices.GetRequiredService<IAuthenticationSchemeProvider>();
             var scheme = parameters.SignInScheme ?? (await schemeProvider.GetDefaultSignInSchemeAsync())?.Name;
             var cookieOptions = options.Get(scheme);
-            
+
             if (result.Properties.AllowRefresh == true ||
                 (result.Properties.AllowRefresh == null && cookieOptions.SlidingExpiration))
             {
