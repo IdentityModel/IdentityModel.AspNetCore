@@ -77,6 +77,12 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             CancellationToken cancellationToken = default)
         {
             if (clientName is null) throw new ArgumentNullException(nameof(clientName));
+            
+            // if the token service does not return expiresIn, cache forever and wait for 401
+            if (expiresIn == 0)
+            {
+                expiresIn = Int32.MaxValue;
+            }
 
             var expiration = DateTimeOffset.UtcNow.AddSeconds(expiresIn);
             var expirationEpoch = expiration.ToUnixTimeSeconds();
