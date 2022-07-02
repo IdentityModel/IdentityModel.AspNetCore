@@ -74,7 +74,7 @@ namespace Tests
                     NullLogger<FakeAuthenticationSessionUserAccessTokenStore>.Instance);
 
             var parameters = new UserAccessTokenParameters()
-                {SignInScheme = "mySigninScheme"};
+                { SignInScheme = "mySigninScheme", Resource = "aResource1" };
 
             if (setChallengeScheme)
                 parameters.ChallengeScheme = "myChallengeScheme";
