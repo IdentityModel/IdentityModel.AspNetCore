@@ -9,6 +9,9 @@ public static class HostingExtensions
 {
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
+        builder.Services.AddTransient<CookieEvents>();
+        builder.Services.AddTransient<OidcEvents>();
+        
         builder.Services.AddAuthentication(options =>
             {
                 options.DefaultScheme = "cookie";
@@ -19,6 +22,8 @@ public static class HostingExtensions
             {
                 options.Cookie.Name = "__Host-blazor";
                 options.Cookie.SameSite = SameSiteMode.Lax;
+
+                options.EventsType = typeof(CookieEvents);
             })
             .AddOpenIdConnect("oidc", options =>
             {
@@ -44,16 +49,7 @@ public static class HostingExtensions
                 options.TokenValidationParameters.NameClaimType = "name";
                 options.TokenValidationParameters.RoleClaimType = "role";
 
-                options.Events.OnTokenValidated = async n =>
-                {
-                    var svc = n.HttpContext.RequestServices.GetRequiredService<IUserAccessTokenStore>();
-                    var exp = DateTimeOffset.UtcNow.AddSeconds(Double.Parse(n.TokenEndpointResponse!.ExpiresIn));
-
-                    await svc.StoreTokenAsync(
-                        n.Principal!, n.TokenEndpointResponse.AccessToken, 
-                        exp,
-                        n.TokenEndpointResponse.RefreshToken);
-                };
+                options.EventsType = typeof(OidcEvents);
             });
 
         // adds access token management
@@ -64,8 +60,11 @@ public static class HostingExtensions
         builder.Services.AddSingleton<IUserAccessTokenStore, ServerSideTokenStore>();
 
         // registers HTTP client that uses the managed user access token
-        builder.Services.AddUserAccessTokenHttpClient("client",
-            configureClient: client => { client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/"); });
+        builder.Services.AddTransient<RemoteApiService>();
+        builder.Services.AddHttpClient<RemoteApiService>(client =>
+        {
+            client.BaseAddress = new Uri("https://demo.duendesoftware.com/api/");
+        });
 
         builder.Services.AddAuthorization(options =>
         {
@@ -77,11 +76,9 @@ public static class HostingExtensions
         builder.Services.AddControllersWithViews();
         builder.Services.AddRazorPages();
         builder.Services.AddServerSideBlazor();
-
-        builder.Services.AddSingleton<RemoteApiService>();
+        
         builder.Services.AddSingleton<WeatherForecastService>();
-
-
+        
         return builder.Build();
     }
 
