@@ -38,5 +38,35 @@ namespace Tests
 
             Assert.Equal(prefix, clientAccessTokenManagementOptions.CacheKeyPrefix);
         }
+
+        [Fact]
+        public void UserAccessTokenManagementOptions_UseChallengeSchemeScopedTokens_defaults_to_false()
+        {
+            var services = new ServiceCollection();
+            
+            services.AddAccessTokenManagement((options) => { });
+            var sp = services.BuildServiceProvider();
+            var userAccessTokenManagementOptions = sp.GetService<UserAccessTokenManagementOptions>();
+
+            Assert.False(userAccessTokenManagementOptions.UseChallengeSchemeScopedTokens);
+        }
+
+        [Fact]
+        public void UserAccessTokenManagementOptions_UseChallengeSchemeScopedTokens_must_be_explicitly_set_to_true()
+        {
+            var services = new ServiceCollection();
+
+            services.AddAccessTokenManagement((options) =>
+            {
+                options.User = new UserAccessTokenManagementOptions
+                {
+                    UseChallengeSchemeScopedTokens = true
+                };
+            });
+            var sp = services.BuildServiceProvider();
+            var userAccessTokenManagementOptions = sp.GetService<UserAccessTokenManagementOptions>();
+
+            Assert.True(userAccessTokenManagementOptions.UseChallengeSchemeScopedTokens);
+        }
     }
 }

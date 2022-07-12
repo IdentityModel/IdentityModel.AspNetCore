@@ -24,22 +24,24 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     {
         private const string TokenPrefix = ".Token.";
         private const string TokenNamesKey = ".TokenNames";
-        private const string AppendChallengeSchemeToTokenNames = ".AppendChallengeSchemeToTokenNames";
 
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly ILogger<AuthenticationSessionUserAccessTokenStore> _logger;
+        private readonly UserAccessTokenManagementOptions _options;
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="contextAccessor"></param>
         /// <param name="logger"></param>
+        /// <param name="options"></param>
         public AuthenticationSessionUserAccessTokenStore(
             IHttpContextAccessor contextAccessor,
-            ILogger<AuthenticationSessionUserAccessTokenStore> logger)
+            ILogger<AuthenticationSessionUserAccessTokenStore> logger, UserAccessTokenManagementOptions options)
         {
             _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
             _logger = logger;
+            _options = options;
         }
 
         /// <inheritdoc/>
@@ -47,7 +49,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             ClaimsPrincipal user,
             UserAccessTokenParameters? parameters = null)
         {
-            parameters ??= new            ();
+            parameters ??= new UserAccessTokenParameters();
             var result = await _contextAccessor!.HttpContext!.AuthenticateAsync(parameters.SignInScheme);
 
             if (!result.Succeeded)
@@ -89,7 +91,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             const string refreshTokenName = $"{TokenPrefix}{OpenIdConnectParameterNames.RefreshToken}";
 
-            if (ShouldAppendChallengeSchemeToTokenNames(result, parameters))
+            if (AppendChallengeSchemeToTokenNames(parameters))
             {
                 refreshToken = tokens
                         .SingleOrDefault(t => t.Key == $"{refreshTokenName}||{parameters.ChallengeScheme}").Value;
@@ -150,7 +152,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             var refreshTokenName = $"{OpenIdConnectParameterNames.RefreshToken}";
 
-            if (ShouldAppendChallengeSchemeToTokenNames(result, parameters))
+            if (AppendChallengeSchemeToTokenNames(parameters))
             {
                 refreshTokenName += $"||{parameters.ChallengeScheme}";
                 tokenName += $"||{parameters.ChallengeScheme}";
@@ -208,17 +210,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         }
 
         /// <summary>
-        /// Determines whether to append ChallengeScheme to token names based on a token [AppendChallengeSchemeToTokenNames] set to true, and UserAccessTokenParameters.ChallengeScheme being set.
+        /// Confirm application has opted in to UseChallengeSchemeScopedTokens and a ChallengeScheme is provided upon storage and retrieval of tokens.
         /// </summary>
-        /// <param name="result"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        protected virtual bool ShouldAppendChallengeSchemeToTokenNames(AuthenticateResult result, UserAccessTokenParameters parameters)
+        protected virtual bool AppendChallengeSchemeToTokenNames(UserAccessTokenParameters parameters)
         {
-            var appendChallengeSchemeToTokenNames = result.Properties.Items
-                .Where(i => i.Key.Equals(AppendChallengeSchemeToTokenNames)).ToList();
-            return !string.IsNullOrEmpty(parameters.ChallengeScheme) && appendChallengeSchemeToTokenNames.Count == 1 && appendChallengeSchemeToTokenNames[0].Value
-                .Equals("true", StringComparison.InvariantCultureIgnoreCase);
+            return _options.UseChallengeSchemeScopedTokens && !string.IsNullOrEmpty(parameters!.ChallengeScheme);
         }
     }
 }
