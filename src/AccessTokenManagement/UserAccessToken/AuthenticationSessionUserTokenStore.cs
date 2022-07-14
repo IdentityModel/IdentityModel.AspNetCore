@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
@@ -22,21 +23,25 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
     public class AuthenticationSessionUserAccessTokenStore : IUserAccessTokenStore
     {
         private const string TokenPrefix = ".Token.";
+        private const string TokenNamesKey = ".TokenNames";
 
         private readonly IHttpContextAccessor _contextAccessor;
         private readonly ILogger<AuthenticationSessionUserAccessTokenStore> _logger;
+        private readonly UserAccessTokenManagementOptions _options;
 
         /// <summary>
         /// ctor
         /// </summary>
         /// <param name="contextAccessor"></param>
         /// <param name="logger"></param>
+        /// <param name="options"></param>
         public AuthenticationSessionUserAccessTokenStore(
             IHttpContextAccessor contextAccessor,
-            ILogger<AuthenticationSessionUserAccessTokenStore> logger)
+            ILogger<AuthenticationSessionUserAccessTokenStore> logger, UserAccessTokenManagementOptions options)
         {
             _contextAccessor = contextAccessor ?? throw new ArgumentNullException(nameof(contextAccessor));
             _logger = logger;
+            _options = options;
         }
 
         /// <inheritdoc/>
@@ -76,7 +81,9 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 tokenName += $"::{parameters.Resource}";
             }
 
-            var expiresName = $"{TokenPrefix}expires_at";
+            var expiresName = $"{TokenPrefix}expires_at"; string? refreshToken = null;
+            string? accessToken = null;
+            string? expiresAt = null;
             if (!string.IsNullOrEmpty(parameters.Resource))
             {
                 expiresName += $"::{parameters.Resource}";
@@ -84,15 +91,14 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             const string refreshTokenName = $"{TokenPrefix}{OpenIdConnectParameterNames.RefreshToken}";
 
-            string? refreshToken = null;
-            string? accessToken = null;
-            string? expiresAt = null;
-
-            if (!string.IsNullOrEmpty(parameters.ChallengeScheme))
+            if (AppendChallengeSchemeToTokenNames(parameters))
             {
-                refreshToken = tokens.SingleOrDefault(t => t.Key == $"{refreshTokenName}||{parameters.ChallengeScheme}").Value;
-                accessToken = tokens.SingleOrDefault(t => t.Key == $"{tokenName}||{parameters.ChallengeScheme}").Value;
-                expiresAt = tokens.SingleOrDefault(t => t.Key == $"{expiresName}||{parameters.ChallengeScheme}").Value;
+                refreshToken = tokens
+                        .SingleOrDefault(t => t.Key == $"{refreshTokenName}||{parameters.ChallengeScheme}").Value;
+                accessToken = tokens.SingleOrDefault(t => t.Key == $"{tokenName}||{parameters.ChallengeScheme}")
+                    .Value;
+                expiresAt = tokens.SingleOrDefault(t => t.Key == $"{expiresName}||{parameters.ChallengeScheme}")
+                    .Value;
             }
 
             refreshToken ??= tokens.SingleOrDefault(t => t.Key == $"{refreshTokenName}").Value;
@@ -131,7 +137,7 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
 
             // in case you want to filter certain claims before re-issuing the authentication session
             var transformedPrincipal = await FilterPrincipalAsync(result.Principal!);
-            
+
             var expiresName = "expires_at";
             if (!string.IsNullOrEmpty(parameters.Resource))
             {
@@ -145,13 +151,13 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
             }
 
             var refreshTokenName = $"{OpenIdConnectParameterNames.RefreshToken}";
-            if (!string.IsNullOrEmpty(parameters.ChallengeScheme))
+
+            if (AppendChallengeSchemeToTokenNames(parameters))
             {
                 refreshTokenName += $"||{parameters.ChallengeScheme}";
                 tokenName += $"||{parameters.ChallengeScheme}";
                 expiresName += $"||{parameters.ChallengeScheme}";
             }
-
 
             result.Properties!.Items[$"{TokenPrefix}{tokenName}"] = accessToken;
             result.Properties!.Items[$"{TokenPrefix}{expiresName}"] = expiration.ToString("o", CultureInfo.InvariantCulture);
@@ -177,7 +183,11 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
                 result.Properties.ExpiresUtc = null;
             }
 
+            result.Properties.Items.Remove(TokenNamesKey);
+            result.Properties.Items.Add(new KeyValuePair<string, string?>(TokenNamesKey, string.Join(";", result.Properties.Items.Select(t => t.Key).ToList())));
+
             await _contextAccessor.HttpContext.SignInAsync(parameters.SignInScheme, transformedPrincipal, result.Properties);
+
         }
 
         /// <inheritdoc/>
@@ -197,6 +207,16 @@ namespace IdentityModel.AspNetCore.AccessTokenManagement
         protected virtual Task<ClaimsPrincipal> FilterPrincipalAsync(ClaimsPrincipal principal)
         {
             return Task.FromResult(principal);
+        }
+
+        /// <summary>
+        /// Confirm application has opted in to UseChallengeSchemeScopedTokens and a ChallengeScheme is provided upon storage and retrieval of tokens.
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
+        protected virtual bool AppendChallengeSchemeToTokenNames(UserAccessTokenParameters parameters)
+        {
+            return _options.UseChallengeSchemeScopedTokens && !string.IsNullOrEmpty(parameters!.ChallengeScheme);
         }
     }
 }
