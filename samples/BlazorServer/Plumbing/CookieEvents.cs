@@ -17,6 +17,6 @@ public class CookieEvents : CookieAuthenticationEvents
         var token = await _store.GetTokenAsync(context.Principal);
         if (token == null) context.RejectPrincipal();
 
-        base.ValidatePrincipal(context);
+        await base.ValidatePrincipal(context);
     }
 }

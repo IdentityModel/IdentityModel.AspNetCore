@@ -22,6 +22,6 @@ public class OidcEvents : OpenIdConnectEvents
             exp,
             context.TokenEndpointResponse.RefreshToken);
         
-        base.TokenValidated(context);
+        await base.TokenValidated(context);
     }
 }
