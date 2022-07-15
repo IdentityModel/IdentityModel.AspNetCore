@@ -39,19 +39,6 @@ public class RemoteApiService
         var token = await _tokenManagementService.GetUserAccessTokenAsync(state.User);
 
         request.SetBearerToken(token);
-        var response = await _client.SendAsync(request);
-
-        // if 401 - retry with refreshed token
-        if (response.StatusCode == HttpStatusCode.Unauthorized)
-        {
-            response.Dispose();
-            
-            token = await _tokenManagementService.GetUserAccessTokenAsync(state.User, new UserAccessTokenParameters { ForceRenewal = true });
-            request.SetBearerToken(token);
-            
-            response = await _client.SendAsync(request);
-        }
-
-        return response;
+        return await _client.SendAsync(request);
     }
 }
