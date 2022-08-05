@@ -1,6 +1,4 @@
 # IdentityModel.AspNetCore
 ASP.NET Core helper library managing user and client access tokens in ASP.NET Core.
 
-The token management library powering our [Duende.BFF](https://duendesoftware.com/products/bff) SPA/BlazorWASM security library. 
-
-See [here](https://identitymodel.readthedocs.io/en/latest/aspnetcore/overview.html) for documentation.
+**important** we have moved all active development of this library to [this](https://github.com/DuendeSoftware/Duende.AccessTokenManagement) repo. You can read more about the rationale on [this](https://blog.duendesoftware.com/posts/20220804_datm/) blog post.
